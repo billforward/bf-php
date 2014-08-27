@@ -1,0 +1,78 @@
+import org.gradle.api.tasks.Exec
+import org.apache.tools.ant.taskdefs.condition.Os
+
+// enable Gradle Wrapper support for bootstrapping with specific version
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
+task ensureComposerInstalled(type:Exec) {
+    workingDir 'composer'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'ensureComposerInstalled.bat'
+    } else {
+        commandLine './ensureComposerInstalled'
+    }
+}
+
+task ensureComposerModulesInstalled(type:Exec) {
+    workingDir 'composer'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'ensureComposerModulesInstalled.bat'
+    } else {
+        commandLine './ensureComposerModulesInstalled'
+    }
+}
+
+task setup {
+    ensureComposerInstalled
+    ensureComposerModulesInstalled
+}
+
+def distDir = new File('dist')
+def composerOutputDir = new File('vendor/composer')
+
+task dist << {
+    //delete distDir
+    delete fileTree(dir: distDir) 
+    distDir.mkdirs()
+    // do something
+}
+
+task makeDist(dependsOn: 'dist') << {
+    if (distDir.isDirectory()) {
+        if (composerOutputDir.isDirectory()) {
+            FileTree tree = fileTree(dir: 'lib')
+            tree.include '**/*.php'
+
+            def out = 'dist'
+
+            String requireFileContents = ''
+
+            copy {
+                from 'lib/'
+                into "$out/"
+                include 'BFPHPClient/**/*.php'
+                include 'BillForward.php'
+            }
+            copy {
+                from 'test/'
+                into "$out/"
+                include 'ExampleUsage.php'
+            }
+            ant.replace(file: "$out/ExampleUsage.php", token: "path_to_BillForward = '../vendor/autoload.php';", value: "path_to_BillForward = 'BillForward.php';")
+            copy {
+                from composerOutputDir
+                into "$out/"
+                include 'autoload_classmap.php'
+                rename ('autoload_classmap.php', 'classmap.php')
+            }
+            ant.replace(file: "$out/classmap.php", token: "\$vendorDir = dirname(dirname(__FILE__));", value: "")
+            ant.replace(file: "$out/classmap.php", token: "\$baseDir = dirname(\$vendorDir).'/composer';", value: "\$baseDir = dirname(__FILE__);")
+            ant.replace(file: "$out/classmap.php", token: "/../lib", value: "")
+        }
+    }
+}
+
+setup.dependsOn ensureComposerInstalled
+setup.dependsOn ensureComposerModulesInstalled

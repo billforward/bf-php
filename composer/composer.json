@@ -1,0 +1,16 @@
+{
+	"config": {
+        "vendor-dir": "../vendor"
+    },
+    "require-dev": {
+        "phpmd/phpmd" : "2.0.*",
+        "phpunit/phpunit": "4.1.*"
+    },
+	"autoload": {
+		"classmap": ["../lib/"]
+		
+	},
+    "autoload-dev": {
+        "classmap": ["../test/"]
+    }
+}
