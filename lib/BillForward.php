@@ -1,8 +1,8 @@
 <?php
 /**
- * Custom SPL autoloader for the AuthorizeNet SDK
+ * Custom SPL autoloader for the BillForward SDK
  *
- * @package AuthorizeNet
+ * @package BillForward
  */
 
 if (!function_exists('curl_init')) {
