@@ -102,11 +102,13 @@ task makeDist(dependsOn: 'dist') << {
             ant.replace(file: "$out/BillForward.php", token: "%BASEDIR%", value: "dirname(__FILE__);")
 
             copy {
-                from "$test/"
+                from "$root/"
                 into "$out/"
                 include 'ExampleUsage.php'
+                filter {
+                    line -> line.contains("\$path_to_BillForward = ") ? "\$path_to_BillForward ='BillForward.php';" : line
+                }
             }
-            ant.replace(file: "$out/ExampleUsage.php", token: "path_to_BillForward = '../vendor/autoload.php';", value: "path_to_BillForward = 'BillForward.php';")
             delete new File("$out/classmap.php")
         }
     }

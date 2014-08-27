@@ -1,6 +1,6 @@
 <?php
 
-$path_to_BillForward = 'BillForward.php';
+$path_to_BillForward = 'lib/BillForward.php';
 require_once($path_to_BillForward);
 
 //namespace BFPHPClientTest;
@@ -40,7 +40,7 @@ foreach ($accounts as $account) {
 	}
 }
 if (is_null($foundLoginAccount)) {
-	throw new \Exception('Login account not found.');
+	throw new Exception('Login account not found.');
 }
 //var_export($foundLoginAccount);
 
