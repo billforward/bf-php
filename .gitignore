@@ -1,4 +1,4 @@
-.gradle
+build/.gradle
 vendor/
 composer/composer.lock
 composer/composer.phar
