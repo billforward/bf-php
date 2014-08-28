@@ -10,12 +10,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 	protected $_client = NULL;
 
-	protected $_registeredEntities = [];
-	protected $_registeredEntityArrays = [];
+	protected $_registeredEntities = array();
+	protected $_registeredEntityArrays = array();
 
 	public function __construct(BfClient &$client = NULL, array $stateParams = NULL) {
 		if ($stateParams == NULL) {
-			$stateParams = [];
+			$stateParams = array();
 		}
 
 		$this->setClient($client);
@@ -58,7 +58,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	protected function buildEntityArray($class, array $input) {
-		$entityArray = [];
+		$entityArray = array();
 		foreach ($input as $index => $value) {
 			$newEntity = $this->buildEntity($class, $value);
 			$entityArray[$index] = $newEntity;
@@ -92,7 +92,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	public function getSerialized() {
-		$outputArray = [];
+		$outputArray = array();
 		foreach ($this as $key => $value) {
 			$outputArray[$key] = static::serializeField($value);
 		}
@@ -105,7 +105,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			return $value->getSerialized();
 		} else if (is_array($value)) {
 			// if it's an array of entities (or worse)?
-			$tempArray = [];
+			$tempArray = array();
 			// recursively serialize its contents, and return them
 			foreach ($value as $key2 => $value2) {
 				$tempArray[$key2] = static::serializeField($value2);
