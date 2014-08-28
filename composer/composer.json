@@ -1,4 +1,17 @@
 {
+    "name": "billforward/phpclient",
+    "type": "library",
+    "description": "BillForward PHP Client Library",
+    "keywords": ["billforward", "bill", "forward", "subscription", "billing", "client", "library"],
+    "homepage": "https://github.com/billforward/bf-php",
+    "authors": [
+        {
+            "name": "Alex Birch",
+            "email": "alexander.birch@billforward.net",
+            "homepage": "http://www.billforward.net/",
+            "role": "Software Developer"
+        }
+    ],
 	"config": {
         "vendor-dir": "../vendor"
     },
@@ -7,7 +20,6 @@
     },
 	"autoload": {
 		"classmap": ["../lib/"]
-		
 	},
     "autoload-dev": {
         "psr-0": {
