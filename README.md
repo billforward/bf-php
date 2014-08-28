@@ -98,10 +98,13 @@ This step installs our build system, Gradle.
 
 *Brave users can skip to Step 3; gradle will self-install itself if it needs to*
 
+
 (Requires Java on PATH).
+
 We provide a Gradle self-installer for Windows and UNIX.
 
 It is in the `build` directory.
+
 Invoke with:
 
 ```
@@ -115,8 +118,11 @@ This step runs a 'setup' build, which:
 2. Installs Composer packages (if necessary). [Classmap is also generated at this time]
 3. Creates `BillForward.php` autoloader from that classmap
 
+
 (Requires CURL on PATH: to self-install Composer).
+
 (Requires PHP on PATH: to invoke Composer).
+
 We provide a Composer self-installer for Windows and UNIX.
 Invoke with:
 
@@ -160,7 +166,9 @@ Running this test is the standard way of preparing a new user account to have te
 
 
 We use phpunit as our testrunner. If you have run `gradlew setup`, you will find already a phpunit binary in `vendor/bin/phpunit`.
+
 (Requires phpunit on PATH).
+
 You can run this particular test by invoking:
 
 ```
