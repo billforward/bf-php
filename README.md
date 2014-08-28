@@ -1,7 +1,8 @@
 #Usage
 ##Put our library into your repository
 Inside `lib/`, lives:
-`BillForward.php` and `BFPHPClient/`.
+* `BillForward.php`
+* `BFPHPClient/`
 
 Put these files in your repository.
 
@@ -15,10 +16,12 @@ This file will autoload the library.
 ##Use credentials to connect to BillForward
 ###Getting BillForward credentials
 Login to (or Register) your BillForward Sandbox account:
+
 https://app-sandbox.billforward.net/login/#/
 https://app-sandbox.billforward.net/register/#/
 
 Grab an API token from:
+
 https://app-sandbox.billforward.net/setup/#/personal/api-keys
 
 ###Connect to BillForward using BfClient
@@ -42,7 +45,6 @@ $accounts = $client
 See `ExampleUsage.php` for a full use-case of interacting with the API.
 
 We provide also in the `test` folder some tests that show usage.
-```
 
 #Compatibility
 The BillForward PHP Client Library is expected to work on PHP 5.3+.
@@ -50,7 +52,7 @@ Required PHP extensions include:
 ```
 cURL
 json_decode
-
+```
 
 #Building (for devs)
 We use a build system. This is Gradle.
@@ -77,6 +79,7 @@ To get the workspace setup, there are three steps:
 ##Step 1. Installing Java, curl and PHP.
 These are well-documented; follow normal installation process.
 UNIX users will already have curl. Windows users might want to look here:
+
 http://curl.haxx.se/dlwiz/?type=bin&os=Win32&flav=-&ver=*
 
 ##Step 2. Installing gradle.
