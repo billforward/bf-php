@@ -37,6 +37,7 @@ spl_autoload_register(function($className) {
             'Bf_PricingComponentValue' => $baseDir . '/BFPHPClient/PricingComponentValue.php',
             'Bf_PricingComponentValueChange' => $baseDir . '/BFPHPClient/PricingComponentValueChange.php',
             'Bf_Product' => $baseDir . '/BFPHPClient/Product.php',
+            'Bf_ProductController' => $baseDir . '/BFPHPClient/ProductController.php',
             'Bf_ProductRatePlan' => $baseDir . '/BFPHPClient/ProductRatePlan.php',
             'Bf_ProductRatePlanController' => $baseDir . '/BFPHPClient/ProductRatePlanController.php',
             'Bf_Profile' => $baseDir . '/BFPHPClient/Profile.php',

@@ -32,6 +32,7 @@ class BfClient {
 	public $accounts = NULL;
     public $organisations = NULL;
     public $subscriptions = NULL;
+    public $products = NULL;
     public $productRatePlans = NULL;
     public $pricingComponents = NULL;
     public $unitsOfMeasure = NULL;
@@ -43,7 +44,8 @@ class BfClient {
         $this->accounts = new Bf_AccountController($this);
         $this->organisations = new Bf_OrganisationController($this);
         $this->subscriptions = new Bf_SubscriptionController($this);
-		$this->productRatePlans = new Bf_ProductRatePlanController($this);
+        $this->productRatePlans = new Bf_ProductRatePlanController($this);
+		$this->products = new Bf_ProductController($this);
         $this->pricingComponents = new Bf_PricingComponentController($this);
         $this->unitsOfMeasure = new Bf_UnitOfMeasureController($this);
 	}

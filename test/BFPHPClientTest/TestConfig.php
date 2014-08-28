@@ -34,19 +34,20 @@ class TestConfig {
 
 	public function __construct() {
 		$this->access_token = '';
-		$this->urlRoot = 'https://api-sandbox.billforward.net/2014.223.0/';
+        $this->urlRoot = 'https://api-sandbox.billforward.net/2014.223.0/';
 
-		$this->usualLoginAccountID = '';
-		$this->usualLoginUserID = '';
-		$this->usualOrganisationID = '';
-		$this->usualAccountID = '';
-		$this->usualPaymentMethodID = '';
-		$this->usualPaymentMethodLinkID = '';
-		$this->usualProductID = '';
-		$this->usualProductRatePlanID = '';
-		$this->usualPricingComponentID = '';
-		$this->usualSubscriptionID = '';
-		$this->usualUnitOfMeasureID = '';
+        $this->usualLoginAccountID = '';
+        $this->usualLoginUserID = '';
+        $this->usualOrganisationID = '';
+        $this->usualAccountID = '';
+        $this->usualPaymentMethodID = '';
+        $this->usualPaymentMethodLinkID = '';
+        $this->usualProductID = '';
+        $this->usualProductRatePlanID = '';
+        $this->usualPricingComponentID = '';
+        $this->usualSubscriptionID = '';
+        $this->usualUnitOfMeasureID = '';
+
 		$this->client = new BfClient($this->access_token, $this->urlRoot);
 	}
 
@@ -125,8 +126,8 @@ class TestConfig {
 		return 'Memorable Subscription';
 	}
 
-	public function getAuthorizeNetToken() {
-
+	public function getUsualProductDescription() {
+		return 'It can cure the common cold, and being struck by lightning';
 	}
 
 	/**
@@ -205,10 +206,14 @@ class TestConfig {
 		$customerProfileID = 28476855;
 		$customerPaymentProfileID = 25879733;
     	
+		// this 'last 4 digits of credit card number' field (currently optional) is required for refunds
+		$cardLast4Digits = 1337;
+
 		$authorizeNetToken = new Bf_AuthorizeNetToken($client, [
 			'accountID' => $createdAccID,
 			'customerProfileID' => $customerProfileID,
 			'customerPaymentProfileID' => $customerPaymentProfileID,
+			'lastFourDigits' => $cardLast4Digits,
 			]);
 
 		$createdAuthorizeNetToken = $authorizeNetToken
@@ -251,12 +256,14 @@ class TestConfig {
 		->create();
 		$createdUomID = $createdUom->id;
 
+		$productDescription = $this->getUsualProductDescription();
+
 		//-- Make product
 		$product = new Bf_Product($client, [
 			'productType' => 'non-recurring',
 			'state' => 'prod',
 			'name' => 'Month of Paracetamoxyfrusebendroneomycin',
-			'description' => 'It can cure the common cold, and being struck by lightning',
+			'description' => $productDescription,
 			'durationPeriod' => 'days',
 			'duration' => 28,
 			]);
