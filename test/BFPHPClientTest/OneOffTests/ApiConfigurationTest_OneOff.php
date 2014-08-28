@@ -7,9 +7,9 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) ApiConfiguration tests for BillForward PHP Client Library.\n";
 
-use BFPHPClient\BfClient;
-use BFPHPClient\Account;
-use BFPHPClient\ApiConfiguration;
+use BfClient;
+use Bf_Account;
+use Bf_APIConfiguration;
 use BFPHPClientTest\TestConfig;
 Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
@@ -57,7 +57,7 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$AuthorizeNetLoginID = '3H8j4PFr7gt7';
 		$AuthorizeNetTransactionKey = '7W8x7v37Gt472Cyn';
 
-		$apiConfiguration = new ApiConfiguration($client, [
+		$apiConfiguration = new Bf_APIConfiguration($client, [
 			 "@type" => "AuthorizeNetConfiguration",
 	         "APILoginID" => $AuthorizeNetLoginID,
 	         "transactionKey" => $AuthorizeNetTransactionKey,

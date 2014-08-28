@@ -7,8 +7,7 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) Bf_Account tests for BillForward PHP Client Library.\n";
 
-use BFPHPClient\BfClient;
-use BFPHPClient\Account;
+use Bf_Account;
 use BFPHPClientTest\TestConfig;
 Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
@@ -23,11 +22,18 @@ Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$client = self::$client;
     	
     	// creates a new default account
-		$account = new Bf_Account($client, []);
+		$account = new Bf_Account($client);
 
 		$response = $account
 		->create();
+	}
 
-		var_export($response);
+	public function testCreateWithController() {
+		$client = self::$client;
+    	
+    	// creates a new default account
+    	$createdAccount = $client
+    	->accounts
+    	->create();
 	}
 }

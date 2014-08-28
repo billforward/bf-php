@@ -13,10 +13,14 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected $_registeredEntities = [];
 	protected $_registeredEntityArrays = [];
 
-	public function __construct(BfClient &$client = NULL, array $json) {
+	public function __construct(BfClient &$client = NULL, array $stateParams = NULL) {
+		if ($stateParams == NULL) {
+			$stateParams = [];
+		}
+
 		$this->setClient($client);
 
-		$this->doUnserialize($json);
+		$this->doUnserialize($stateParams);
 	}
 
 	public static function getClassName() {

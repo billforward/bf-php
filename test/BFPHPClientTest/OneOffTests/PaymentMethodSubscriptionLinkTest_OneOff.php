@@ -7,10 +7,10 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) Payment Method Suscription Link tests for BillForward PHP Client Library.\n";
 
-use BFPHPClient\BfClient;
-use BFPHPClient\PaymentMethod;
-use BFPHPClient\PaymentMethodSubscriptionLink;
-use BFPHPClient\Subscription;
+use BfClient;
+use Bf_PaymentMethod;
+use Bf_PaymentMethodSubscriptionLink;
+use Bf_Subscription;
 use BFPHPClientTest\TestConfig;
 Class Bf_PaymentMethodSubscriptionLink_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;

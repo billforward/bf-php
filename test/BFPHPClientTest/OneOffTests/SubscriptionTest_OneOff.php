@@ -7,8 +7,8 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) Bf_Subscription tests for BillForward PHP Client Library.\n";
 
-use \Bf_BfClient;
-use \Bf_Subscription;
+use BfClient;
+use Bf_Subscription;
 use BFPHPClientTest\TestConfig;
 Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
@@ -20,7 +20,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 	}
 
 
-	/*public function testCreate() {
+	public function testCreate() {
 		$client = self::$client;
 		$config = self::$config;
 
@@ -41,7 +41,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		$response = $sub
 		->create();
-	}*/
+	}
 
 	public function testStart() {
 		$client = self::$client;

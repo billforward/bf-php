@@ -7,8 +7,8 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) Payment Method tests for BillForward PHP Client Library.\n";
 
-use BFPHPClient\BfClient;
-use BFPHPClient\AuthorizeNetToken;
+use BfClient;
+use Bf_AuthorizeNetToken;
 use BFPHPClientTest\TestConfig;
 Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;

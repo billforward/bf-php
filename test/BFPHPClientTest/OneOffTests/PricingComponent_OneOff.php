@@ -7,9 +7,9 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) Bf_PricingComponent tests for BillForward PHP Client Library.\n";
 
-use BFPHPClient\BfClient;
-use BFPHPClient\PricingComponent;
-use BFPHPClient\PricingComponentTier;
+use BfClient;
+use Bf_PricingComponent;
+use Bf_PricingComponentTier;
 use BFPHPClientTest\TestConfig;
 Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
