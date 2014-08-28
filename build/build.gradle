@@ -43,42 +43,6 @@ task regenerateClassmap(type:Exec) {
     }
 }
 
-task setup {
-    ensureComposerInstalled
-    ensureComposerModulesInstalled
-}
-
-task dist << {
-    //delete distDir
-    delete fileTree(dir: distDir) 
-    distDir.mkdirs()
-    // do something
-}
-
-task makeDist(dependsOn: 'dist') << {
-    if (distDir.isDirectory()) {
-        if (composerOutputDir.isDirectory()) {
-            def out = "$distDir"
-
-            copy {
-                from "$lib/"
-                into "$out/"
-                include 'BFPHPClient/**/*.php'
-                include 'BillForward.php'
-            }
-
-            copy {
-                from "$root/"
-                into "$out/"
-                include 'ExampleUsage.php'
-                filter {
-                    line -> line.contains("\$path_to_BillForward = ") ? "\$path_to_BillForward ='BillForward.php';" : line
-                }
-            }
-        }
-    }
-}
-
 task recompileClasspath() << {
     // TODO: spin this out into a shared task
     if (composerOutputDir.isDirectory()) {
@@ -96,7 +60,7 @@ task recompileClasspath() << {
             // turn into empty lines any class mappings that don't point into BFPHPClient folder
             filter {
                 line
-                -> if (line.contains('=>') && line.contains('BFPHPClient')) {
+                -> if (line.contains('=>') && line.contains('BFPHPClient/')) {
                         line
                     } else {
                         ''
@@ -131,13 +95,36 @@ task recompileClasspath() << {
     }
 }
 
-ensureComposerModulesInstalled.dependsOn ensureComposerInstalled
+task setup(dependsOn: ['ensureComposerInstalled', 'ensureComposerModulesInstalled', 'regenerateClassmap', 'recompileClasspath']) {
+}
 
-setup.dependsOn ensureComposerModulesInstalled
+task clearDist << {
+    //delete distDir
+    delete fileTree(dir: distDir) 
+    distDir.mkdirs()
+    // do something
+}
 
-recompileClasspath.dependsOn regenerateClassmap
+task makeDist(dependsOn: ['setup', 'clearDist']) << {
+    if (distDir.isDirectory()) {
+        if (composerOutputDir.isDirectory()) {
+            def out = "$distDir"
 
-regenerateClassmap.dependsOn setup
+            copy {
+                from "$lib/"
+                into "$out/"
+                include 'BFPHPClient/**/*.php'
+                include 'BillForward.php'
+            }
 
-makeDist.dependsOn recompileClasspath
-
+            copy {
+                from "$root/"
+                into "$out/"
+                include 'ExampleUsage.php'
+                filter {
+                    line -> line.contains("\$path_to_BillForward = ") ? "\$path_to_BillForward ='BillForward.php';" : line
+                }
+            }
+        }
+    }
+}
