@@ -46,7 +46,7 @@ abstract class Bf_Controller {
 		$json = $response->json();
 		$results = $json['results'];
 
-		$entities = [];
+		$entities = array();
 
 		foreach($results as $value) {
 			$constructedEntity = new $entityClass($client, $value);
@@ -63,7 +63,7 @@ abstract class Bf_Controller {
 	 */
 	public function create(array $stateParams = NULL) {
 		if ($stateParams == NULL) {
-			$stateParams = [];
+			$stateParams = array();
 		}
 		$entityClass = static::getEntityClass();
 
