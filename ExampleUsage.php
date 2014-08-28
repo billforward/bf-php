@@ -54,8 +54,8 @@ $firstOrgID = $firstOrg->id;
 
 
 // Create (upon our organisation) API configuration for Authorize.net
-$AuthorizeNetLoginID = '4X8R8UAawK67';
-$AuthorizeNetTransactionKey = '3Udsn9w8G29qNt3Q';
+$AuthorizeNetLoginID = 'AUTHORIZE NET LOGIN ID HERE';
+$AuthorizeNetTransactionKey = 'AUTHORIZE NET TRANSACTION KEY HERE';
 
 // saving this twice to the same organisation seems to make a copy.
 // so probably you sohuld clear out your `api_configurations` in SQL before running this a second time.
