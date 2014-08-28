@@ -54,8 +54,8 @@ $firstOrgID = $firstOrg->id;
 
 
 // Create (upon our organisation) API configuration for Authorize.net
-$AuthorizeNetLoginID = 'AUTHORIZE NET LOGIN ID HERE';
-$AuthorizeNetTransactionKey = 'AUTHORIZE NET TRANSACTION KEY HERE';
+$AuthorizeNetLoginID = 'FILL IN WITH AUTHORIZE NET LOGIN ID';
+$AuthorizeNetTransactionKey = 'FILL IN WITH AUTHORIZE NET TRANSACTION KEY';
 
 // saving this twice to the same organisation seems to make a copy.
 // so probably you sohuld clear out your `api_configurations` in SQL before running this a second time.
@@ -91,13 +91,19 @@ $createdAccID = $createdAcc->id;
 //-- make payment method, and associate it with account
 	//-- make Authorize.net token to associate payment method to
 
-$customerProfileID = 28476855;
-$customerPaymentProfileID = 25879733;
+// FILL IN WITH YOUR AUTHORIZE.NET CUSTOMER PROFILE ID
+$customerProfileID = 00000000;
+// FILL IN WITH YOUR AUTHORIZE.NET CUSTOMER PAYMENT PROFILE ID
+$customerPaymentProfileID = 00000000;
+// FILL IN WITH YOUR AUTHORIZE.NET CUSTOMER'S CARD LAST 4 DIGITS
+// this 'last 4 digits of credit card number' field (currently optional) is required for refunds
+$cardLast4Digits = 0000;
 
 $authorizeNetToken = new Bf_AuthorizeNetToken($client, [
 	'accountID' => $createdAccID,
 	'customerProfileID' => $customerProfileID,
 	'customerPaymentProfileID' => $customerPaymentProfileID,
+	'lastFourDigits' => $cardLast4Digits,
 	]);
 
 $createdAuthorizeNetToken = $authorizeNetToken
@@ -212,7 +218,7 @@ $paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink($client, [
 	]);
 $paymentMethodSubscriptionLinks = [$paymentMethodSubscriptionLink];
 
-//-- Make subscription
+//-- Provision subscription
 $sub = new Bf_Subscription($client, [
 	'type' => 'Subscription',
 	'productID' => $createdProductID,
@@ -225,6 +231,10 @@ $sub = new Bf_Subscription($client, [
 	]);
 $createdSub = $sub
 ->create();
+
+// activate provisioned subscription
+$createdSub
+->activate();
 
 echo "\n";
 echo sprintf("\$usualLoginAccountID = '%s';\n", $foundLoginAccount->id);
