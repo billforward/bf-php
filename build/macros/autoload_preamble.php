@@ -20,6 +20,6 @@ spl_autoload_register(function($className) {
     }
 
     if (isset($classMap[$className])) {
-        include $classMap[$className];
+        require_once $classMap[$className];
     }
 });
