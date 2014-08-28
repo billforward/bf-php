@@ -18,7 +18,7 @@ class Bf_OrganisationController extends Bf_Controller {
 		$json = $response->json();
 		$results = $json['results'];
 
-		$entities = [];
+		$entities = array();
 
 		foreach($results as $value) {
 			$constructedEntity = new $entityClass($client, $value);
