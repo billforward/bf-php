@@ -21,7 +21,7 @@ task ensureComposerInstalled(type:Exec) {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd', '/c', 'ensureComposerInstalled.bat'
     } else {
-        commandLine './ensureComposerInstalled'
+        commandLine 'sh', 'ensureComposerInstalled'
     }
 }
 
@@ -30,7 +30,7 @@ task ensureComposerModulesInstalled(type:Exec) {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd', '/c', 'ensureComposerModulesInstalled.bat'
     } else {
-        commandLine './ensureComposerModulesInstalled'
+        commandLine 'sh', 'ensureComposerModulesInstalled'
     }
 }
 
@@ -39,7 +39,7 @@ task regenerateClassmap(type:Exec) {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         commandLine 'cmd', '/c', 'regenerateClassmap.bat'
     } else {
-        commandLine './regenerateClassmap'
+        commandLine 'sh', 'regenerateClassmap'
     }
 }
 

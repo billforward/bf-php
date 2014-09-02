@@ -4,7 +4,7 @@ if [ -f "$file" ]
 then
 	echo "$file found - thus Composer is installed already. Skipping installation."
 else
-	echo "$file not found - thus Composter is not yet installed. Installing..."
+	echo "$file not found - thus Composer is not yet installed. Installing..."
 	chmod +x installComposer
 	. installComposer
 fi
