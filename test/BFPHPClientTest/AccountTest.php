@@ -65,9 +65,9 @@ Class Bf_AccountTest extends \PHPUnit_Framework_TestCase {
     	// order by userID so that we are likely to see our login user's account
 		$accounts = $client
 		->accounts
-		->getAll([
+		->getAll(array(
 			'order_by' => 'userID'
-			]);
+			));
 
 		$found = NULL;
 		foreach ($accounts as $account) {

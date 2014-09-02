@@ -22,14 +22,14 @@ Class Bf_Product_OneOffTest extends \PHPUnit_Framework_TestCase {
 	public function testCreate() {
 		$client = self::$client;
     	
-		$product = new Bf_Product($client, [
+		$product = new Bf_Product($client, array(
 		'productType' => 'non-recurring',
 		'state' => 'prod',
 		'name' => 'Month of Paracetamoxyfrusebendroneomycin',
 		'description' => 'It can cure the common cold, and being struck by lightning',
 		'durationPeriod' => 'days',
 		'duration' => 28,
-			]);
+			));
 
 		// TODO API: 'description' should be allowed to be null.
 		// TODO API: 'duration' should be 'required', rather than defaulting to 0.

@@ -27,9 +27,9 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// order by userID so that we are likely to see our login user's account
 		$accounts = $client
 		->accounts
-		->getAll([
+		->getAll(array(
 			'order_by' => 'userID'
-			]);
+			));
 
 		$foundLoginAccount = NULL;
 		foreach ($accounts as $account) {
@@ -57,17 +57,17 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$AuthorizeNetLoginID = '3H8j4PFr7gt7';
 		$AuthorizeNetTransactionKey = '7W8x7v37Gt472Cyn';
 
-		$apiConfiguration = new Bf_APIConfiguration($client, [
+		$apiConfiguration = new Bf_APIConfiguration($client, array(
 			 "@type" => "AuthorizeNetConfiguration",
 	         "APILoginID" => $AuthorizeNetLoginID,
 	         "transactionKey" => $AuthorizeNetTransactionKey,
 	         "environment" => "Sandbox"
-			]);
+			));
 
 		// TODO API: '@type' needs to be 'required', otherwise we get marshalling errors where ti doesn't know what class to make. and the client just receives a '-1 server error'
 
 		$firstOrg
-		->apiConfigurations = [$apiConfiguration];
+		->apiConfigurations = array($apiConfiguration);
 
 		echo "\n\nEdited model Org:\n\n";
 		var_export($firstOrg);

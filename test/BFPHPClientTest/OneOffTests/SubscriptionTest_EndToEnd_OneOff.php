@@ -27,36 +27,36 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		$testAccountID = $config->getUsualAccountID();
 
-		$product = new Bf_Product($client, [
+		$product = new Bf_Product($client, array(
 			'productType' => 'non-recurring',
 			'state' => 'prod',
 			'name' => 'Month of Paracetamoxyfrusebendroneomycin',
 			'description' => 'It can cure the common cold, and being struck by lightning',
 			'durationPeriod' => 'days',
 			'duration' => 28,
-			]);
+			));
 		$createdProduct = $product
 		->create();
 
 		$testProductID = $createdProduct->id;
 
-		$prp = new Bf_ProductRatePlan($client, [
+		$prp = new Bf_ProductRatePlan($client, array(
 			'productID' => $testProductID,
 			'currency' => 'USD',
-			]);
+			));
 		$createdPrp = $prp
 		->create();
 
 		$testProductRatePlanID = $createdPrp->id;
     	
     	// creates a new default account
-		$sub = new Bf_Subscription($client, [
+		$sub = new Bf_Subscription($client, array(
 			'type' => 'Subscription',
 			'productID' => $testProductID,
 			'productRatePlanID' => $testProductRatePlanID,
 			'accountID' => $testAccountID,
 			'name' => 'Test Bf_Subscription',
-			]);
+			));
 
 		$createdSub = $sub
 		->create();

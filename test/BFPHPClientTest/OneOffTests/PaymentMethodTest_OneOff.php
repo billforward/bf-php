@@ -26,7 +26,7 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testAccountID = $config->getUsualAccountID();
 		$testPaymentMethodLinkID = $config->getUsualPaymentMethodLinkID();
     	
-		$paymentMethod = new Bf_PaymentMethod($client, [
+		$paymentMethod = new Bf_PaymentMethod($client, array(
 		'accountID' => $testAccountID,
 		'linkID' => $testPaymentMethodLinkID,
 		'name' => 'Credit',
@@ -34,7 +34,7 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 		'gateway' => 'AuthorizeNet',
 		'userEditable' => 1,
 		'reusable' => 1,
-			]);
+			));
 
 		// TODO API: 'linkID' appears in docs example, and indeed is 'required' (see API's 'link_id'). Yet has no @ApiModelProperty(), so does not appear as 'required' in docs.
 		// TODO API: when 'linkID' is null, we get a 'Duplicate record' back from server, rather than parameter validation prompt.

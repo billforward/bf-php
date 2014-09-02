@@ -28,15 +28,15 @@ Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testUomID = $config->getUsualUnitOfMeasureID();
 		$testProductRatePlanId = $config->getUsualProductRatePlanID();
 
-		$tier = new Bf_PricingComponentTier($client, [
+		$tier = new Bf_PricingComponentTier($client, array(
 			'lowerThreshold' => 1,
 			'upperThreshold' => 1,
 			'pricingType' => 'unit',
 			'price' => 1,
-			]);
-		$tiers = [$tier];
+			));
+		$tiers = array($tier);
     	
-		$prc = new Bf_PricingComponent($client, [
+		$prc = new Bf_PricingComponent($client, array(
 			'@type' => 'flatPricingComponent',
 			'productRatePlanID' => $testProductRatePlanId,
 			'unitOfMeasureID' => $testUomID,
@@ -47,7 +47,7 @@ Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'downgradeMode' => 'immediate',
 			'defaultQuantity' => 10,
 			'tiers' => $tiers
-			]);
+			));
 		$createdPrc = $prc
 		->create();
 
@@ -55,8 +55,7 @@ Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// TODO API: received 'you must specify a default quantity' when I tried example request.
 		// TODO API: change POST permission to 'admin'
 		// TODO API: change POST permission of Bf_PricingComponentTier to 'admin'
-		// TODO API: refuse creation of 0-tiered flat pricing component (kills generation engine)
-		// TODO API: refuse creation of descriptionless pricing component (kills generation engine). maybe name as well; not tried.
+		// TODO API 2
 
 		var_export($createdPrc);
 	}

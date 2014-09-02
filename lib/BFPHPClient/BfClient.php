@@ -98,7 +98,7 @@ class BfClient {
 	public function doPost($endpoint, array $params) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->CallAPI_Unvalidated('POST', $urlFull, json_encode($params, JSON_PRETTY_PRINT), true);
+        $response = $this->CallAPI_Unvalidated('POST', $urlFull, json_encode($params), true);
 
         static::handleError($response);
 
@@ -108,7 +108,7 @@ class BfClient {
 	public function doPut($endpoint, array $params) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->CallAPI_Unvalidated('PUT', $urlFull, json_encode($params, JSON_PRETTY_PRINT), true);
+        $response = $this->CallAPI_Unvalidated('PUT', $urlFull, json_encode($params), true);
 
         static::handleError($response);
 

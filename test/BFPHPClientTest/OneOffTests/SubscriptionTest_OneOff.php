@@ -29,13 +29,13 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testAccountID = $config->getUsualAccountID();
     	
     	// creates a new default account
-		$sub = new Bf_Subscription($client, [
+		$sub = new Bf_Subscription($client, array(
 			'type' => 'Subscription',
 			'productID' => $testProductID,
 			'productRatePlanID' => $testProductRatePlanID,
 			'accountID' => $testAccountID,
 			'name' => 'Memorable Bf_Subscription',
-			]);
+			));
 
 		// TODO API: why is 'productID' 'required'? surely it can (and should) grab this from PRP. Otherwise user can mismatch them.
 

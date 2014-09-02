@@ -28,8 +28,8 @@ Class Bf_ProductRatePlan_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testProductID = $config->getUsualProductID();
 		$testUomID = $config->getUsualUnitOfMeasureID();
 
-		$pricingComponentsArray = [
-			new Bf_PricingComponent($client, [
+		$pricingComponentsArray = array(
+			new Bf_PricingComponent($client, array(
 			'@type' => 'flatPricingComponent',
 			'chargeModel' => 'flat',
 			'name' => 'Devices used',
@@ -38,15 +38,15 @@ Class Bf_ProductRatePlan_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'upgradeMode' => 'immediate',
 			'downgradeMode' => 'immediate',
 			'defaultQuantity' => 10,
-			])
-		];
+			))
+		);
     	
-		$prp = new Bf_ProductRatePlan($client, [
+		$prp = new Bf_ProductRatePlan($client, array(
 			'currency' => 'USD',
 			'name' => 'Cool Plan',
 			'pricingComponents' => $pricingComponentsArray,
 			'productID' => $testProductID,
-			]);
+			));
 
 		//var_export($prp->getSerialized());
 

@@ -87,10 +87,11 @@ Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
     {	
     	$profile = $this->recycleUsualProfile();
 
-    	$uniqueString = date(DATE_RFC2822);
+    	$uniqueString = time();
 
     	$changeNameTo = 'Test '.$uniqueString;
 
+    	// note: affected by side-effect of previous test; has changes to model
 		$firstNameBefore = $profile
 		->firstName;
 
