@@ -29,27 +29,11 @@ class BillForwardClient {
 	private $access_token = NULL;
 	private $urlRoot = NULL;
 
-	public $accounts = NULL;
-    public $organisations = NULL;
-    public $subscriptions = NULL;
-    public $products = NULL;
-    public $productRatePlans = NULL;
-    public $pricingComponents = NULL;
-    public $unitsOfMeasure = NULL;
-
     private static $singletonClient = NULL;
 
 	public function __construct($access_token, $urlRoot) {
 		$this->access_token = $access_token;
 		$this->urlRoot = $urlRoot;
-
-        $this->accounts = new Bf_AccountController($this);
-        $this->organisations = new Bf_OrganisationController($this);
-        $this->subscriptions = new Bf_SubscriptionController($this);
-        $this->productRatePlans = new Bf_ProductRatePlanController($this);
-		$this->products = new Bf_ProductController($this);
-        $this->pricingComponents = new Bf_PricingComponentController($this);
-        $this->unitsOfMeasure = new Bf_UnitOfMeasureController($this);
 
         // latest instantiated BillForwardClient is the one used when 'singletonClient' is requested.
         static::setSingletonClient($this);
