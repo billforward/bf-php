@@ -97,7 +97,7 @@ Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 		$profile
 		->firstName = $changeNameTo;
 
-		$profile->update();
+		$profile->save();
 
 		$updated = $this->getUsualProfile();
 

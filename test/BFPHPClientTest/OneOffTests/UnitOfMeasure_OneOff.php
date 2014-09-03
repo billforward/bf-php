@@ -28,7 +28,7 @@ Class Bf_UnitOfMeasure_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'roundingScheme' => 'UP',
 			));
 
-		$createdUom = $uom->create();
+		$createdUom = Bf_UnitOfMeasure::create($uom);
 
 		var_export($createdUom);
 	}

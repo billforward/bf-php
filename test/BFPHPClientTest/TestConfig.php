@@ -50,6 +50,7 @@ class TestConfig {
         $this->usualUnitOfMeasureID = '';
 
 		$this->client = new BillForwardClient($this->access_token, $this->urlRoot);
+        BillForwardClient::setDefaultClient($this->client);
 	}
 
 	public function getClient() {
@@ -179,7 +180,7 @@ class TestConfig {
 		->apiConfigurations = array($apiConfiguration);
 
 		$savedOrg = $firstOrg
-		->update();
+		->save();
 
 		//-- Make account with expected profile
 		$email = $this->getUsualAccountsProfileEmail();
@@ -192,8 +193,7 @@ class TestConfig {
 			'profile' => $profile,
 			));
 
-		$createdAcc = $account
-		->create();
+		$createdAcc = Bf_Account::create($account);
 		$createdAccID = $createdAcc->id;
 
 
@@ -213,8 +213,7 @@ class TestConfig {
 			'lastFourDigits' => $cardLast4Digits,
 			));
 
-		$createdAuthorizeNetToken = $authorizeNetToken
-		->create();
+		$createdAuthorizeNetToken = Bf_AuthorizeNetToken::create($authorizeNetToken);
 		$createdAuthorizeNetTokenID = $createdAuthorizeNetToken
 		->id;
 
@@ -228,8 +227,7 @@ class TestConfig {
 			'priority' => 100,
 			'reusable' => 1,
 			));
-		$createdPaymentMethod = $paymentMethod
-		->create();
+		$createdPaymentMethod = Bf_PaymentMethod::create($paymentMethod);
 		$createdPaymentMethodID = $createdPaymentMethod->id;
 
 		$paymentMethods = array($createdPaymentMethod);
@@ -239,7 +237,7 @@ class TestConfig {
 		->paymentMethods = $paymentMethods;
 		// save changes to real account
 		$createdAcc = $createdAcc
-		->update();
+		->save();
 
 		var_export($createdAcc);
 
@@ -249,8 +247,7 @@ class TestConfig {
 			'displayedAs' => 'Devices',
 			'roundingScheme' => 'UP',
 			));
-		$createdUom = $uom
-		->create();
+		$createdUom = Bf_UnitOfMeasure::create($uom);
 		$createdUomID = $createdUom->id;
 
 		$productDescription = $this->getUsualProductDescription();
@@ -264,8 +261,7 @@ class TestConfig {
 			'durationPeriod' => 'days',
 			'duration' => 28,
 			));
-		$createdProduct = $product
-		->create();
+		$createdProduct = Bf_Product::create($product);
 		$createdProductID = $createdProduct->id;
 
 		//-- Make product rate plan
@@ -300,8 +296,7 @@ class TestConfig {
 			'pricingComponents' => $pricingComponentsArray,
 			'productID' => $createdProductID,
 			));
-		$createdPrp = $prp
-		->create();
+		$createdPrp = Bf_ProductRatePlan::create($prp);
 		$createdProductRatePlanID = $createdPrp->id;
 		$createdPricingComponentID = $createdPrp->pricingComponents[0]->id;
 
@@ -339,8 +334,7 @@ class TestConfig {
 			'paymentMethodSubscriptionLinks' => $paymentMethodSubscriptionLinks,
 			'pricingComponentValues' => $pricingComponentValuesArray
 			));
-		$createdSub = $sub
-		->create();
+		$createdSub = Bf_Subscription::create($sub);
 
 		echo "\n";
 		echo sprintf("\$this->usualLoginAccountID = '%s';\n", $foundLoginAccount->id);

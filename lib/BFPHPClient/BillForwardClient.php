@@ -34,24 +34,21 @@ class BillForwardClient {
 	public function __construct($access_token, $urlRoot) {
 		$this->access_token = $access_token;
 		$this->urlRoot = $urlRoot;
-
-        // latest instantiated BillForwardClient is the one used when 'singletonClient' is requested.
-        static::setSingletonClient($this);
 	}
 
-    public static function getSingletonClient() {
+    public static function getDefaultClient() {
         $client = static::$singletonClient;
         if (is_null($client)) {
             // check for existence of static client instead
             $client = static::$singletonClient;
             if (is_null($client)) {
-                throw new Exception('No BillForwardClient found; cannot make API requests.');
+                throw new Exception('No default BillForwardClient found; cannot make API requests.');
             }
         }
         return $client;
     }
 
-    public static function setSingletonClient(BillForwardClient &$client = NULL) {
+    public static function setDefaultClient(BillForwardClient &$client = NULL) {
         static::$singletonClient = $client;
     }
 

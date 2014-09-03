@@ -54,7 +54,7 @@ Class Bf_ProductRatePlan_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// TODO API: 'chargeModel' on pricingComponent should be 'required' (at least in cascade).
 		// TODO API: 'defaultQuantity' on pricingComponent should be 'required' in cascade, since it is required otherwise.
 
-		$createdPrp = $prp->create();
+		$createdPrp = Bf_ProductRatePlan::create($prp);
 
 		var_export($createdPrp);
 	}

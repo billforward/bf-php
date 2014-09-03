@@ -9,7 +9,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	public static function getSingletonClient() {
-		return BillForwardClient::getSingletonClient();
+		return BillForwardClient::getDefaultClient();
 	}
 
 	protected $_client = NULL;
@@ -23,7 +23,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 
 		if (is_null($client)) {
-			// default to singletonClient, which is the 'most recently constructed BillForwardClient'
+			// default to singletonClient
 			$client = static::getSingletonClient();
 		}
 		$this->setClient($client);

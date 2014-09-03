@@ -33,8 +33,7 @@ Class Bf_PaymentMethodSubscriptionLink_OneOffTest extends \PHPUnit_Framework_Tes
 		'paymentMethodID' => $testPaymentMethodID,
 			));
 
-		$response = $paymentMethodSubscriptionLink
-		->create();
+		$response = Bf_PaymentMethodSubscriptionLink::create($paymentMethodSubscriptionLink);
 
 		var_export($response);
 	}

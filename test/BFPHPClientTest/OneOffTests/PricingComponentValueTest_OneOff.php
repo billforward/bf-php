@@ -21,29 +21,26 @@ Class Bf_PricingComponentValue_OneOffTest extends \PHPUnit_Framework_TestCase {
 		self::$client = self::$config->getClient();
 	}
 
-	/*public function testCreate() {
+	public function testCreate() {
 		$client = self::$client;
 		$config = self::$config;
 
-		//$testProductID = '376E2FFB-4C2F-4B49-AAF9-B93CF6A1C9CB';
 		$testPricingComponentId = $config->getUsualPricingComponentID();
     	
-		$prc = new Bf_PricingComponentValue($client, [
-			//'@type' => 'flatPricingComponent',
+		$prc = new Bf_PricingComponentValue(array(
 			'pricingComponentID' => $testPricingComponentId,
 			'value' => 2,
-			]);
-		$createdPrcv = $prc
-		->create();
+			));
+		$createdPrcv = Bf_PricingComponentValue::create($prc);
 
 		// TODO API: 'productID' should be 'required'.
 		// TODO API: received 'you must specify a default quantity' when I tried example request.
 
 		var_export($createdPrcv);
-	}*/
+	}
 
 	// not actually a one-off; just didn't want to make another class
-	public function testGetByID() {
+	/*public function testGetByID() {
 		$client = self::$client;
 		$config = self::$config;
 
@@ -57,5 +54,5 @@ Class Bf_PricingComponentValue_OneOffTest extends \PHPUnit_Framework_TestCase {
 		->pricingComponentValues[0];
 
 		var_export($gottenPrc);
-	}
+	}*/
 }

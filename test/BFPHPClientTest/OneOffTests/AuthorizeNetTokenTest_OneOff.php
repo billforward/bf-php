@@ -39,8 +39,7 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		// TODO API: make 'lastFourDigits' required, as this is needed for refunds.
 
-		$createdAuthorizeNetToken = $authorizeNetToken
-		->create();
+		$createdAuthorizeNetToken = Bf_AuthorizeNetToken::create($authorizeNetToken);
 
 		var_export($createdAuthorizeNetToken);
 	}

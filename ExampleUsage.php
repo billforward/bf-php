@@ -23,6 +23,7 @@ function getUsualPrpName() {
 $access_token = 'INSERT ACCESS TOKEN HERE';
 $urlRoot = 'https://api-sandbox.billforward.net/2014.223.0/';
 $client = new BillForwardClient($access_token, $urlRoot);
+BillForwardClient::setDefaultClient($client);
 
 //-- Find the account we login with (assume first found with associated user)
 // order by userID so that we are likely to see our login user's account
@@ -66,7 +67,7 @@ $firstOrg
 ->apiConfigurations = array($apiConfiguration);
 
 $savedOrg = $firstOrg
-->update();
+->save();
 
 //-- Make account with expected profile
 $email = getUsualAccountsProfileEmail();
@@ -79,8 +80,7 @@ $account = new Bf_Account(array(
 	'profile' => $profile,
 	));
 
-$createdAcc = $account
-->create();
+$createdAcc = Bf_Account::create($account);
 $createdAccID = $createdAcc->id;
 
 
@@ -102,8 +102,7 @@ $authorizeNetToken = new Bf_AuthorizeNetToken(array(
 	'lastFourDigits' => $cardLast4Digits,
 	));
 
-$createdAuthorizeNetToken = $authorizeNetToken
-->create();
+$createdAuthorizeNetToken = Bf_AuthorizeNetToken::create($authorizeNetToken);
 $createdAuthorizeNetTokenID = $createdAuthorizeNetToken
 ->id;
 
@@ -117,8 +116,7 @@ $paymentMethod = new Bf_PaymentMethod(array(
 	'priority' => 100,
 	'reusable' => 1,
 	));
-$createdPaymentMethod = $paymentMethod
-->create();
+$createdPaymentMethod = Bf_PaymentMethod::create($paymentMethod);
 $createdPaymentMethodID = $createdPaymentMethod->id;
 
 $paymentMethods = array($createdPaymentMethod);
@@ -128,7 +126,7 @@ $createdAcc
 ->paymentMethods = $paymentMethods;
 // save changes to real account
 $createdAcc = $createdAcc
-->update();
+->save();
 
 var_export($createdAcc);
 
@@ -138,8 +136,7 @@ $uom = new Bf_UnitOfMeasure(array(
 	'displayedAs' => 'Devices',
 	'roundingScheme' => 'UP',
 	));
-$createdUom = $uom
-->create();
+$createdUom = Bf_UnitOfMeasure::create($uom);
 $createdUomID = $createdUom->id;
 
 //-- Make product
@@ -151,8 +148,7 @@ $product = new Bf_Product(array(
 	'durationPeriod' => 'days',
 	'duration' => 28,
 	));
-$createdProduct = $product
-->create();
+$createdProduct = Bf_Product::create($product);
 $createdProductID = $createdProduct->id;
 
 //-- Make product rate plan
@@ -187,8 +183,7 @@ $prp = new Bf_ProductRatePlan(array(
 	'pricingComponents' => $pricingComponentsArray,
 	'productID' => $createdProductID,
 	));
-$createdPrp = $prp
-->create();
+$createdPrp = Bf_ProductRatePlan::create($prp);
 $createdProductRatePlanID = $createdPrp->id;
 $createdPricingComponentID = $createdPrp->pricingComponents[0]->id;
 
@@ -225,8 +220,7 @@ $sub = new Bf_Subscription(array(
 	'paymentMethodSubscriptionLinks' => $paymentMethodSubscriptionLinks,
 	'pricingComponentValues' => $pricingComponentValuesArray
 	));
-$createdSub = $sub
-->create();
+$createdSub = Bf_Subscription::create($sub);
 
 // activate provisioned subscription
 $createdSub

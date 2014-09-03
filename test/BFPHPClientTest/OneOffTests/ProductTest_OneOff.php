@@ -34,8 +34,7 @@ Class Bf_Product_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// TODO API: 'description' should be allowed to be null.
 		// TODO API: 'duration' should be 'required', rather than defaulting to 0.
 
-		$response = $product
-		->create();
+		$response = Bf_Product::create($product);
 
 		var_export($response);
 	}

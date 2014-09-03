@@ -45,7 +45,6 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// TODO API: 'userEditable' is an optional field that is not mentioned in docs
 		// TODO API: 'reusable' is an optional field that is not mentioned in docs
 
-		$response = $paymentMethod
-		->create();
+		$response = Bf_PaymentMethod::create($paymentMethod);
 	}
 }

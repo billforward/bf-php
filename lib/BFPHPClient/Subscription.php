@@ -45,7 +45,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public function activate() {
 		$this
 		->state = 'AwaitingPayment';
-		$response = $this->update();
+		$response = $this->save();
 		return $response;
 	}
 

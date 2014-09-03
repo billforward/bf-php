@@ -35,8 +35,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'durationPeriod' => 'days',
 			'duration' => 28,
 			));
-		$createdProduct = $product
-		->create();
+		$createdProduct = Bf_Product::create($product);
 
 		$testProductID = $createdProduct->id;
 
@@ -44,8 +43,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'productID' => $testProductID,
 			'currency' => 'USD',
 			));
-		$createdPrp = $prp
-		->create();
+		$createdPrp = Bf_ProductRatePlan::create($prp);
 
 		$testProductRatePlanID = $createdPrp->id;
     	
@@ -58,8 +56,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'name' => 'Test Bf_Subscription',
 			));
 
-		$createdSub = $sub
-		->create();
+		$createdSub = Bf_Subscription::create($sub);
 
 		// if we get this far, there's no errors, right?
 	}

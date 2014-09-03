@@ -39,8 +39,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		// TODO API: why is 'productID' 'required'? surely it can (and should) grab this from PRP. Otherwise user can mismatch them.
 
-		$response = $sub
-		->create();
+		$response = Bf_Subscription::create($sub);
 	}
 
 	public function testStart() {
@@ -68,28 +67,27 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 	/*
 	// This code 
 	//-- Make subscription
-	$sub = new Bf_Subscription($client, [
+	$sub = new Bf_Subscription(array(
 		'type' => 'Subscription',
 		'productID' => $createdProductID,
 		'productRatePlanID' => $createdProductRatePlanID,
 		'accountID' => $createdAccID,
 		'name' => 'Memorable Bf_Subscription',
 		'pricingComponentValues' => $pricingComponentValuesArray
-		]);
-	$createdSub = $sub
-	->create();
+		));
+	$createdSub = Bf_Subscription::create($sub);
 
 	//-- Make Bf_PaymentMethodSubscriptionLinks
-	$paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink($client, [
+	$paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink(array(
 		'paymentMethodID' => $createdPaymentMethodID,
 		'subscriptionID' => $createdPaymentMethodID,
 		'organizationID' => $firstOrgID,
-		]);
-	$paymentMethodSubscriptionLinks = [$paymentMethodSubscriptionLink];
+		));
+	$paymentMethodSubscriptionLinks = array($paymentMethodSubscriptionLink);
 
 	$createdSub
 	->paymentMethodSubscriptionLinks = $paymentMethodSubscriptionLinks;
 	$createdSub
-	->update();
+	->save();
 	*/
 }

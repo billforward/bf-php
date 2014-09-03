@@ -48,8 +48,7 @@ Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'defaultQuantity' => 10,
 			'tiers' => $tiers
 			));
-		$createdPrc = $prc
-		->create();
+		$createdPrc = Bf_PricingComponent::create($prc);
 
 		// TODO API: 'productID' should be 'required'.
 		// TODO API: received 'you must specify a default quantity' when I tried example request.
