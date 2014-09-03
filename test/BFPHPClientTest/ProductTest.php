@@ -17,9 +17,7 @@ Class Bf_ProductTest extends \PHPUnit_Framework_TestCase {
     	// short alias
     	$client = self::$client;
     	
-		$products = $client
-		->products
-		->getAll();
+		$products = Bf_Product::getAll();
 
 		$firstProduct = $products[0];
 
@@ -42,9 +40,7 @@ Class Bf_ProductTest extends \PHPUnit_Framework_TestCase {
     	$productId = $config
     	->getUsualProductID();
     	
-		$product = $client
-		->products
-		->getById($productId);
+		$product = Bf_Product::getById($productId);
 
 		$description = $product
 		->description;

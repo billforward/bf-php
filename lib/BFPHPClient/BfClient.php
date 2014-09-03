@@ -37,6 +37,8 @@ class BfClient {
     public $pricingComponents = NULL;
     public $unitsOfMeasure = NULL;
 
+    private static $singletonClient = NULL;
+
 	public function __construct($access_token, $urlRoot) {
 		$this->access_token = $access_token;
 		$this->urlRoot = $urlRoot;
@@ -48,7 +50,26 @@ class BfClient {
 		$this->products = new Bf_ProductController($this);
         $this->pricingComponents = new Bf_PricingComponentController($this);
         $this->unitsOfMeasure = new Bf_UnitOfMeasureController($this);
+
+        // latest instantiated bfClient is the one used when 'singletonClient' is requested.
+        static::setSingletonClient($this);
 	}
+
+    public static function getSingletonClient() {
+        $client = static::$singletonClient;
+        if (is_null($client)) {
+            // check for existence of static client instead
+            $client = static::$singletonClient;
+            if (is_null($client)) {
+                throw new Exception('No BillForwardClient found; cannot make API requests.');
+            }
+        }
+        return $client;
+    }
+
+    public static function setSingletonClient(BfClient &$client = NULL) {
+        static::$singletonClient = $client;
+    }
 
     protected static function handleError($response) {
         $info = $response

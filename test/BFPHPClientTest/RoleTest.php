@@ -2,7 +2,8 @@
 namespace BFPHPClientTest;
 echo "Running Bf_Role tests for BillForward PHP Client Library.\n";
 
-use \BfClient;
+use BfClient;
+use Bf_Account;
 Class Bf_RoleTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
 	protected static $config = NULL;
@@ -21,9 +22,7 @@ Class Bf_RoleTest extends \PHPUnit_Framework_TestCase {
     	$testAccountId = $config
     	->getUsualLoginAccountID();
     	
-		$account = $client
-		->accounts
-		->getById($testAccountId);
+		$account = Bf_Account::getById($testAccountId);
 
 		$roles = $account
 		->getRoles();

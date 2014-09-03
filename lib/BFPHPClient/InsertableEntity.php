@@ -33,7 +33,7 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 		$client = $this
 		->getClient();
 		
-		$constructedEntity = new $entityClass($client, $probablyOnlyEntity);
+		$constructedEntity = new $entityClass($probablyOnlyEntity, $client);
 
 		return $constructedEntity;
 	}

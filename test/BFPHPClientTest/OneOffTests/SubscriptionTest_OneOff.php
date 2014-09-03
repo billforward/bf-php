@@ -29,7 +29,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testAccountID = $config->getUsualAccountID();
     	
     	// creates a new default account
-		$sub = new Bf_Subscription($client, array(
+		$sub = new Bf_Subscription(array(
 			'type' => 'Subscription',
 			'productID' => $testProductID,
 			'productRatePlanID' => $testProductRatePlanID,
@@ -52,9 +52,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 		var_export($testSubscriptionID);
     	
     	// creates a new default account
-		$sub = $client
-		->subscriptions
-		->getByID($testSubscriptionID);
+		$sub = Bf_Subscription::getByID($testSubscriptionID);
 
 		if ($sub->state != 'AwaitingPayment') {
 			$response = $sub->

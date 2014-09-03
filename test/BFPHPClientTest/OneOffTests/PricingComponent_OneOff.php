@@ -28,7 +28,7 @@ Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testUomID = $config->getUsualUnitOfMeasureID();
 		$testProductRatePlanId = $config->getUsualProductRatePlanID();
 
-		$tier = new Bf_PricingComponentTier($client, array(
+		$tier = new Bf_PricingComponentTier(array(
 			'lowerThreshold' => 1,
 			'upperThreshold' => 1,
 			'pricingType' => 'unit',
@@ -36,7 +36,7 @@ Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 			));
 		$tiers = array($tier);
     	
-		$prc = new Bf_PricingComponent($client, array(
+		$prc = new Bf_PricingComponent(array(
 			'@type' => 'flatPricingComponent',
 			'productRatePlanID' => $testProductRatePlanId,
 			'unitOfMeasureID' => $testUomID,

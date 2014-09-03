@@ -26,7 +26,7 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testAccountID = $config->getUsualAccountID();
 		$testPaymentMethodLinkID = $config->getUsualPaymentMethodLinkID();
     	
-		$paymentMethod = new Bf_PaymentMethod($client, array(
+		$paymentMethod = new Bf_PaymentMethod(array(
 		'accountID' => $testAccountID,
 		'linkID' => $testPaymentMethodLinkID,
 		'name' => 'Credit',

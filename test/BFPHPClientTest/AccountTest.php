@@ -17,9 +17,7 @@ Class Bf_AccountTest extends \PHPUnit_Framework_TestCase {
     	// short alias
     	$client = self::$client;
     	
-		$accounts = $client
-		->accounts
-		->getAll();
+		$accounts = Bf_Account::getAll();
 
 		$firstAccount = $accounts[0];
 
@@ -42,9 +40,7 @@ Class Bf_AccountTest extends \PHPUnit_Framework_TestCase {
     	$loginAccountId = $config
     	->getUsualLoginAccountID();
     	
-		$account = $client
-		->accounts
-		->getById($loginAccountId);
+		$account = Bf_Account::getById($loginAccountId);
 
 		$userID = $account['userID'];
 
@@ -63,9 +59,7 @@ Class Bf_AccountTest extends \PHPUnit_Framework_TestCase {
 		$client = self::$client;
     	
     	// order by userID so that we are likely to see our login user's account
-		$accounts = $client
-		->accounts
-		->getAll(array(
+		$accounts = Bf_Account::getAll(array(
 			'order_by' => 'userID'
 			));
 

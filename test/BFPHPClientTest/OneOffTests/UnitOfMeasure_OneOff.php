@@ -22,7 +22,7 @@ Class Bf_UnitOfMeasure_OneOffTest extends \PHPUnit_Framework_TestCase {
 	public function testCreate() {
 		$client = self::$client;
     	
-		$uom = new Bf_UnitOfMeasure($client, array(
+		$uom = new Bf_UnitOfMeasure(array(
 			'name' => 'Devices',
 			'displayedAs' => 'Devices',
 			'roundingScheme' => 'UP',

@@ -7,14 +7,12 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 	 */
 	public function save() {
 		$serial = $this->getSerialized($this);
-		//var_export($shallow);
+
 		$client = $this
 		->getClient();
 
 		$endpoint = static::getResourcePath()
 		->getPath();
-
-		// var_export($shallow);
 
 		$response = $client->doPut($endpoint, $serial);
 		$constructedEntity = $this->makeEntityFromResponse($response);

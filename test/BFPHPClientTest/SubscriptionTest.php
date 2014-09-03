@@ -2,8 +2,8 @@
 namespace BFPHPClientTest;
 echo "Running Bf_Subscription tests for BillForward PHP Client Library.\n";
 
-use \BfClient;
-use \Bf_Subscription;
+use BfClient;
+use Bf_Subscription;
 Class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
 	protected static $config = NULL;
@@ -29,9 +29,7 @@ Class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
     	
     	$testSubscriptionId = $config->getUsualSubscriptionID();
 
-		$sub = $client
-		->subscriptions
-		->getById($testSubscriptionId);
+		$sub = Bf_Subscription::getById($testSubscriptionId);
 
 		self::$usualSubscription = $sub;
 
@@ -42,9 +40,7 @@ Class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
     	// short alias
     	$client = self::$client;
     	
-		$subscriptions = $client
-		->subscriptions
-		->getAll();
+		$subscriptions = Bf_Subscription::getAll();
 
 		$firstSub = $subscriptions[0];
 

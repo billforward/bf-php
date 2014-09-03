@@ -29,7 +29,7 @@ Class Bf_ProductRatePlan_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testUomID = $config->getUsualUnitOfMeasureID();
 
 		$pricingComponentsArray = array(
-			new Bf_PricingComponent($client, array(
+			new Bf_PricingComponent(array(
 			'@type' => 'flatPricingComponent',
 			'chargeModel' => 'flat',
 			'name' => 'Devices used',
@@ -41,7 +41,7 @@ Class Bf_ProductRatePlan_OneOffTest extends \PHPUnit_Framework_TestCase {
 			))
 		);
     	
-		$prp = new Bf_ProductRatePlan($client, array(
+		$prp = new Bf_ProductRatePlan(array(
 			'currency' => 'USD',
 			'name' => 'Cool Plan',
 			'pricingComponents' => $pricingComponentsArray,

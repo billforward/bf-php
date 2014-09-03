@@ -9,6 +9,7 @@ echo "Running (one-off) ApiConfiguration tests for BillForward PHP Client Librar
 
 use BfClient;
 use Bf_Account;
+use Bf_Organisation;
 use Bf_APIConfiguration;
 use BFPHPClientTest\TestConfig;
 Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
@@ -25,9 +26,7 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		//-- Find the account we login with (assume first found with associated user)
 		// order by userID so that we are likely to see our login user's account
-		$accounts = $client
-		->accounts
-		->getAll(array(
+		$accounts = Bf_Account::getAll(array(
 			'order_by' => 'userID'
 			));
 
@@ -44,9 +43,7 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 		//var_export($foundLoginAccount);
 
 		//-- Get the organization we log in with (assume first found)
-		$orgs = $client
-		->organisations
-		->getMine();
+		$orgs = Bf_Organisation::getMine();
 
 		$firstOrg = $orgs[0];
 		$firstOrgID = $firstOrg->id;
@@ -54,10 +51,10 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 		echo "\nInitial Org from API:\n\n";
 		var_export($firstOrg);
 
-		$AuthorizeNetLoginID = '3H8j4PFr7gt7';
-		$AuthorizeNetTransactionKey = '7W8x7v37Gt472Cyn';
+		$AuthorizeNetLoginID = '4X8R8UAawK67';
+		$AuthorizeNetTransactionKey = '3Udsn9w8G29qNt3Q';
 
-		$apiConfiguration = new Bf_APIConfiguration($client, array(
+		$apiConfiguration = new Bf_APIConfiguration(array(
 			 "@type" => "AuthorizeNetConfiguration",
 	         "APILoginID" => $AuthorizeNetLoginID,
 	         "transactionKey" => $AuthorizeNetTransactionKey,

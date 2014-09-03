@@ -30,7 +30,7 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// err, didn't check what the actual card last 4 digits are. but this only matters at refund-time.
 		$cardLast4Digits = 4444;
     	
-		$authorizeNetToken = new Bf_AuthorizeNetToken($client, array(
+		$authorizeNetToken = new Bf_AuthorizeNetToken(array(
 			'accountID' => $testAccountID,
 			'customerProfileID' => $customerProfileID,
 			'customerPaymentProfileID' => $customerPaymentProfileID,

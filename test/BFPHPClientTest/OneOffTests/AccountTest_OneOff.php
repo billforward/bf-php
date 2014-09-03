@@ -22,18 +22,9 @@ Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$client = self::$client;
     	
     	// creates a new default account
-		$account = new Bf_Account($client);
+		$account = new Bf_Account();
 
 		$response = $account
 		->create();
-	}
-
-	public function testCreateWithController() {
-		$client = self::$client;
-    	
-    	// creates a new default account
-    	$createdAccount = $client
-    	->accounts
-    	->create();
 	}
 }

@@ -8,16 +8,24 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$this->_client = $client;
 	}
 
+	public static function getSingletonClient() {
+		return BfClient::getSingletonClient();
+	}
+
 	protected $_client = NULL;
 
 	protected $_registeredEntities = array();
 	protected $_registeredEntityArrays = array();
 
-	public function __construct(BfClient &$client = NULL, array $stateParams = NULL) {
-		if ($stateParams == NULL) {
+	public function __construct(array $stateParams = NULL, $client = NULL) {
+		if (is_null($stateParams)) {
 			$stateParams = array();
 		}
 
+		if (is_null($client)) {
+			// default to singletonClient, which is the 'most recently constructed BillForwardClient'
+			$client = static::getSingletonClient();
+		}
 		$this->setClient($client);
 
 		$this->doUnserialize($stateParams);
@@ -86,7 +94,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 				throw new \Exception($errorString);
 			}
 		} else {
-			$newEntity = new $class($client, $constructArgs);
+			$newEntity = new $class($constructArgs, $client);
 		}
 		return $newEntity;
 	}
@@ -115,6 +123,63 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			// just a normal kvp
 			return $value;
 		}
+	}
+
+	public static function getbyID($id, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		// empty IDs are no good!
+		if (!$id) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$endpoint = "/$id";
+		$fullRoute = $apiRoute.$endpoint;
+
+		$response = $client->doGet($fullRoute, $options);
+		$json = $response->json();
+
+		$results = $json['results'];
+
+		$firstMatch = $results[0];
+
+		return new $entityClass($firstMatch, $client);
+	}
+
+	public static function getAll($options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$fullRoute = $apiRoute;
+
+		$response = $client->doGet($fullRoute, $options);
+
+		$json = $response->json();
+		$results = $json['results'];
+
+		$entities = array();
+
+		foreach($results as $value) {
+			$constructedEntity = new $entityClass($value, $client);
+			array_push($entities, $constructedEntity);
+		}
+
+		return $entities;
 	}
 
     public function __get($name) {

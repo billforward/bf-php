@@ -22,7 +22,7 @@ Class Bf_Product_OneOffTest extends \PHPUnit_Framework_TestCase {
 	public function testCreate() {
 		$client = self::$client;
     	
-		$product = new Bf_Product($client, array(
+		$product = new Bf_Product(array(
 		'productType' => 'non-recurring',
 		'state' => 'prod',
 		'name' => 'Month of Paracetamoxyfrusebendroneomycin',

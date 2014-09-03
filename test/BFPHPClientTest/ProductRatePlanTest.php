@@ -2,8 +2,8 @@
 namespace BFPHPClientTest;
 echo "Running Bf_ProductRatePlan tests for BillForward PHP Client Library.\n";
 
-use \BfClient;
-use \Bf_ProductRatePlan;
+use BfClient;
+use Bf_ProductRatePlan;
 Class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
 	protected static $config = NULL;
@@ -29,9 +29,7 @@ Class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
     	
     	$testProductRatePlanId = $config->getUsualProductRatePlanID();
 
-		$sub = $client
-		->productRatePlans
-		->getById($testProductRatePlanId);
+		$sub = Bf_ProductRatePlan::getById($testProductRatePlanId);
 
 		self::$usualProductRatePlan = $sub;
 
@@ -42,9 +40,7 @@ Class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
     	// short alias
     	$client = self::$client;
     	
-		$productRatePlans = $client
-		->productRatePlans
-		->getAll();
+		$productRatePlans = Bf_ProductRatePlan::getAll();
 
 		$firstPrp = $productRatePlans[0];
 

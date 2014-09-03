@@ -49,9 +49,7 @@ Class Bf_PricingComponentValue_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		$subID = $config->getUsualSubscriptionID();
 
-		$gottenSub = $client
-		->subscriptions
-		->getByID($subID);
+		$gottenSub = Bf_Subscription::getByID($subID);
 
 		var_export($gottenSub);
     	

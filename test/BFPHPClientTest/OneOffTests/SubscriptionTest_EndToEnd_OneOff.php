@@ -27,7 +27,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		$testAccountID = $config->getUsualAccountID();
 
-		$product = new Bf_Product($client, array(
+		$product = new Bf_Product(array(
 			'productType' => 'non-recurring',
 			'state' => 'prod',
 			'name' => 'Month of Paracetamoxyfrusebendroneomycin',
@@ -40,7 +40,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		$testProductID = $createdProduct->id;
 
-		$prp = new Bf_ProductRatePlan($client, array(
+		$prp = new Bf_ProductRatePlan(array(
 			'productID' => $testProductID,
 			'currency' => 'USD',
 			));
@@ -50,7 +50,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$testProductRatePlanID = $createdPrp->id;
     	
     	// creates a new default account
-		$sub = new Bf_Subscription($client, array(
+		$sub = new Bf_Subscription(array(
 			'type' => 'Subscription',
 			'productID' => $testProductID,
 			'productRatePlanID' => $testProductRatePlanID,

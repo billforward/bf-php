@@ -41,9 +41,7 @@ Class Bf_OrganisationTest extends \PHPUnit_Framework_TestCase {
 		$client = self::$client;
 		$config = self::$config;
     	
-		$orgs = $client
-		->organisations
-		->getMine();
+		$orgs = Bf_Organisation::getMine();
 
 		$firstOrg = $orgs[0];
 

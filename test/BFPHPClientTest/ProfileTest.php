@@ -2,7 +2,8 @@
 namespace BFPHPClientTest;
 echo "Running Bf_Profile tests for BillForward PHP Client Library.\n";
 
-use \BfClient;
+use BfClient;
+use Bf_Account;
 Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 
 	protected static $usualProfile = NULL;
@@ -30,9 +31,7 @@ Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
     	$testAccountId = $config
     	->getUsualAccountID();
 
-		$account = $client
-		->accounts
-		->getById($testAccountId);
+		$account = Bf_Account::getById($testAccountId);
 
 		$profile = $account
 		->getProfile();
