@@ -29,7 +29,9 @@ Grab an API token from:
 https://app-sandbox.billforward.net/setup/#/personal/api-keys
 
 ####Step 3.2. Connect to BillForward using BillForwardClient
-Having included `BillForward.php`, you can now make an instance of BillForwardClient. It can be used as the default client for all requests:
+Having included `BillForward.php`, you can now make an instance of BillForwardClient.
+
+It can be used as the default client for all requests:
 
 ```
 $access_token = 'YOUR ACCESS TOKEN HERE';
