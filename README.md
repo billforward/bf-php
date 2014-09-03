@@ -41,11 +41,19 @@ BillForwardClient::setDefaultClient($client);
 ```
 
 ####Step 3.3. Make API calls using BillForwardClient
-You can now make requests using the `$client` instance.
+Construction of any BillForwardClient automatically registers that client as the 'default client'.
+
+Requests can now be made. These use the 'default client' implicitly:
+
 ```
-$accounts = $client
-->accounts
-->getAll();
+$accounts = Bf_Account::getAll();
+```
+
+You can also explicitly specify a client. This is useful when connecting using multiple clients -- i.e. when migrating a user's data:
+
+```
+// use null queryparams, and specify the client to use for the request
+$accounts = Bf_Account::getAll(null, $client);
 ```
 
 ##Examples
