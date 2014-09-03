@@ -4,13 +4,13 @@ abstract class Bf_Controller {
 		return $this->_client;
 	}
 
-	public function setClient(BfClient &$client = NULL) {
+	public function setClient(BillForwardClient &$client = NULL) {
 		$this->_client = $client;
 	}
 
 	protected $_client = NULL;
 
-	public function __construct(BfClient &$client = NULL) {
+	public function __construct(BillForwardClient &$client = NULL) {
 		$this->setClient($client);
 	}
 

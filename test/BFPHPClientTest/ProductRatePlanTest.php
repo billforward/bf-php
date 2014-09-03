@@ -2,7 +2,7 @@
 namespace BFPHPClientTest;
 echo "Running Bf_ProductRatePlan tests for BillForward PHP Client Library.\n";
 
-use BfClient;
+use BillForwardClient;
 use Bf_ProductRatePlan;
 Class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;

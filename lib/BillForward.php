@@ -17,7 +17,6 @@ spl_autoload_register(function($className) {
     	$baseDir = dirname(__FILE__);
     	// class map points to all classes inside BFPHPClient
         $classMap = array(
-            'BfClient' => $baseDir . '/BFPHPClient/BfClient.php',
             'Bf_APIConfiguration' => $baseDir . '/BFPHPClient/APIConfiguration.php',
             'Bf_Account' => $baseDir . '/BFPHPClient/Account.php',
             'Bf_AccountController' => $baseDir . '/BFPHPClient/AccountController.php',
@@ -41,7 +40,7 @@ spl_autoload_register(function($className) {
             'Bf_ProductRatePlan' => $baseDir . '/BFPHPClient/ProductRatePlan.php',
             'Bf_ProductRatePlanController' => $baseDir . '/BFPHPClient/ProductRatePlanController.php',
             'Bf_Profile' => $baseDir . '/BFPHPClient/Profile.php',
-            'Bf_RawAPIOutput' => $baseDir . '/BFPHPClient/BfClient.php',
+            'Bf_RawAPIOutput' => $baseDir . '/BFPHPClient/BillForwardClient.php',
             'Bf_ResourcePath' => $baseDir . '/BFPHPClient/ResourcePath.php',
             'Bf_Role' => $baseDir . '/BFPHPClient/Role.php',
             'Bf_Subscription' => $baseDir . '/BFPHPClient/Subscription.php',
@@ -49,6 +48,7 @@ spl_autoload_register(function($className) {
             'Bf_TaxationLink' => $baseDir . '/BFPHPClient/TaxationLink.php',
             'Bf_UnitOfMeasure' => $baseDir . '/BFPHPClient/UnitOfMeasure.php',
             'Bf_UnitOfMeasureController' => $baseDir . '/BFPHPClient/UnitOfMeasureController.php',
+            'BillForwardClient' => $baseDir . '/BFPHPClient/BillForwardClient.php',
 
         );
     }

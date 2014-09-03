@@ -7,7 +7,7 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) ApiConfiguration tests for BillForward PHP Client Library.\n";
 
-use BfClient;
+use BillForwardClient;
 use Bf_Account;
 use Bf_Organisation;
 use Bf_APIConfiguration;

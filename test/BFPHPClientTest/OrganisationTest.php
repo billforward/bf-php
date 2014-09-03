@@ -2,7 +2,7 @@
 namespace BFPHPClientTest;
 echo "Running Bf_Organisation tests for BillForward PHP Client Library.\n";
 
-use \BfClient;
+use \BillForwardClient;
 use \Bf_Organisation;
 Class Bf_OrganisationTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;

@@ -1,6 +1,6 @@
 <?php
 namespace BFPHPClientTest;
-use BfClient;
+use BillForwardClient;
 use Bf_Account;
 use Bf_ApiConfiguration;
 use Bf_Organisation;
@@ -49,7 +49,7 @@ class TestConfig {
         $this->usualSubscriptionID = '';
         $this->usualUnitOfMeasureID = '';
 
-		$this->client = new BfClient($this->access_token, $this->urlRoot);
+		$this->client = new BillForwardClient($this->access_token, $this->urlRoot);
 	}
 
 	public function getClient() {

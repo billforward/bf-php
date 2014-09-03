@@ -7,7 +7,7 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) Bf_PricingComponent tests for BillForward PHP Client Library.\n";
 
-use BfClient;
+use BillForwardClient;
 use Bf_Subscription;
 use Bf_PricingComponent;
 use Bf_PricingComponentValue;

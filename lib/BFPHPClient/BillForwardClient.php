@@ -25,7 +25,7 @@ class Bf_RawAPIOutput {
     }
 }
 
-class BfClient {
+class BillForwardClient {
 	private $access_token = NULL;
 	private $urlRoot = NULL;
 
@@ -51,7 +51,7 @@ class BfClient {
         $this->pricingComponents = new Bf_PricingComponentController($this);
         $this->unitsOfMeasure = new Bf_UnitOfMeasureController($this);
 
-        // latest instantiated bfClient is the one used when 'singletonClient' is requested.
+        // latest instantiated BillForwardClient is the one used when 'singletonClient' is requested.
         static::setSingletonClient($this);
 	}
 
@@ -67,7 +67,7 @@ class BfClient {
         return $client;
     }
 
-    public static function setSingletonClient(BfClient &$client = NULL) {
+    public static function setSingletonClient(BillForwardClient &$client = NULL) {
         static::$singletonClient = $client;
     }
 

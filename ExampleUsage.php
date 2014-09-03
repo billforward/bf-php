@@ -22,7 +22,7 @@ function getUsualPrpName() {
 // Grab an API token from: https://app-sandbox.billforward.net/setup/#/personal/api-keys
 $access_token = 'INSERT ACCESS TOKEN HERE';
 $urlRoot = 'https://api-sandbox.billforward.net/2014.223.0/';
-$client = new BfClient($access_token, $urlRoot);
+$client = new BillForwardClient($access_token, $urlRoot);
 
 //-- Find the account we login with (assume first found with associated user)
 // order by userID so that we are likely to see our login user's account

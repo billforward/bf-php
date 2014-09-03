@@ -2,7 +2,7 @@
 namespace BFPHPClientTest;
 echo "Running Bf_Profile tests for BillForward PHP Client Library.\n";
 
-use BfClient;
+use BillForwardClient;
 use Bf_Account;
 Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 

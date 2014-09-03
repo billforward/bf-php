@@ -7,7 +7,7 @@ namespace BFPHPClientTest\OneOffTests;
  */
 echo "Running (one-off) Bf_ProductRatePlan tests for BillForward PHP Client Library.\n";
 
-use BfClient;
+use BillForwardClient;
 use Bf_UnitOfMeasure;
 use BFPHPClientTest\TestConfig;
 Class Bf_UnitOfMeasure_OneOffTest extends \PHPUnit_Framework_TestCase {
