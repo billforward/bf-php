@@ -70,7 +70,7 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 		var_export($firstOrg);
 
 		$savedOrg = $firstOrg
-		->save();
+		->update();
 
 		echo "\n\nResponse from API after updating Org:\n\n";
 		var_export($savedOrg);

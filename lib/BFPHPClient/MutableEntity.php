@@ -5,7 +5,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 	 * based on provided properties.
 	 * @return the updated Entity.
 	 */
-	public function save() {
+	public function update() {
 		$serial = $this->getSerialized($this);
 
 		$client = $this

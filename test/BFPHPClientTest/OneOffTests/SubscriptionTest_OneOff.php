@@ -90,6 +90,6 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 	$createdSub
 	->paymentMethodSubscriptionLinks = $paymentMethodSubscriptionLinks;
 	$createdSub
-	->save();
+	->update();
 	*/
 }

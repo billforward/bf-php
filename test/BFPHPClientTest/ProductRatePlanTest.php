@@ -113,7 +113,7 @@ Class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 		$profile
 		->firstName = $changeNameTo;
 
-		$profile->save();
+		$profile->update();
 
 		$updated = $this->getUsualSubscription();
 

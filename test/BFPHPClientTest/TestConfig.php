@@ -179,7 +179,7 @@ class TestConfig {
 		->apiConfigurations = array($apiConfiguration);
 
 		$savedOrg = $firstOrg
-		->save();
+		->update();
 
 		//-- Make account with expected profile
 		$email = $this->getUsualAccountsProfileEmail();
@@ -239,7 +239,7 @@ class TestConfig {
 		->paymentMethods = $paymentMethods;
 		// save changes to real account
 		$createdAcc = $createdAcc
-		->save();
+		->update();
 
 		var_export($createdAcc);
 

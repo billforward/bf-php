@@ -26,9 +26,7 @@ $client = new BfClient($access_token, $urlRoot);
 
 //-- Find the account we login with (assume first found with associated user)
 // order by userID so that we are likely to see our login user's account
-$accounts = $client
-->accounts
-->getAll(array(
+$accounts = Bf_Account::getAll(array(
 	'order_by' => 'userID'
 	));
 
@@ -45,9 +43,7 @@ if (is_null($foundLoginAccount)) {
 //var_export($foundLoginAccount);
 
 //-- Get the organization we log in with (assume first found)
-$orgs = $client
-->organisations
-->getMine();
+$orgs = Bf_Organisation::getMine();
 
 $firstOrg = $orgs[0];
 $firstOrgID = $firstOrg->id;
@@ -59,7 +55,7 @@ $AuthorizeNetTransactionKey = 'FILL IN WITH AUTHORIZE NET TRANSACTION KEY';
 
 // saving this twice to the same organisation seems to make a copy.
 // so probably you sohuld clear out your `api_configurations` in SQL before running this a second time.
-$apiConfiguration = new Bf_APIConfiguration($client, array(
+$apiConfiguration = new Bf_APIConfiguration(array(
 	 "@type" => "AuthorizeNetConfiguration",
      "APILoginID" => $AuthorizeNetLoginID,
      "transactionKey" => $AuthorizeNetTransactionKey,
@@ -70,16 +66,16 @@ $firstOrg
 ->apiConfigurations = array($apiConfiguration);
 
 $savedOrg = $firstOrg
-->save();
+->update();
 
 //-- Make account with expected profile
 $email = getUsualAccountsProfileEmail();
-$profile = new Bf_Profile($client, array(
+$profile = new Bf_Profile(array(
 	'email' => $email,
 	'firstName' => 'Test',
 	));
 
-$account = new Bf_Account($client, array(
+$account = new Bf_Account(array(
 	'profile' => $profile,
 	));
 
@@ -99,7 +95,7 @@ $customerPaymentProfileID = 00000000;
 // this 'last 4 digits of credit card number' field (currently optional) is required for refunds
 $cardLast4Digits = 0000;
 
-$authorizeNetToken = new Bf_AuthorizeNetToken($client, array(
+$authorizeNetToken = new Bf_AuthorizeNetToken(array(
 	'accountID' => $createdAccID,
 	'customerProfileID' => $customerProfileID,
 	'customerPaymentProfileID' => $customerPaymentProfileID,
@@ -111,7 +107,7 @@ $createdAuthorizeNetToken = $authorizeNetToken
 $createdAuthorizeNetTokenID = $createdAuthorizeNetToken
 ->id;
 
-$paymentMethod = new Bf_PaymentMethod($client, array(
+$paymentMethod = new Bf_PaymentMethod(array(
 	'linkID' => $createdAuthorizeNetTokenID,
 	'accountID' => $createdAccID,
 	'name' => 'Authorize.Net',
@@ -132,12 +128,12 @@ $createdAcc
 ->paymentMethods = $paymentMethods;
 // save changes to real account
 $createdAcc = $createdAcc
-->save();
+->update();
 
 var_export($createdAcc);
 
 //-- Make unit of measure
-$uom = new Bf_UnitOfMeasure($client, array(
+$uom = new Bf_UnitOfMeasure(array(
 	'name' => 'Devices',
 	'displayedAs' => 'Devices',
 	'roundingScheme' => 'UP',
@@ -147,7 +143,7 @@ $createdUom = $uom
 $createdUomID = $createdUom->id;
 
 //-- Make product
-$product = new Bf_Product($client, array(
+$product = new Bf_Product(array(
 	'productType' => 'non-recurring',
 	'state' => 'prod',
 	'name' => 'Month of Paracetamoxyfrusebendroneomycin',
@@ -162,7 +158,7 @@ $createdProductID = $createdProduct->id;
 //-- Make product rate plan
 	//-- Make pricing components for product rate plan
 		//-- Make tiers for pricing component
-$tier = new Bf_PricingComponentTier($client, array(
+$tier = new Bf_PricingComponentTier(array(
 	'lowerThreshold' => 1,
 	'upperThreshold' => 1,
 	'pricingType' => 'unit',
@@ -171,7 +167,7 @@ $tier = new Bf_PricingComponentTier($client, array(
 $tiers = array($tier);
 
 $pricingComponentsArray = array(
-	new Bf_PricingComponent($client, array(
+	new Bf_PricingComponent(array(
 	'@type' => 'flatPricingComponent',
 	'chargeModel' => 'flat',
 	'name' => 'Devices used',
@@ -185,7 +181,7 @@ $pricingComponentsArray = array(
 	))
 );
 
-$prp = new Bf_ProductRatePlan($client, array(
+$prp = new Bf_ProductRatePlan(array(
 	'currency' => 'USD',
 	'name' => getUsualPrpName(),
 	'pricingComponents' => $pricingComponentsArray,
@@ -197,7 +193,7 @@ $createdProductRatePlanID = $createdPrp->id;
 $createdPricingComponentID = $createdPrp->pricingComponents[0]->id;
 
 //-- Make pricing component value instance of pricing component
-$prc = new Bf_PricingComponentValue($client, array(
+$prc = new Bf_PricingComponentValue(array(
 	'pricingComponentID' => $createdPricingComponentID,
 	'value' => 2,
 	'crmID' => ''
@@ -207,11 +203,11 @@ $pricingComponentValuesArray = array($prc);
 
 //-- Make Bf_PaymentMethodSubscriptionLinks
 // refer by ID to our payment method.
-$paymentMethodReference = new Bf_PaymentMethod($client, array(
+$paymentMethodReference = new Bf_PaymentMethod(array(
 		'id' => $createdPaymentMethodID 
 		));
 
-$paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink($client, array(
+$paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink(array(
 	// 'paymentMethodID' => $createdPaymentMethodID,
 	'paymentMethod' => $paymentMethodReference,
 	'organizationID' => $firstOrgID,
@@ -219,7 +215,7 @@ $paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink($client, a
 $paymentMethodSubscriptionLinks = array($paymentMethodSubscriptionLink);
 
 //-- Provision subscription
-$sub = new Bf_Subscription($client, array(
+$sub = new Bf_Subscription(array(
 	'type' => 'Subscription',
 	'productID' => $createdProductID,
 	'productRatePlanID' => $createdProductRatePlanID,

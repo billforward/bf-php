@@ -112,7 +112,7 @@ Class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
 		$profile
 		->firstName = $changeNameTo;
 
-		$profile->save();
+		$profile->update();
 
 		$updated = $this->getUsualSubscription();
 
