@@ -4,6 +4,7 @@ echo "Running Bf_Profile tests for BillForward PHP Client Library.\n";
 
 use BillForwardClient;
 use Bf_Account;
+use Bf_Address;
 Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 
 	protected static $usualProfile = NULL;
@@ -112,5 +113,55 @@ Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 			$actual,
 			"Asserting that profile's firstName is able to be changed in model."
 			);
+    }
+
+    /*public function testSetAddress()
+    {	
+    	$profile = $this->recycleUsualProfile();
+
+    	var_export($profile); print "\n";
+
+    	$address1 = new Bf_Address(array(
+    		'city' => 'space'
+    		));
+
+    	$profile->addresses = array($address1);
+
+    	var_export($profile); print "\n";
+
+    	// $updatedProfile = $profile->save();
+
+    	// var_export($updatedProfile); print "\n";
+    }*/
+
+    public function testSetAddressByDereference()
+    {	
+    	$profile = $this->recycleUsualProfile();
+
+    	// var_export($profile); print "\n";
+
+    	$expectedKey = 'city';
+    	$expected = 'space';
+
+    	$address = new Bf_Address(array(
+    		$expectedKey => $expected
+    		));
+
+    	$profile->addresses[0] = $address;
+
+    	// var_export($profile); print "\n";
+
+    	$profileAddress = $profile->getAddresses()[0];
+    	$actual = $profileAddress->$expectedKey;
+
+    	$this->assertEquals(
+			$expected,
+			$actual,
+			"Asserting that profile's address is able to be changed in model through array dereference."
+			);
+
+    	// $updatedProfile = $profile->save();
+
+    	// var_export($updatedProfile); print "\n";
     }
 }

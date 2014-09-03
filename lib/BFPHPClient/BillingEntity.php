@@ -182,12 +182,15 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entities;
 	}
 
-    public function __get($name) {
-    	return $this->offsetGet($name);
+    public function &__get($name) {
+    	$ref =& $this[$name];
+    	return $ref;
     }
 
-    public function __set($name, $value) {
-    	return $this->offsetSet($name, $value);
+    public function &__set($name, $value) {
+    	$this->offsetSet($name, $value);
+    	$ref =& $this->$name;
+    	return $ref;	
     }
 
     public function offsetSet($name, $value) {

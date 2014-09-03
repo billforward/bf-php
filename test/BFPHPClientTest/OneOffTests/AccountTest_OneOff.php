@@ -8,6 +8,7 @@ namespace BFPHPClientTest\OneOffTests;
 echo "Running (one-off) Bf_Account tests for BillForward PHP Client Library.\n";
 
 use Bf_Account;
+use Bf_Profile;
 use BFPHPClientTest\TestConfig;
 Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
@@ -26,4 +27,22 @@ Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		$response = Bf_Account::create($account);
 	}
+
+	public function testCreateWithProfile()
+    {	
+    	// creates a new default account
+    	$profile = new Bf_Profile(array(
+    		));
+		$account = new Bf_Account(array(
+			'profile' => $profile
+			));
+
+    	var_export($account); print "\n";
+
+    	$createdAccount = Bf_Account::create($account);
+
+    	var_export($createdAccount); print "\n";
+
+    	// TODO API: API should not ignore our profile when it has no params!
+    }
 }
