@@ -4,8 +4,8 @@
  */
 class Bf_RawAPIOutput {
     /**
-     * @param $info mixed
-     * @param $response RestAPIResponse
+     * @param mixed $info
+     * @param RestAPIResponse $response
      */
     public function __construct($info, $response) {
         $this->info = $info;
@@ -48,8 +48,26 @@ class BillForwardClient {
         return $client;
     }
 
+    /**
+     * Sets the specified client to be used as the default client.
+     * @param BillForwardClient &$client The client to designate as default client
+     * @return BillForwardClient The new default client
+     */
     public static function setDefaultClient(BillForwardClient &$client = NULL) {
         static::$singletonClient = $client;
+        return static::$singletonClient;
+    }
+
+    /**
+     * Constructs a client, and sets it to be used as the default client.
+     * @param string $access_token Access token to connect to BillForward API
+     * @param string $urlRoot URL of BillForward API version you wish to connect to
+     * @return BillForwardClient The new default client
+     */
+    public static function makeDefaultClient($access_token, $urlRoot) {
+        $client = new BillForwardClient($access_token, $urlRoot);
+        static::setDefaultClient($client);
+        return static::$singletonClient;
     }
 
     protected static function handleError($response) {

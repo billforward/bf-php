@@ -19,6 +19,15 @@ Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 	// you will need to fill these in before running this one-off test
 	private $token2 = '';
 	private $url2 = 'http://localhost:8080/RestAPI/';
+	public function testSingletonMake() {
+		BillForwardClient::makeDefaultClient($this->token2, $this->url2);
+
+		$orgs2 = Bf_Organisation::getMine();
+
+		$firstOrg2 = $orgs2[0];
+		$firstOrgID2 = $firstOrg2->id;
+	}
+
 	public function testGetFromDifferentClientsUsingSingleton() {
 		$client1 = new BillForwardClient($this->token1, $this->url1);
 		BillForwardClient::setDefaultClient($client1);
