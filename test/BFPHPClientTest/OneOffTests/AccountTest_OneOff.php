@@ -45,4 +45,26 @@ Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 
     	// TODO API: API should not ignore our profile when it has no params!
     }
+
+	public function testUpdateWithProfile()
+    {	
+    	//--Add a Profile to an existing Account
+		// construct default model of new account
+		$account = new Bf_Account();
+		// create modeled account via API
+		$createdAccount = Bf_Account::create($account);
+
+		// construct model of profile
+		$profile = new Bf_Profile(array(
+			'email' => 'always@testing.is.moe',
+			'firstName' => 'Test',
+			));
+
+		// associate profile with account
+		$createdAccount->profile = $profile;
+		// save changes to account
+		$createdAccount->save();
+
+    	var_export($createdAccount); print "\n";
+    }
 }
