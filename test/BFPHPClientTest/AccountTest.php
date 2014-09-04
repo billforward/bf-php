@@ -21,7 +21,7 @@ Class Bf_AccountTest extends \PHPUnit_Framework_TestCase {
 
 		$firstAccount = $accounts[0];
 
-		$expected = Bf_Account::getResourcePathStatic()->getEntityName();
+		$expected = Bf_Account::getResourcePath()->getEntityName();
 		$actual = $firstAccount['@type'];
 
 		$this->assertEquals(

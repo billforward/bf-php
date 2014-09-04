@@ -21,7 +21,7 @@ Class Bf_ProductTest extends \PHPUnit_Framework_TestCase {
 
 		$firstProduct = $products[0];
 
-		$expected = Bf_Product::getResourcePathStatic()->getEntityName();
+		$expected = Bf_Product::getResourcePath()->getEntityName();
 		$actual = $firstProduct['@type'];
 
 		$this->assertEquals(

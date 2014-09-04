@@ -12,20 +12,18 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 		$client = $entity
 		->getClient();
 
-		$resourcePath = $entity->getResourcePath();
-		$overrideResourcePath = $resourcePath;
-
-		$endpoint = $resourcePath->getPath();
+		$endpoint = static::getResourcePath()
+		->getPath();
 
 		$response = $client
 		->doPost($endpoint, $serial);
 
-		$constructedEntity = static::makeEntityFromResponseStatic($response, $client, $overrideResourcePath);
+		$constructedEntity = static::makeEntityFromResponseStatic($response, $client);
 
 		return $constructedEntity;
 	}
 
-	protected static function makeEntityFromResponseStatic(Bf_RawAPIOutput $response, BillForwardClient $providedClient, Bf_ResourcePath $overrideResourcePath = NULL) {
+	protected static function makeEntityFromResponseStatic(Bf_RawAPIOutput $response, BillForwardClient $providedClient) {
 		$payload = $response
 		->json();
 		$results = $payload['results'];
@@ -37,7 +35,7 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 
 		$client = $providedClient;
 		
-		$constructedEntity = new $entityClass($probablyOnlyEntity, $client, $overrideResourcePath);
+		$constructedEntity = new $entityClass($probablyOnlyEntity, $client);
 
 		return $constructedEntity;
 	}

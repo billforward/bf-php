@@ -44,7 +44,7 @@ Class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 
 		$firstPrp = $productRatePlans[0];
 
-		$expected = Bf_ProductRatePlan::getResourcePathStatic()->getEntityName();
+		$expected = Bf_ProductRatePlan::getResourcePath()->getEntityName();
 		$actual = $firstPrp['@type'];
 
 		// var_export($firstPrp);

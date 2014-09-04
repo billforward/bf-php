@@ -17,10 +17,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected $_registeredEntities = array();
 	protected $_registeredEntityArrays = array();
 
-	// used only by generic entities, who have no static resource path
-	protected $_overrideResourcePath = NULL;
-
-	public function __construct(array $stateParams = NULL, $client = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
+	public function __construct(array $stateParams = NULL, $client = NULL) {
 		if (is_null($stateParams)) {
 			$stateParams = array();
 		}
@@ -39,11 +36,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return get_called_class();
 	}
 
-	public function getResourcePath() {
-		return static::getResourcePathStatic();
-	}
-
-	public static function getResourcePathStatic() {
+	public static function getResourcePath() {
 		return static::$_resourcePath;
 	}
 
@@ -132,29 +125,22 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 	}
 
-	public static function getbyID($id, $options = NULL, $customClient = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
+	public static function getbyID($id, $options = NULL, $customClient = NULL) {
 		$client = NULL;
 		if (is_null($customClient)) {
 			$client = static::getSingletonClient();
 		} else {
 			$client = $customClient;
 		}
-		
-		$entityClass = static::getClassName();
-
-		$resourcePath = NULL;
-		if (is_null($overrideResourcePath)) {
-			$resourcePath = $entityClass::getResourcePathStatic();
-		} else {
-			$resourcePath = $overrideResourcePath;
-		}		
 
 		// empty IDs are no good!
 		if (!$id) {
     		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$apiRoute = $resourcePath->getPath();
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
 		$endpoint = "/$id";
 		$fullRoute = $apiRoute.$endpoint;
 
@@ -168,25 +154,17 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return new $entityClass($firstMatch, $client);
 	}
 
-	public static function getAll($options = NULL, $customClient = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
+	public static function getAll($options = NULL, $customClient = NULL) {
 		$client = NULL;
 		if (is_null($customClient)) {
 			$client = static::getSingletonClient();
 		} else {
 			$client = $customClient;
 		}
-		
+
 		$entityClass = static::getClassName();
 
-		$resourcePath = NULL;
-		if (is_null($overrideResourcePath)) {
-			$resourcePath = $entityClass::getResourcePathStatic();
-		} else {
-			$resourcePath = $overrideResourcePath;
-		}
-
-
-		$apiRoute = $entityClass::getResourcePathStatic()->getPath();
+		$apiRoute = $entityClass::getResourcePath()->getPath();
 		$fullRoute = $apiRoute;
 
 		$response = $client->doGet($fullRoute, $options);
