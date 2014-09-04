@@ -2,6 +2,7 @@
 namespace BFPHPClientTest;
 use BillForwardClient;
 use Bf_Account;
+use Bf_Address;
 use Bf_ApiConfiguration;
 use Bf_Organisation;
 use Bf_Profile;
@@ -24,6 +25,8 @@ class TestConfig {
 	private $usualLoginAccountID;
 	private $usualLoginUserID;
 	private $usualAccountID;
+	private $usualProfileID;
+	private $usualAddressID;
 	private $usualOrganisationID;
 	private $usualProductID;
 	private $usualProductRatePlanID;
@@ -41,6 +44,8 @@ class TestConfig {
         $this->usualLoginUserID = '';
         $this->usualOrganisationID = '';
         $this->usualAccountID = '';
+        $this->usualProfileID = '';
+        $this->usualAddressID = '';
         $this->usualPaymentMethodID = '';
         $this->usualPaymentMethodLinkID = '';
         $this->usualProductID = '';
@@ -82,6 +87,22 @@ class TestConfig {
 	 */
 	public function getUsualAccountID() {
 		return $this->usualAccountID;
+	}
+
+	/**
+	 * Get Bf_Profile ID of our go-to profile.
+	 * @return string
+	 */
+	public function getUsualProfileID() {
+		return $this->usualProfileID;
+	}
+
+	/**
+	 * Get Bf_Address ID of our go-to address.
+	 * @return string
+	 */
+	public function getUsualAddressID() {
+		return $this->usualAddressID;
 	}
 
 	public function getUsualOrganisationID() {
@@ -182,11 +203,26 @@ class TestConfig {
 		$savedOrg = $firstOrg
 		->save();
 
-		//-- Make account with expected profile
+		//-- Make account with expected profile, profile with expected address
+		$address = new Bf_Address(array(
+			'addressLine1' => 'address line 1',
+		    'addressLine2' => 'address line 2',
+		    'addressLine3' => 'address line 3',
+		    'city' => 'London',
+		    'province' => 'London',
+		    'country' => 'United Kingdom',
+		    'postcode' => 'SW1 1AS',
+		    'landline' => '02000000000',
+		    'primaryAddress' => true
+			));
+		// make one-item list of addresses
+		$addresses = array($address);
+
 		$email = $this->getUsualAccountsProfileEmail();
 		$profile = new Bf_Profile(array(
 			'email' => $email,
 			'firstName' => 'Test',
+			'addresses' => $addresses,
 			));
 		
 		$account = new Bf_Account(array(
@@ -195,6 +231,11 @@ class TestConfig {
 
 		$createdAcc = Bf_Account::create($account);
 		$createdAccID = $createdAcc->id;
+		$createdProfileID = $createdAcc->getProfile()->id;
+		$createdAddresses = $createdAcc->getProfile()->getAddresses();
+		$firstAddress = $createdAddresses[0];
+
+		$createdAddressID = $firstAddress->id;
 
 
 		//-- make payment method, and associate it with account
@@ -341,6 +382,8 @@ class TestConfig {
 		echo sprintf("\$this->usualLoginUserID = '%s';\n", $foundLoginAccount->userID);
 		echo sprintf("\$this->usualOrganisationID = '%s';\n", $firstOrgID);
 		echo sprintf("\$this->usualAccountID = '%s';\n", $createdAccID);
+		echo sprintf("\$this->usualProfileID = '%s';\n", $createdProfileID);
+		echo sprintf("\$this->usualAddressID = '%s';\n", $createdAddressID);
 		echo sprintf("\$this->usualPaymentMethodLinkID = '%s';\n", $createdAuthorizeNetTokenID);
 		echo sprintf("\$this->usualPaymentMethodID = '%s';\n", $createdPaymentMethodID);
 		echo sprintf("\$this->usualProductID = '%s';\n", $createdProductID);

@@ -4,6 +4,7 @@ echo "Running Bf_Profile tests for BillForward PHP Client Library.\n";
 
 use BillForwardClient;
 use Bf_Account;
+use Bf_Profile;
 use Bf_Address;
 Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 
@@ -22,6 +23,22 @@ Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 		} else {
 			return self::$usualProfile;
 		}
+    }
+
+	public function testGetAll()
+    {	    	
+		$profiles = Bf_Profile::getAll();
+
+		$firstProfile = $profiles[0];
+
+		$expected = Bf_Profile::getResourcePath()->getEntityName();
+		$actual = $firstProfile['@type'];
+
+		$this->assertEquals(
+			$expected,
+			$actual,
+			"Asserting that type of any returned entity matches known value."
+			);
     }
 
     protected function getUsualProfile() {
