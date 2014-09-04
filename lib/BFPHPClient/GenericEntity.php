@@ -6,22 +6,12 @@ class Bf_GenericEntity extends Bf_MutableEntity {
 		$this->setResourcePath($overrideResourcePath);
 	}
 
-	public static function getByID($id, $options = NULL, $customClient = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
-		if (is_null($overrideResourcePath)) {
-			trigger_error('Generic entities require a "Bf_ResourcePath $overrideResourcePath" argument, in order to GET from API.',
-			 E_USER_ERROR);
-		}
-
-		return parent::getByID($id, $options, $customClient, $overrideResourcePath);
+	public function getByIDGeneric($id, $options = NULL, $customClient = NULL) {
+		return static::getByID($id, $options, $customClient, $this->getResourcePath());
 	}
 
-	public static function getAll($options = NULL, $customClient = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
-		if (is_null($overrideResourcePath)) {
-			trigger_error('Generic entities require a "Bf_ResourcePath $overrideResourcePath" argument, in order to GET from API.',
-			 E_USER_ERROR);
-		}
-
-		return parent::getAll($options, $customClient, $overrideResourcePath);
+	public function getAllGeneric($options = NULL, $customClient = NULL) {
+		return static::getAll($options, $customClient, $this->getResourcePath());
 	}
 
 	protected function doUnserialize(array $json) {
