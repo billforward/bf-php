@@ -132,7 +132,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 	}
 
-	public static function getbyID($id, $options = NULL, $customClient = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
+	public static function getByID($id, $options = NULL, $customClient = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
 		$client = NULL;
 		if (is_null($customClient)) {
 			$client = static::getSingletonClient();
@@ -165,7 +165,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 		$firstMatch = $results[0];
 
-		return new $entityClass($firstMatch, $client);
+		return new $entityClass($firstMatch, $client, $resourcePath);
 	}
 
 	public static function getAll($options = NULL, $customClient = NULL, Bf_ResourcePath $overrideResourcePath = NULL) {
@@ -186,7 +186,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 
 
-		$apiRoute = $entityClass::getResourcePathStatic()->getPath();
+		$apiRoute = $resourcePath->getPath();
 		$fullRoute = $apiRoute;
 
 		$response = $client->doGet($fullRoute, $options);
@@ -197,7 +197,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$entities = array();
 
 		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
+			$constructedEntity = new $entityClass($value, $client, $resourcePath);
 			array_push($entities, $constructedEntity);
 		}
 

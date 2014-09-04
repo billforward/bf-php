@@ -48,6 +48,8 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 
 		$thisClass = static::getClassName();
 
-		return $thisClass::makeEntityFromResponseStatic($response, $client);
+		$overrideResourcePath = $this->getResourcePath();
+
+		return $thisClass::makeEntityFromResponseStatic($response, $client, $overrideResourcePath);
 	}
 }
