@@ -44,7 +44,7 @@ Class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
 
 		$firstSub = $subscriptions[0];
 
-		$expected = Bf_Subscription::getResourcePath()->getEntityName();
+		$expected = Bf_Subscription::getResourcePathStatic()->getEntityName();
 		$actual = $firstSub['@type'];
 
 		$this->assertEquals(

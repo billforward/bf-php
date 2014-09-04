@@ -11,7 +11,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 		$client = $this
 		->getClient();
 
-		$endpoint = static::getResourcePath()
+		$endpoint = $this->getResourcePath()
 		->getPath();
 
 		$response = $client->doPut($endpoint, $serial);

@@ -22,6 +22,7 @@ spl_autoload_register(function($className) {
             'Bf_Address' => $baseDir . '/BFPHPClient/Address.php',
             'Bf_AuthorizeNetToken' => $baseDir . '/BFPHPClient/AuthorizeNetToken.php',
             'Bf_BillingEntity' => $baseDir . '/BFPHPClient/BillingEntity.php',
+            'Bf_GenericEntity' => $baseDir . '/BFPHPClient/GenericEntity.php',
             'Bf_InsertableEntity' => $baseDir . '/BFPHPClient/InsertableEntity.php',
             'Bf_MutableEntity' => $baseDir . '/BFPHPClient/MutableEntity.php',
             'Bf_Organisation' => $baseDir . '/BFPHPClient/Organisation.php',

@@ -25,7 +25,7 @@ Class Bf_OrganisationTest extends \PHPUnit_Framework_TestCase {
 
 		$firstOrg = $organisations[0];
 
-		$expected = Bf_Organisation::getResourcePath()->getEntityName();
+		$expected = Bf_Organisation::getResourcePathStatic()->getEntityName();
 		$actual = $firstOrg['@type'];
 
 		$this->assertEquals(

@@ -72,11 +72,11 @@ Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 			'profile' => $profile
 			));
 
-    	var_export($account); print "\n";
+    	// var_export($account); print "\n";
 
     	$createdAccount = Bf_Account::create($account);
 
-    	var_export($createdAccount); print "\n";
+    	// var_export($createdAccount); print "\n";
 
     	// TODO API: API should not ignore our profile when it has no params!
     }
@@ -98,8 +98,9 @@ Class Bf_Account_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// associate profile with account
 		$createdAccount->profile = $profile;
 		// save changes to account
-		$createdAccount->save();
+		$updatedAccount = $createdAccount->save();
 
-    	var_export($createdAccount); print "\n";
+		// Take a peek at updated account
+    	var_export($updatedAccount); print "\n";
     }
 }

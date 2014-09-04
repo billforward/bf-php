@@ -32,7 +32,7 @@ class Bf_Organisation extends Bf_MutableEntity {
 
 		$entityClass = static::getClassName();
 
-		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$apiRoute = $entityClass::getResourcePathStatic()->getPath();
 		$endpoint = "/mine";
 		$fullRoute = $apiRoute.$endpoint;
 		

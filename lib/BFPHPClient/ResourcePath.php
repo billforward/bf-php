@@ -3,7 +3,7 @@ class Bf_ResourcePath {
 	protected $path;
 	protected $entityName;
 
-	public function __construct($path, $entityName) {
+	public function __construct($path, $entityName = NULL) {
 		$this->path = $path;
 		$this->entityName = $entityName;
 	}

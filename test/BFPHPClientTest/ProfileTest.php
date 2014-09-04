@@ -31,7 +31,7 @@ Class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
 
 		$firstProfile = $profiles[0];
 
-		$expected = Bf_Profile::getResourcePath()->getEntityName();
+		$expected = Bf_Profile::getResourcePathStatic()->getEntityName();
 		$actual = $firstProfile['@type'];
 
 		$this->assertEquals(
