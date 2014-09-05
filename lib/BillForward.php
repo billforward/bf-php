@@ -20,6 +20,8 @@ spl_autoload_register(function($className) {
             'Bf_APIConfiguration' => $baseDir . '/BFPHPClient/APIConfiguration.php',
             'Bf_Account' => $baseDir . '/BFPHPClient/Account.php',
             'Bf_Address' => $baseDir . '/BFPHPClient/Address.php',
+            'Bf_AmendmentPriceRequest' => $baseDir . '/BFPHPClient/AmendmentPriceRequest.php',
+            'Bf_AmendmentPriceRequestCodeType' => $baseDir . '/BFPHPClient/AmendmentPriceRequestCodeType.php',
             'Bf_AuthorizeNetToken' => $baseDir . '/BFPHPClient/AuthorizeNetToken.php',
             'Bf_BillingEntity' => $baseDir . '/BFPHPClient/BillingEntity.php',
             'Bf_ComponentCost' => $baseDir . '/BFPHPClient/ComponentCost.php',

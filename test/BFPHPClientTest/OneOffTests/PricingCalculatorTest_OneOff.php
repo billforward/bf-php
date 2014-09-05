@@ -8,6 +8,7 @@ namespace BFPHPClientTest\OneOffTests;
 echo "Running (one-off) Bf_PricingCalculator tests for BillForward PHP Client Library.\n";
 
 use Bf_PricingCalculator;
+use Bf_PriceRequest;
 use BFPHPClientTest\TestConfig;
 Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
     protected static $client = NULL;
@@ -25,13 +26,13 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
     	$prpID = $config->getUsualProductRatePlanID();
     	$productID = $config->getUsualProductID();
 
-    	$calculator = new Bf_PricingCalculator(array(
+    	$requestEntity = new Bf_PriceRequest(array(
     		'accountID' => $accountID,
     		'productRatePlanID' => $prpID,
     		'productID' => $productID
     		));
 
-    	$calculation = Bf_PricingCalculator::calculatePrice($calculator);
+    	$calculation = Bf_PricingCalculator::requestPriceCalculation($requestEntity);
 
     	var_export($calculation);
     }
