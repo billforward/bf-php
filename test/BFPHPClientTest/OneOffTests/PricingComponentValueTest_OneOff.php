@@ -25,7 +25,7 @@ Class Bf_PricingComponentValue_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$client = self::$client;
 		$config = self::$config;
 
-		$testPricingComponentId = $config->getUsualPricingComponentID();
+		$testPricingComponentId = $config->getUsualFlatPricingComponentID();
     	
 		$prc = new Bf_PricingComponentValue(array(
 			'pricingComponentID' => $testPricingComponentId,

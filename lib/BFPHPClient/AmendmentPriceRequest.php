@@ -33,7 +33,7 @@ class Bf_AmendmentPriceRequest extends Bf_MutableEntity {
 		// consult parent for further unserialization
 		parent::doUnserialize($json);
 
-		$this->unserializeEntity('subscription', Bf_RuleSatisfaction::getClassName(), $json);
+		$this->unserializeEntity('subscription', Bf_Subscription::getClassName(), $json);
 		$this->unserializeEntity('codeType', Bf_AmendmentPriceRequestCodeType::getClassName(), $json);
 		$this->unserializeArrayEntities('pricingComponentValues', Bf_PricingComponentValue::getClassName(), $json);
 	}

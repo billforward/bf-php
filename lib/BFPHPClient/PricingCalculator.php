@@ -30,6 +30,33 @@ class Bf_PricingCalculator {
 		return $constructedEntity;
 	}
 
+	/**
+	 * Requests a price-calculation. Request is built using specified PricingCalculator entity, plus
+	 * specified AmendmentPriceRequest entity.
+	 * Returns an entity which embodies the response.
+	 * @param Bf_AmendmentPriceRequest $requestEntity 
+	 * @return Bf_PriceCalculation $responseEntity
+	 */
+	public static function requestAmendmentPriceAndTime(Bf_AmendmentPriceRequest $requestEntity) {
+		$entity = $requestEntity;
+		$serial = $entity->getSerialized();
+
+		$client = $entity
+		->getClient();
+
+		$endpointPrefix = static::getResourcePath()
+		->getPath();
+		$endpointPostfix = "/coupon-instance/initialisation";
+		$endpoint = $endpointPrefix.$endpointPostfix;
+
+		$response = $client
+		->doPost($endpoint, $serial);
+
+		$constructedEntity = Bf_PriceCalculation::callMakeEntityFromResponseStatic($response, $client);
+
+		return $constructedEntity;
+	}
+
 	public static function getResourcePath() {
 		return static::$_resourcePath;
 	}

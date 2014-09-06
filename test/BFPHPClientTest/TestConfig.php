@@ -32,7 +32,8 @@ class TestConfig {
 	private $usualProductRatePlanID;
 	private $usualSubscriptionID;
 	private $usualUnitOfMeasureID;
-	private $usualPricingComponentID;
+	private $usualFlatPricingComponentID;
+	private $usualTieredPricingComponentID;
 	private $usualPaymentMethodID;
 	private $usualPaymentMethodLinkID;
 
@@ -41,18 +42,19 @@ class TestConfig {
         $this->urlRoot = 'https://api-sandbox.billforward.net/2014.223.0/';
 
         $this->usualLoginAccountID = '';
-        $this->usualLoginUserID = '';
-        $this->usualOrganisationID = '';
-        $this->usualAccountID = '';
-        $this->usualProfileID = '';
-        $this->usualAddressID = '';
-        $this->usualPaymentMethodID = '';
-        $this->usualPaymentMethodLinkID = '';
-        $this->usualProductID = '';
-        $this->usualProductRatePlanID = '';
-        $this->usualPricingComponentID = '';
-        $this->usualSubscriptionID = '';
-        $this->usualUnitOfMeasureID = '';
+		$this->usualLoginUserID = '';
+		$this->usualOrganisationID = '';
+		$this->usualAccountID = '';
+		$this->usualProfileID = '';
+		$this->usualAddressID = '';
+		$this->usualPaymentMethodLinkID = '';
+		$this->usualPaymentMethodID = '';
+		$this->usualProductID = '';
+		$this->usualProductRatePlanID = '';
+		$this->usualFlatPricingComponentID = '';
+		$this->usualTieredPricingComponentID = '';
+		$this->usualSubscriptionID = '';
+		$this->usualUnitOfMeasureID = '';
 
 		$this->client = new BillForwardClient($this->access_token, $this->urlRoot);
         BillForwardClient::setDefaultClient($this->client);
@@ -125,8 +127,12 @@ class TestConfig {
 		return $this->usualUnitOfMeasureID;
 	}
 
-	public function getUsualPricingComponentID() {
-		return $this->usualPricingComponentID;
+	public function getUsualFlatPricingComponentID() {
+		return $this->usualFlatPricingComponentID;
+	}
+
+	public function getUsualTieredPricingComponentID() {
+		return $this->usualTieredPricingComponentID;
 	}
 
 	public function getUsualPaymentMethodID() {
@@ -308,20 +314,52 @@ class TestConfig {
 		//-- Make product rate plan
 			//-- Make pricing components for product rate plan
 				//-- Make tiers for pricing component
-		$tier = new Bf_PricingComponentTier(array(
+		$tierFlat = new Bf_PricingComponentTier(array(
 			'lowerThreshold' => 1,
 			'upperThreshold' => 1,
-			'pricingType' => 'unit',
+			'pricingType' => 'fixed',
 			'price' => 1,
 			));
-		$tiers = array($tier);
+
+		$tier1 = new Bf_PricingComponentTier(array(
+			'lowerThreshold' => 1,
+			'upperThreshold' => 1,
+			'pricingType' => 'fixed',
+			'price' => 10,
+			));
+		$tier2 = new Bf_PricingComponentTier(array(
+			'lowerThreshold' => 2,
+			'upperThreshold' => 10,
+			'pricingType' => 'unit',
+			'price' => 5,
+			));
+		$tier3 = new Bf_PricingComponentTier(array(
+			'lowerThreshold' => 11,
+			'upperThreshold' => 100,
+			'pricingType' => 'unit',
+			'price' => 2,
+			));
+		$tiersFlat = array($tierFlat);
+		$tiers = array($tier1, $tier2, $tier3);
 
 		$pricingComponentsArray = array(
 			new Bf_PricingComponent(array(
 			'@type' => 'flatPricingComponent',
 			'chargeModel' => 'flat',
-			'name' => 'Devices used',
+			'name' => 'Devices used, fixed',
 			'description' => 'How many devices you use, I guess',
+			'unitOfMeasureID' => $createdUomID,
+			'chargeType' => 'subscription',
+			'upgradeMode' => 'immediate',
+			'downgradeMode' => 'immediate',
+			'defaultQuantity' => 1,
+			'tiers' => $tiersFlat
+			)),
+			new Bf_PricingComponent(array(
+			'@type' => 'tieredPricingComponent',
+			'chargeModel' => 'tiered',
+			'name' => 'Devices used, tiered',
+			'description' => 'How many devices you use, but with a tiering system',
 			'unitOfMeasureID' => $createdUomID,
 			'chargeType' => 'subscription',
 			'upgradeMode' => 'immediate',
@@ -339,16 +377,21 @@ class TestConfig {
 			));
 		$createdPrp = Bf_ProductRatePlan::create($prp);
 		$createdProductRatePlanID = $createdPrp->id;
-		$createdPricingComponentID = $createdPrp->pricingComponents[0]->id;
+		$createdFlatPricingComponentID = $createdPrp->pricingComponents[0]->id;
+		$createdTieredPricingComponentID = $createdPrp->pricingComponents[1]->id;
 
 		//-- Make pricing component value instance of pricing component
-		$prc = new Bf_PricingComponentValue(array(
-			'pricingComponentID' => $createdPricingComponentID,
-			'value' => 2,
+		$prcFlat = new Bf_PricingComponentValue(array(
+			'pricingComponentID' => $createdFlatPricingComponentID,
+			'value' => 1,
 			'crmID' => ''
 			));
-		$pricingComponentValuesArray = array($prc);
-
+		$prcTiered = new Bf_PricingComponentValue(array(
+			'pricingComponentID' => $createdTieredPricingComponentID,
+			'value' => 5,
+			'crmID' => ''
+			));
+		$pricingComponentValuesArray = array($prcFlat, $prcTiered);
 		
 		//-- Make Bf_PaymentMethodSubscriptionLinks
 		// refer by ID to our payment method.
@@ -388,7 +431,8 @@ class TestConfig {
 		echo sprintf("\$this->usualPaymentMethodID = '%s';\n", $createdPaymentMethodID);
 		echo sprintf("\$this->usualProductID = '%s';\n", $createdProductID);
 		echo sprintf("\$this->usualProductRatePlanID = '%s';\n", $createdProductRatePlanID);
-		echo sprintf("\$this->usualPricingComponentID = '%s';\n", $createdPricingComponentID);
+		echo sprintf("\$this->usualFlatPricingComponentID = '%s';\n", $createdFlatPricingComponentID);
+		echo sprintf("\$this->usualTieredPricingComponentID = '%s';\n", $createdTieredPricingComponentID);
 		echo sprintf("\$this->usualSubscriptionID = '%s';\n", $createdSub->id);
 		echo sprintf("\$this->usualUnitOfMeasureID = '%s';\n", $createdUomID);
 	}
