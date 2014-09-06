@@ -31,6 +31,13 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$this->doUnserialize($stateParams);
 	}
 
+	public static function __set_state($stateParams)
+    {
+    	$entityClass = static::getClassName();
+        $obj = new $entityClass($stateParams);
+        return $obj;
+    }
+
 	public static function getClassName() {
 		// late static bindings, PHP version 5.3+ only
 		return get_called_class();
