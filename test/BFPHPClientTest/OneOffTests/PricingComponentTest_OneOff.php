@@ -51,6 +51,7 @@ Class Bf_PricingComponent_OneOffTest extends \PHPUnit_Framework_TestCase {
 		$createdPrc = Bf_PricingComponent::create($prc);
 
 		// TODO API: 'productID' should be 'required'.
+		// TODO API: 'productRatePlanID' should be 'required'.
 		// TODO API: received 'you must specify a default quantity' when I tried example request.
 		// TODO API: change POST permission to 'admin'
 		// TODO API: change POST permission of Bf_PricingComponentTier to 'admin'
