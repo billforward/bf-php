@@ -35,7 +35,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_PaymentMethodSubscriptionLink[]
 	 */
 	public function getPaymentMethodSubscriptionLinks() {
-		return $this->pricingComponentValues;
+		return $this->paymentMethodSubscriptionLinks;
 	}
 
 	/**
