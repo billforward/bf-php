@@ -6,7 +6,7 @@ Add us to your `composer.json`:
 ```
 {
     "require": {
-        "billforward/phpclient": "1.*"
+        "billforward/bf-php": "1.*"
     }
 }
 ```
@@ -24,7 +24,7 @@ require_once('vendor/autoload.php');
 
 Or include manually:
 ```
-require_once('/path/to/vendor/billforward/phpclient/lib/BillForward.php');
+require_once('/path/to/vendor/billforward/bf-php/lib/BillForward.php');
 ```
 
 ##Install (manually)
