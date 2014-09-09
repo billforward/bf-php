@@ -1,5 +1,5 @@
 {
-    "name": "billforward/phpclient",
+    "name": "billforward/bf-php",
     "type": "library",
     "description": "BillForward PHP Client Library",
     "keywords": ["billforward", "bill", "forward", "subscription", "billing", "client", "library"],
