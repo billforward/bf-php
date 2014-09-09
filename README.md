@@ -146,6 +146,7 @@ It is in the `build` directory.
 Invoke with:
 
 ```
+cd build
 gradlew
 ```
 
@@ -165,6 +166,7 @@ We provide a Composer self-installer for Windows and UNIX.
 Invoke with:
 
 ```
+cd build
 gradlew setup
 ```
 
