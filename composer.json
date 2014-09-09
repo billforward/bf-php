@@ -4,6 +4,7 @@
     "description": "BillForward PHP Client Library",
     "keywords": ["billforward", "bill", "forward", "subscription", "billing", "client", "library"],
     "homepage": "https://github.com/billforward/bf-php",
+    "license": "MIT",
     "authors": [
         {
             "name": "Ian Saunders",
