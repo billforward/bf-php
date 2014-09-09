@@ -1,23 +1,50 @@
 #Usage
-##Installation
-###Step 1. Put our library into your repository
+##Install (via Composer)
+Our library can be installed via the [Composer](http://getcomposer.org/) package manager.
+
+Add us to your `composer.json`:
+```
+{
+    "require": {
+        "billforward/phpclient": "1.*"
+    }
+}
+```
+
+Install the new package:
+```
+composer.phar install
+```
+
+Now include our code.
+Either use Composer's [autoloader](https://getcomposer.org/doc/00-intro.md#autoloading):
+```
+require_once('vendor/autoload.php');
+```
+
+Or include manually:
+```
+require_once('/path/to/vendor/billforward/phpclient/lib/BillForward.php');
+```
+
+##Install (manually)
+####Step 1. Put our library into your repository
 Inside `lib/`, lives:
 * `BillForward.php`
 * `BFPHPClient/`
 
 Put these files in your repository.
 
-
-###Step 2.  Include our library from your code
+####Step 2. Include our library from your code
 Point to where `BillForward.php` is in your repository:
 ```
 require_once('path/to/BillForward.php');
 ```
 This file will autoload the library.
 
-
-###Step 3. Use credentials to connect to BillForward
-####Step 3.1. Getting BillForward credentials
+##Invocation
+###Use credentials to connect to BillForward
+####Step 1. Getting BillForward credentials
 Login to (or Register) your BillForward Sandbox account:
 
 https://app-sandbox.billforward.net/login/#/
@@ -28,7 +55,7 @@ Grab an API token from:
 
 https://app-sandbox.billforward.net/setup/#/personal/api-keys
 
-####Step 3.2. Connect to BillForward using BillForwardClient
+####Step 2. Connect to BillForward using BillForwardClient
 Having included `BillForward.php`, you can now make an instance of BillForwardClient.
 
 It can be used as the default client for all requests:
@@ -42,7 +69,7 @@ $client = new BillForwardClient($access_token, $urlRoot);
 BillForwardClient::setDefaultClient($client);
 ```
 
-####Step 3.3. Make API calls using BillForwardClient
+####Step 3. Make API calls using BillForwardClient
 Construction of any BillForwardClient automatically registers that client as the 'default client'.
 
 Requests can now be made. These use the 'default client' implicitly:
