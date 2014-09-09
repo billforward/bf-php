@@ -6,6 +6,12 @@
     "homepage": "https://github.com/billforward/bf-php",
     "authors": [
         {
+            "name": "Ian Saunders",
+            "email": "ian@billforward.net",
+            "homepage": "http://www.billforward.net/",
+            "role": "CTO"
+        },
+        {
             "name": "Alex Birch",
             "email": "alexander.birch@billforward.net",
             "homepage": "http://www.billforward.net/",

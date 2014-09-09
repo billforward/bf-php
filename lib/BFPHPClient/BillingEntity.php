@@ -132,7 +132,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 	}
 
-	public static function getbyID($id, $options = NULL, $customClient = NULL) {
+	public static function getByID($id, $options = NULL, $customClient = NULL) {
 		$client = NULL;
 		if (is_null($customClient)) {
 			$client = static::getSingletonClient();
