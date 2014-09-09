@@ -13,17 +13,17 @@
         }
     ],
 	"config": {
-        "vendor-dir": "../vendor"
+        "vendor-dir": "vendor"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"
     },
 	"autoload": {
-		"classmap": ["../lib/"]
+		"classmap": ["lib/"]
 	},
     "autoload-dev": {
         "psr-0": {
-            "BFPHPClientTest": "../test/"
+            "BFPHPClientTest": "test/"
         }
     }
 }

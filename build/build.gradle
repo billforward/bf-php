@@ -10,36 +10,45 @@ task wrapper(type: Wrapper) {
 def build = new File(".")
 def buildMacros = new File("$build/macros")
 def root = new File("$build/..")
-def composer = new File("$root/composer")
+def composerJsonDir = new File("$root")
+def composerHelpers = new File("$build/composerHelpers")
+def composerJsonToHelpers = new File("build/composerHelpers")
 def lib = new File("$root/lib")
 def test = new File("$root/test")
 def distDir = new File("$root/dist")
 def composerOutputDir = new File("$root/vendor/composer")
 
 task ensureComposerInstalled(type:Exec) {
-    workingDir "$composer"
+    workingDir "$composerJsonDir"
+    def executable = new File("$composerJsonToHelpers/ensureComposerInstalled")
+    def winExecutable = new File("$executable"+'.bat')
+    println winExecutable
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine 'cmd', '/c', 'ensureComposerInstalled.bat'
+        commandLine 'cmd', '/c', winExecutable
     } else {
-        commandLine 'sh', 'ensureComposerInstalled'
+        commandLine 'sh', executable
     }
 }
 
 task ensureComposerModulesInstalled(type:Exec) {
-    workingDir "$composer"
+    workingDir "$composerJsonDir"
+    def executable = new File("$composerJsonToHelpers/ensureComposerModulesInstalled")
+    def winExecutable = new File("$executable"+'.bat')
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine 'cmd', '/c', 'ensureComposerModulesInstalled.bat'
+        commandLine 'cmd', '/c', winExecutable
     } else {
-        commandLine 'sh', 'ensureComposerModulesInstalled'
+        commandLine 'sh', executable
     }
 }
 
 task regenerateClassmap(type:Exec) {
-    workingDir "$composer"
+    workingDir "$composerJsonDir"
+    def executable = new File("$composerJsonToHelpers/regenerateClassmap")
+    def winExecutable = new File("$executable"+'.bat')
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine 'cmd', '/c', 'regenerateClassmap.bat'
+        commandLine 'cmd', '/c', winExecutable
     } else {
-        commandLine 'sh', 'regenerateClassmap'
+        commandLine 'sh', executable
     }
 }
 
@@ -76,7 +85,7 @@ task recompileClasspath() << {
                 line -> '        ' + line
             }
         }
-        ant.replace(file: "$out/classmap.php", token: "/../lib", value: "")
+        ant.replace(file: "$out/classmap.php", token: "/lib", value: "")
 
         String classmapContents = new File("$out/classmap.php").text
 

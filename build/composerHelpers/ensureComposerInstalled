@@ -5,6 +5,6 @@ then
 	echo "$file found - thus Composer is installed already. Skipping installation."
 else
 	echo "$file not found - thus Composer is not yet installed. Installing..."
-	chmod +x installComposer
-	. installComposer
+	chmod +x build/composerHelpers/installComposer
+	. build/composerHelpers/installComposer
 fi
