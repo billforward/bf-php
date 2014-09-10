@@ -88,6 +88,8 @@ $accounts = Bf_Account::getAll(null, $client);
 ##Examples
 See `ExampleUsage.php` for a full use-case of interacting with the API.
 
+View the examples in our [PHP Client Library Docs](https://app-sandbox.billforward.net/api/#/method/accounts/POST?path=%2Faccounts&api=PHP).
+
 We provide also in the `test` folder some tests that show usage.
 
 
@@ -127,9 +129,7 @@ To get the workspace setup, there are three steps:
 ###Step 1. Installing Java, curl and PHP.
 These are well-documented; follow normal installation process.
 
-UNIX users will already have curl. Windows users might want to look here:
-
-http://curl.haxx.se/dlwiz/?type=bin&os=Win32&flav=-&ver=*
+UNIX users will already have curl. Windows users might want to look [http://curl.haxx.se/dlwiz/?type=bin&os=Win32&flav=-&ver=*](here).
 
 ###Step 2. Installing gradle.
 This step installs our build system, Gradle.
