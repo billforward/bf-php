@@ -25,6 +25,7 @@ spl_autoload_register(function($className) {
             'Bf_AmendmentPriceRequestCodeType' => $baseDir . '/BFPHPClient/AmendmentPriceRequestCodeType.php',
             'Bf_AuthorizeNetToken' => $baseDir . '/BFPHPClient/AuthorizeNetToken.php',
             'Bf_BillingEntity' => $baseDir . '/BFPHPClient/BillingEntity.php',
+            'Bf_CancellationAmendment' => $baseDir . '/BFPHPClient/Amendments/CancellationAmendment.php',
             'Bf_ComponentCost' => $baseDir . '/BFPHPClient/ComponentCost.php',
             'Bf_ComponentDiscount' => $baseDir . '/BFPHPClient/ComponentDiscount.php',
             'Bf_InsertableEntity' => $baseDir . '/BFPHPClient/InsertableEntity.php',
