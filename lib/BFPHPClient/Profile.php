@@ -1,6 +1,7 @@
 <?php
 
 class Bf_Profile extends Bf_MutableEntity {
+	// TODO: actually, endpoint appears to exist.
 	public static function create(Bf_InsertableEntity $entity) {
 		trigger_error('Create support is denied for this entity; '
 		 .'at the time of writing, no API endpoint exists to support it.'

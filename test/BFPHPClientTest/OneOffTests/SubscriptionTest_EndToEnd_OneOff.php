@@ -49,11 +49,8 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
     	
     	// creates a new default account
 		$sub = new Bf_Subscription(array(
-			'type' => 'Subscription',
-			'productID' => $testProductID,
 			'productRatePlanID' => $testProductRatePlanID,
 			'accountID' => $testAccountID,
-			'name' => 'Test Bf_Subscription',
 			));
 
 		$createdSub = Bf_Subscription::create($sub);

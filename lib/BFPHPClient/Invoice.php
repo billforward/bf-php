@@ -1,6 +1,7 @@
 <?php
 
 class Bf_Invoice extends Bf_MutableEntity {
+	// TODO: deny create access
 	protected static $_resourcePath;
 
 	protected function doUnserialize(array $json) {
