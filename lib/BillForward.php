@@ -30,6 +30,7 @@ spl_autoload_register(function($className) {
             'Bf_InsertableEntity' => $baseDir . '/BFPHPClient/InsertableEntity.php',
             'Bf_Invoice' => $baseDir . '/BFPHPClient/Invoice.php',
             'Bf_InvoiceLine' => $baseDir . '/BFPHPClient/InvoiceLine.php',
+            'Bf_InvoiceNextExecutionAttemptAmendment' => $baseDir . '/BFPHPClient/Amendments/InvoiceNextExecutionAttemptAmendment.php',
             'Bf_InvoicePayment' => $baseDir . '/BFPHPClient/InvoicePayment.php',
             'Bf_InvoiceRecalculationAmendment' => $baseDir . '/BFPHPClient/Amendments/InvoiceRecalculationAmendment.php',
             'Bf_MutableEntity' => $baseDir . '/BFPHPClient/MutableEntity.php',
