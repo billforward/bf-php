@@ -49,4 +49,16 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
 		var_export($createdAmendment);
 	}
+
+	public function testIssueUsingHelper() {
+		$client = self::$client;
+    	
+    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
+    	// works at least on Paid invoices.
+    	$invoiceID = 'E422C79D-4351-4D93-A103-320A5E4E1174';
+		$invoice = Bf_Invoice::getByID($invoiceID);
+
+		$createdAmendment = $invoice->changeValueOfPricingComponentWhoseNameMatches('Devices used, tiered', 51, 'immediate', 'Immediate');
+		var_export($createdAmendment);
+	}
 }
