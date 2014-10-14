@@ -92,19 +92,37 @@ class Bf_Invoice extends Bf_MutableEntity {
 	/**
 	 * Changes the value of whichever Bf_PricingComponentValue corresponds to a Bf_PricingComponent which recruits
 	 * the provided Bf_UnitOfMeasure.
-	 * @param array The unit of measure by which a Bf_PricingComponent will be found, instrumental to finding its corresponding Bf_PricingComponentValue on the Bf_Subscription. In cases where multiple pricing components on the Bf_ProductRatePlan recruit the same Bf_UnitOfMeasure, the first Bf_PricingComponent encountered will be picked.
+	 * @param Bf_UnitOfMeasure The unit of measure by which a Bf_PricingComponent will be found, instrumental to finding its corresponding Bf_PricingComponentValue on the Bf_Subscription. In cases where multiple pricing components on the Bf_ProductRatePlan recruit the same Bf_UnitOfMeasure, the first Bf_PricingComponent encountered will be picked.
 	 * @param float the new value to which the Bf_PricingComponentValue will be changed
 	 * @param string ENUM['immediate', 'delayed'] When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
 	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @return Bf_PricingComponentValueAmendment
 	 */
-	public function upgrade(Bf_UnitOfMeasure $unitOfMeasure, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+	public function changeValueOfPricingComponentWhoseUoMMatches(Bf_UnitOfMeasure $unitOfMeasure, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
 		$properties = array(
 			'chargeModel' => 'tiered',
 			'unitOfMeasureID' => $unitOfMeasure->id
 			);
 
 		return $this->changeValueOfPricingComponentWhosePropertiesMatch($properties, $newValue, $changeMode, $invoicingType);
+	}
+
+	/**
+	 * Changes the value of whichever Bf_PricingComponentValue corresponds to a Bf_PricingComponent which recruits
+	 * the provided Bf_UnitOfMeasure.
+	 * @param string The Bf_UnitOfMeasure name by which a Bf_PricingComponent will be found, instrumental to finding its corresponding Bf_PricingComponentValue on the Bf_Subscription. In cases where multiple pricing components on the Bf_ProductRatePlan recruit the same Bf_UnitOfMeasure, the first Bf_PricingComponent encountered will be picked.
+	 * @param float the new value to which the Bf_PricingComponentValue will be changed
+	 * @param string ENUM['immediate', 'delayed'] When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
+	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @return Bf_PricingComponentValueAmendment
+	 */
+	public function upgrade($unitOfMeasureName, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+		$uomProperties = array(
+			'name' => $unitOfMeasureName
+			);
+		$unitOfMeasure = Bf_UnitOfMeasure::getAllThenGrabFirstWithProperties($uomProperties);
+
+		return $this->changeValueOfPricingComponentWhoseUoMMatches($unitOfMeasure, $newValue, $changeMode, $invoicingType);
 	}
 
 	public static function initStatics() {

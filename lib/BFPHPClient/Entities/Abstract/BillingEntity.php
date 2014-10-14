@@ -48,13 +48,31 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	/**
-	 * Returns (if exist; otherwise NULL) the first entity from a collection whose properties match
+	 * Returns (if exist; otherwise OutOfBoundsException) the first entity from a collection whose properties match
 	 * those provided.
 	 * @param array the collection of entities to search
 	 * @param array the array of properties upon which to match
-	 * @return Bf_PricingComponentValue The matching Bf_PricingComponentValue (if any)
+	 * @return BillingEntity The matching BillingEntity
 	 */
-	protected static function fromCollectionFindFirstWhoMatchesProperties(array $collection, array $props) {
+	public static function fromCollectionFindFirstWhoMatchesProperties(array $collection, array $props) {
+		$matchingEntities = self::fromCollectionFindAllWhoMatchProperties($collection, $props);
+
+		if (sizeof($matchingEntities) > 0) {
+			return $matchingEntities[0];
+		} else {
+			throw new OutOfBoundsException('No entity matched the provided properties.');
+		}	
+	}
+
+	/**
+	 * Returns all entities from a collection whose properties match
+	 * those provided.
+	 * @param array the collection of entities to search
+	 * @param array the array of properties upon which to match
+	 * @return BillingEntity[] The matching BillingEntities
+	 */
+	public static function fromCollectionFindAllWhoMatchProperties(array $collection, array $props) {
+		$matches = array();
 		foreach($collection as $entity) {
 			$allPropsMatched = TRUE;
 			foreach($props as $key => $value) {
@@ -63,11 +81,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 				}
 			}
 			if ($allPropsMatched) {
-				return $entity;
+				array_push($matches, $entity);
 			}
 		}
-		// no entity in collection matched array of properties
-		return NULL;
+		return $matches;
 	}
 
 	protected function doUnserialize(array $json) {
@@ -210,6 +227,16 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 
 		return $entities;
+	}
+
+	public static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {
+		$entities = self::getAll($options, $customClient);
+		return self::fromCollectionFindAllWhoMatchProperties($entities, $properties);
+	}
+
+	public static function getAllThenGrabFirstWithProperties(array $properties, $options = NULL, $customClient = NULL) {
+		$entities = self::getAll($options, $customClient);
+		return self::fromCollectionFindFirstWhoMatchesProperties($entities, $properties);
 	}
 
     public function &__get($name) {
