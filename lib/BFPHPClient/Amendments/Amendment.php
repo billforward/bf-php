@@ -1,6 +1,6 @@
 <?php
 
-abstract class Bf_Amendment extends Bf_InsertableEntity {
+class Bf_Amendment extends Bf_InsertableEntity {
 	protected static $_resourcePath;
 
 	public static function initStatics() {
