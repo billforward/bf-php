@@ -24,25 +24,29 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 		$client = self::$client;
     	
     	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
-    	// specifically this needs to point to a pending invoice.
-    	$invoiceID = '4F2B93F3-C774-4E51-8513-E9DE79AB263C';
+    	// works at least on Paid invoices.
+    	$invoiceID = 'A142C507-4FAD-48F5-9DE6-29D824ACF17A';
 		$invoice = Bf_Invoice::getByID($invoiceID);
 
 		$subscription = Bf_Subscription::getByID($invoice->subscriptionID);
 
-		$pricingComponentValue_0 = $subscription->getPCVCorrespondingToPricingComponentWithName('Devices used, fixed');
+		var_export($subscription);
 
-		var_export($pricingComponentValue_0);
+		// needs to be a tiered component.
+		$pricingComponentValue_0 = $subscription->getPCVCorrespondingToPricingComponentWithName('Devices used, tiered');
+		$newValue_0 = 100;
 
-		
-
-		/*$amendment = new Bf_PricingComponentValueAmendment(array(
+		$amendment = new Bf_PricingComponentValueAmendment(array(
 			'subscriptionID' => $invoice->subscriptionID,
 			'invoiceID' => $invoice->id,
-			'newInvoiceState' => 'Pending' // well, probably you want Paid, but this lets us run the test again. :)
+			'oldValue' => $pricingComponentValue_0->value,
+			'newValue' => $newValue_0,
+			'mode' => 'immediate',
+			'invoicingType' => 'Immediate', 
+			'logicalComponentID' => $pricingComponentValue_0->pricingComponentID
 			));
 
 		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
-		var_export($createdAmendment);*/
+		var_export($createdAmendment);
 	}
 }
