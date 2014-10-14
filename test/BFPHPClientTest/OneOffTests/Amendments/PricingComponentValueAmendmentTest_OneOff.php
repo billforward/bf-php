@@ -10,6 +10,7 @@ echo "Running (one-off) Bf_PricingComponentValueAmendment tests for BillForward 
 use Bf_Invoice;
 use Bf_Subscription;
 use Bf_PricingComponentValueAmendment;
+use Bf_UnitOfMeasure;
 use BFPHPClientTest\TestConfig;
 Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
@@ -59,6 +60,19 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 		$invoice = Bf_Invoice::getByID($invoiceID);
 
 		$createdAmendment = $invoice->changeValueOfPricingComponentWhoseNameMatches('Devices used, tiered', 51, 'immediate', 'Immediate');
+		var_export($createdAmendment);
+	}
+
+	public function testIssueUsingHelper2() {
+		$client = self::$client;
+    	
+    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
+    	// works at least on Paid invoices.
+    	$invoiceID = 'E422C79D-4351-4D93-A103-320A5E4E1174';
+		$invoice = Bf_Invoice::getByID('E422C79D-4351-4D93-A103-320A5E4E1174');
+		$unitOfMeasure = Bf_UnitOfMeasure::getByID('C5C431C5-1037-4C75-A29F-0EDC2184923F');
+
+		$createdAmendment = $invoice->upgrade($unitOfMeasure, 23);
 		var_export($createdAmendment);
 	}
 }
