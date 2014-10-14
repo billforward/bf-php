@@ -182,7 +182,7 @@ class BillForwardClient {
                 }
         }
 
-        curl_setopt($curl, CURLOPT_PROXY, '127.0.0.1:8888');
+        //curl_setopt($curl, CURLOPT_PROXY, '127.0.0.1:8888');
         $header = array();
 
         if ($json) {
