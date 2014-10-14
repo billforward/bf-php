@@ -37,6 +37,31 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 		return $this->product;
 	}
 
+	/**
+	 * Returns (if existent; otherwise NULL) the Bf_PricingComponent whose name matching the one 
+	 * provided.
+	 * @param string the name upon which to match
+	 * @return Bf_PricingComponent The matching Bf_PricingComponent (if any; otherwise NULL)
+	 */
+	public function getPricingComponentWithName($name) {
+		$properties = array(
+			'name' => $name
+			);
+		return $this->getPricingComponentWithProperties($properties);
+	}
+
+	/**
+	 * Returns (if existent; otherwise NULL) the Bf_PricingComponent who has properties matching those 
+	 * provided.
+	 * @param array the Bf_PricingComponent properties upon which to match
+	 * @return Bf_PricingComponent The matching Bf_PricingComponent (if any; otherwise NULL)
+	 */
+	public function getPricingComponentWithProperties(array $properties) {
+		$pricingComponents = $this->getPricingComponents();
+
+		return Bf_BillingEntity::fromCollectionFindFirstWhoMatchesProperties($pricingComponents, $properties);
+	}
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('product-rate-plans', 'productRatePlan');
 	}

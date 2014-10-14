@@ -47,6 +47,29 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return static::$_resourcePath;
 	}
 
+	/**
+	 * Returns (if exist; otherwise NULL) the first entity from a collection whose properties match
+	 * those provided.
+	 * @param array the collection of entities to search
+	 * @param array the array of properties upon which to match
+	 * @return Bf_PricingComponentValue The matching Bf_PricingComponentValue (if any)
+	 */
+	protected static function fromCollectionFindFirstWhoMatchesProperties(array $collection, array $props) {
+		foreach($collection as $entity) {
+			$allPropsMatched = TRUE;
+			foreach($props as $key => $value) {
+				if ($entity[$key] !== $value) {
+					$allPropsMatched = FALSE;
+				}
+			}
+			if ($allPropsMatched) {
+				return $entity;
+			}
+		}
+		// no entity in collection matched array of properties
+		return NULL;
+	}
+
 	protected function doUnserialize(array $json) {
 		foreach($json as $key => $value) {
 			$this->offsetSet($key, $value);
