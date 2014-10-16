@@ -8,6 +8,7 @@ namespace BFPHPClientTest\OneOffTests;
 echo "Running (one-off) Bf_AmendmentDiscardAmendment tests for BillForward PHP Client Library.\n";
 
 use Bf_Invoice;
+use Bf_Amendment;
 use Bf_AmendmentDiscardAmendment;
 use BFPHPClientTest\TestConfig;
 Class Bf_AmendmentDiscardAmendment_OneOffTest extends \PHPUnit_Framework_TestCase {
@@ -25,8 +26,12 @@ Class Bf_AmendmentDiscardAmendment_OneOffTest extends \PHPUnit_Framework_TestCas
     	// gets existing amendment. sorry for magic number; it's useful to me at least. :)
     	$amendmentID = '82EAD04F-9058-4B3E-B45D-E0B9D5F73225';
 
+		$fetched_amendment = Bf_Amendment::getByID($amendmentID);
+
+		// create model of amendment
 		$amendment = new Bf_AmendmentDiscardAmendment(array(
-			'amendmentToDiscardID' => $amendmentID
+			'amendmentToDiscard' => $fetched_amendment,
+			'subscriptionID' => $fetched_amendment->subscriptionID
 			));
 
 		$createdAmendment = Bf_AmendmentDiscardAmendment::create($amendment);
