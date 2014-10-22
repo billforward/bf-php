@@ -36,7 +36,7 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 
 		// get the tiered pricing component whose value you wish to change.
 		// needs to be a tiered component.
-		$pricingComponentValue_0 = $subscription->getPCVCorrespondingToPricingComponentWithName('Devices used, tiered');
+		$pricingComponentValue_0 = $subscription->getValueOfPricingComponentWithName('Devices used, tiered');
 		$newValue_0 = 100;
 
 		// create model of amendment

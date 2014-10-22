@@ -87,6 +87,28 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $matches;
 	}
 
+	/**
+	 * Adds the '@type' key to entity, in an order-sensitive
+	 * fashion (so unserialization works as expected on the API end)
+	 * @param string the value to assing to @type
+	 * @param array the existing params used to serialize entity
+	 * @return array the new state params to use for initializing the entity
+	 */
+	protected function addTypeParam($type, $stateParams) {
+		if (is_null($stateParams)) {
+			$stateParams = array();
+		}
+		$newStateParams = array(
+			'@type' => $type
+			);
+		foreach($stateParams as $key => $value) {
+			if ($key !== '@type') {
+				$newStateParams[$key] = $value;	
+			}
+		}
+		return $newStateParams;
+	}
+
 	protected function doUnserialize(array $json) {
 		foreach($json as $key => $value) {
 			$this->offsetSet($key, $value);

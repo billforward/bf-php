@@ -64,8 +64,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param Bf_PricingComponent the corresponding Bf_PricingComponent upon which to match
 	 * @return Bf_PricingComponentValue The matching Bf_PricingComponentValue (if any)
 	 */
-	public function getPCVCorrespondingToPricingComponent(Bf_PricingComponent $pricingComponent) {
-		return $this->getPCVCorrespondingToPricingComponentWithID($pricingComponent->id);
+	public function getValueOfPricingComponent(Bf_PricingComponent $pricingComponent) {
+		return $this->getValueOfPricingComponentWithID($pricingComponent->id);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param string the Bf_PricingComponent ID upon which to match
 	 * @return Bf_PricingComponentValue The matching Bf_PricingComponentValue (if any)
 	 */
-	public function getPCVCorrespondingToPricingComponentWithID($pricingComponentID) {
+	public function getValueOfPricingComponentWithID($pricingComponentID) {
 		$properties = array(
 			'pricingComponentID' => $pricingComponentID
 			);
@@ -89,12 +89,12 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param string the Bf_PricingComponent name upon which to match
 	 * @return Bf_PricingComponentValue The matching Bf_PricingComponentValue (if any)
 	 */
-	public function getPCVCorrespondingToPricingComponentWithName($name) {
+	public function getValueOfPricingComponentWithName($name) {
 		$properties = array(
 			'name' => $name
 			);
 
-		return $this->getPCVCorrespondingToPricingComponentWithProperties($properties);
+		return $this->getValueOfPricingComponentWithProperties($properties);
 	}
 
 	/**
@@ -103,7 +103,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array the Bf_PricingComponent properties upon which to match
 	 * @return Bf_PricingComponentValue The matching Bf_PricingComponentValue (if any)
 	 */
-	public function getPCVCorrespondingToPricingComponentWithProperties(array $properties) {
+	public function getValueOfPricingComponentWithProperties(array $properties) {
 		$prp = $this->getProductRatePlan();
 
 		$pricingComponent = $prp->getPricingComponentWithProperties($properties);
@@ -112,7 +112,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			return NULL;
 		}
 
-		return $this->getPCVCorrespondingToPricingComponent($pricingComponent);
+		return $this->getValueOfPricingComponent($pricingComponent);
 	}
 
 	public static function initStatics() {

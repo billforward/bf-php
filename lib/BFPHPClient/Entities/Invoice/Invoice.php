@@ -55,7 +55,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public function changeValueOfPricingComponentWhosePropertiesMatch(array $pricingComponentProperties, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
 		$subscription = Bf_Subscription::getByID($this->subscriptionID);
 
-		$pricingComponentValue = $subscription->getPCVCorrespondingToPricingComponentWithProperties($pricingComponentProperties);
+		$pricingComponentValue = $subscription->getValueOfPricingComponentWithProperties($pricingComponentProperties);
 
 		$amendment = new Bf_PricingComponentValueAmendment(array(
 			'subscriptionID' => $subscription->id,

@@ -8,9 +8,9 @@ namespace BFPHPClientTest\OneOffTests;
 echo "Running (one-off) Payment Method tests for BillForward PHP Client Library.\n";
 
 use BillForwardClient;
-use Bf_AuthorizeNetToken;
+use Bf_BraintreeToken;
 use BFPHPClientTest\TestConfig;
-Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
+Class Bf_BraintreeToken_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
 	protected static $config = NULL;
 
@@ -25,22 +25,19 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 		$testAccountID = $config->getUsualAccountID();
 
-		$customerProfileID = 28476855;
-		$customerPaymentProfileID = 25879733;
-		// err, didn't check what the actual card last 4 digits are. but this only matters at refund-time.
-		$cardLast4Digits = 4444;
+		// ID of tokenized card in Braintree
+		$cardTokenID = "gr3jmb";
+		// ID of customer in Braintree
+		$customerID = "22198384";
     	
-		$authorizeNetToken = new Bf_AuthorizeNetToken(array(
+		$braintreeToken = new Bf_BraintreeToken(array(
 			'accountID' => $testAccountID,
-			'customerProfileID' => $customerProfileID,
-			'customerPaymentProfileID' => $customerPaymentProfileID,
-			'lastFourDigits' => $cardLast4Digits,
+			'creditCardID' => $cardTokenID,
+			'customerID' => $customerID
 			));
 
-		// TODO API: make 'lastFourDigits' required, as this is needed for refunds.
+		$createdBraintreeToken = Bf_BraintreeToken::create($braintreeToken);
 
-		$createdAuthorizeNetToken = Bf_AuthorizeNetToken::create($authorizeNetToken);
-
-		var_export($createdAuthorizeNetToken);
+		var_export($createdBraintreeToken);
 	}
 }
