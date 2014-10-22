@@ -51,20 +51,40 @@ Class ApiConfiguration_OneOffTest extends \PHPUnit_Framework_TestCase {
 		echo "\nInitial Org from API:\n\n";
 		var_export($firstOrg);
 
+		// we are going to add an API configuration for Authorize.Net
+		$configType = "AuthorizeNetConfiguration";
+
+		// Create (upon our organisation) API configuration for Authorize.net
 		$AuthorizeNetLoginID = '4X8R8UAawK67';
 		$AuthorizeNetTransactionKey = '3Udsn9w8G29qNt3Q';
 
-		$apiConfiguration = new Bf_APIConfiguration(array(
-			 "@type" => "AuthorizeNetConfiguration",
+		// model of Authorize.Net credentials
+		$apiConfiguration = new Bf_ApiConfiguration(array(
+			 "@type" => $configType,
 	         "APILoginID" => $AuthorizeNetLoginID,
 	         "transactionKey" => $AuthorizeNetTransactionKey,
 	         "environment" => "Sandbox"
 			));
 
-		// TODO API: '@type' needs to be 'required', otherwise we get marshalling errors where ti doesn't know what class to make. and the client just receives a '-1 server error'
+		// when there are no api configurations, possibly there is no array altogether
+		if (!is_array($firstOrg->apiConfigurations)) {
+			$firstOrg->apiConfigurations = array();
+		}
+
+		// we are going to remove any existing API configurations of the current type
+		$prunedConfigs = array();
+
+		foreach($firstOrg->apiConfigurations as $config) {
+			if ($config['@type'] !== $configType) {
+				array_push($prunedConfigs, $config);
+			}
+		}
+
+		// add to our organization the model of the Authorize.Net credentials
+		array_push($prunedConfigs, $apiConfiguration);
 
 		$firstOrg
-		->apiConfigurations = array($apiConfiguration);
+		->apiConfigurations = $prunedConfigs;
 
 		echo "\n\nEdited model Org:\n\n";
 		var_export($firstOrg);

@@ -39,7 +39,7 @@ class TestConfig {
 
 	public function __construct() {
 		$this->access_token = '';
-        $this->urlRoot = 'https://api-sandbox.billforward.net/2014.223.0/';
+		$this->urlRoot = 'https://api-sandbox.billforward.net/2014.251.0/';
 
         $this->usualLoginAccountID = '';
 		$this->usualLoginUserID = '';
@@ -189,22 +189,40 @@ class TestConfig {
 		$firstOrg = $orgs[0];
 		$firstOrgID = $firstOrg->id;
 
+		// we are going to add an API configuration for Authorize.Net
+		$configType = "AuthorizeNetConfiguration";
 
 		// Create (upon our organisation) API configuration for Authorize.net
 		$AuthorizeNetLoginID = '4X8R8UAawK67';
 		$AuthorizeNetTransactionKey = '3Udsn9w8G29qNt3Q';
 
-		// saving this twice to the same organisation seems to make a copy.
-		// so probably you sohuld clear out your `api_configurations` in SQL before running this a second time.
+		// model of Authorize.Net credentials
 		$apiConfiguration = new Bf_ApiConfiguration(array(
-			 "@type" => "AuthorizeNetConfiguration",
+			 "@type" => $configType,
 	         "APILoginID" => $AuthorizeNetLoginID,
 	         "transactionKey" => $AuthorizeNetTransactionKey,
 	         "environment" => "Sandbox"
 			));
 
+		// when there are no api configurations, possibly there is no array altogether
+		if (!is_array($firstOrg->apiConfigurations)) {
+			$firstOrg->apiConfigurations = array();
+		}
+
+		// we are going to remove any existing API configurations of the current type
+		$prunedConfigs = array();
+
+		foreach($firstOrg->apiConfigurations as $config) {
+			if ($config['@type'] !== $configType) {
+				array_push($prunedConfigs, $config);
+			}
+		}
+
+		// add to our organization the model of the Authorize.Net credentials
+		array_push($prunedConfigs, $apiConfiguration);
+
 		$firstOrg
-		->apiConfigurations = array($apiConfiguration);
+		->apiConfigurations = $prunedConfigs;
 
 		$savedOrg = $firstOrg
 		->save();
@@ -286,7 +304,7 @@ class TestConfig {
 		$createdAcc = $createdAcc
 		->save();
 
-		var_export($createdAcc);
+		//var_export($createdAcc);
 
 		//-- Make unit of measure
 		$uom = new Bf_UnitOfMeasure(array(

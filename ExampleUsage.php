@@ -49,22 +49,40 @@ $orgs = Bf_Organisation::getMine();
 $firstOrg = $orgs[0];
 $firstOrgID = $firstOrg->id;
 
+// we are going to add an API configuration for Authorize.Net
+$configType = "AuthorizeNetConfiguration";
 
 // Create (upon our organisation) API configuration for Authorize.net
 $AuthorizeNetLoginID = 'FILL IN WITH AUTHORIZE NET LOGIN ID';
 $AuthorizeNetTransactionKey = 'FILL IN WITH AUTHORIZE NET TRANSACTION KEY';
 
-// saving this twice to the same organisation seems to make a copy.
-// so probably you sohuld clear out your `api_configurations` in SQL before running this a second time.
-$apiConfiguration = new Bf_APIConfiguration(array(
-	 "@type" => "AuthorizeNetConfiguration",
+// model of Authorize.Net credentials
+$apiConfiguration = new Bf_ApiConfiguration(array(
+	 "@type" => $configType,
      "APILoginID" => $AuthorizeNetLoginID,
      "transactionKey" => $AuthorizeNetTransactionKey,
      "environment" => "Sandbox"
 	));
 
+// when there are no api configurations, possibly there is no array altogether
+if (!is_array($firstOrg->apiConfigurations)) {
+	$firstOrg->apiConfigurations = array();
+}
+
+// we are going to remove any existing API configurations of the current type
+$prunedConfigs = array();
+
+foreach($firstOrg->apiConfigurations as $config) {
+	if ($config['@type'] !== $configType) {
+		array_push($prunedConfigs, $config);
+	}
+}
+
+// add to our organization the model of the Authorize.Net credentials
+array_push($prunedConfigs, $apiConfiguration);
+
 $firstOrg
-->apiConfigurations = array($apiConfiguration);
+->apiConfigurations = $prunedConfigs;
 
 $savedOrg = $firstOrg
 ->save();
