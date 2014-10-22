@@ -30,7 +30,7 @@ Class Bf_AmendmentDiscardAmendment_OneOffTest extends \PHPUnit_Framework_TestCas
 
 		// create model of amendment
 		$amendment = new Bf_AmendmentDiscardAmendment(array(
-			'amendmentToDiscard' => $fetched_amendment,
+			'amendmentToDiscardID' => $amendmentID,
 			'subscriptionID' => $fetched_amendment->subscriptionID
 			));
 

@@ -5,7 +5,7 @@ namespace BFPHPClientTest\OneOffTests;
  * For example, creating the same 'new Bf_Account' twice, fails (causes clash).
  * So we hide from the testrunner here, and only run when we want to.
  */
-echo "Running (one-off) Payment Method tests for BillForward PHP Client Library.\n";
+echo "Running (one-off) Authorize.Net Token tests for BillForward PHP Client Library.\n";
 
 use BillForwardClient;
 use Bf_AuthorizeNetToken;
