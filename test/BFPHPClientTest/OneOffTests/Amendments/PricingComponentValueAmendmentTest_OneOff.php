@@ -21,22 +21,25 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 		self::$client = self::$config->getClient();
 	}
 
-	/*public function testIssue() {
+	public function testIssue() {
 		$client = self::$client;
     	
     	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
     	// works at least on Paid invoices.
-    	$invoiceID = 'A142C507-4FAD-48F5-9DE6-29D824ACF17A';
+    	//--Upgrade/downgrade pricing component values on an invoice
+		// Get invoice for which you want to change pricing compononent values
+		$invoiceID = 'B468EC60-A7B9-4329-A6C6-FCE69AD3894B';
 		$invoice = Bf_Invoice::getByID($invoiceID);
 
+		// get subscription to which the invoice pertains
 		$subscription = Bf_Subscription::getByID($invoice->subscriptionID);
 
-		var_export($subscription);
-
+		// get the tiered pricing component whose value you wish to change.
 		// needs to be a tiered component.
 		$pricingComponentValue_0 = $subscription->getPCVCorrespondingToPricingComponentWithName('Devices used, tiered');
 		$newValue_0 = 100;
 
+		// create model of amendment
 		$amendment = new Bf_PricingComponentValueAmendment(array(
 			'subscriptionID' => $invoice->subscriptionID,
 			'invoiceID' => $invoice->id,
@@ -47,7 +50,10 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 			'logicalComponentID' => $pricingComponentValue_0->pricingComponentID
 			));
 
+		// send amendment model to API to be created.
 		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
+
+		// look at created amendment
 		var_export($createdAmendment);
 	}
 
@@ -61,7 +67,7 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 
 		$createdAmendment = $invoice->changeValueOfPricingComponentWhoseNameMatches('Devices used, tiered', 51, 'immediate', 'Immediate');
 		var_export($createdAmendment);
-	}*/
+	}
 
 	public function testIssueUsingHelper2() {
 		$client = self::$client;
