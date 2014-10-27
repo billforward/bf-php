@@ -12,6 +12,7 @@ use Bf_PriceRequest;
 use Bf_AmendmentPriceRequest;
 use Bf_PricingComponentValue;
 use Bf_Subscription;
+use Bf_ProductRatePlan;
 use BFPHPClientTest\TestConfig;
 Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
     protected static $client = NULL;
@@ -38,7 +39,7 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
     	$calculation = Bf_PricingCalculator::requestPriceCalculation($requestEntity);
     }*/
 
-    public function testCalculatePrice() {
+    /*public function testCalculatePrice() {
         $config = self::$config;
 
         $accountID = $config->getUsualAccountID();
@@ -69,6 +70,46 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
         $requestEntity = new Bf_PriceRequest(array(
             'accountID' => $accountID,
             'productRatePlanID' => $prpID,
+            'productID' => $productID,
+            'updatedPricingComponentValues' => $updatedPricingComponentValues
+            ));
+
+        //var_export($requestEntity);
+        $calculation = Bf_PricingCalculator::requestPriceCalculation($requestEntity);
+
+        var_export($calculation);
+    }*/
+
+    public function testCalculatePriceSimple() {
+        $config = self::$config;
+
+        $productRatePlanID = $config->getUsualProductRatePlanID();
+
+        $productRatePlan = Bf_ProductRatePlan::getByID($productRatePlanID);
+        $productID = $productRatePlan->productID;
+
+        // find pricing component by name
+        $flatPricingComponent = $productRatePlan->getPricingComponentWithName('Devices used, fixed');
+        $tieredPricingComponent = $productRatePlan->getPricingComponentWithName('Devices used, tiered');
+
+        $newFlatQuantity = 15;
+        $flatPricingComponentValue = new Bf_PricingComponentValue(array(
+            'pricingComponentID' => $flatPricingComponent->id,
+            'value' => $newFlatQuantity,
+            ));
+        $newTieredQuantity = 100;
+        $tieredPricingComponentValue = new Bf_PricingComponentValue(array(
+            'pricingComponentID' => $tieredPricingComponent->id,
+            'value' => $newTieredQuantity,
+            ));
+
+        $updatedPricingComponentValues = array(
+            $flatPricingComponentValue,
+            $tieredPricingComponentValue
+            );
+
+        $requestEntity = new Bf_PriceRequest(array(
+            'productRatePlanID' => $productRatePlanID,
             'productID' => $productID,
             'updatedPricingComponentValues' => $updatedPricingComponentValues
             ));
