@@ -80,7 +80,7 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
         var_export($calculation);
     }*/
 
-    public function testCalculatePriceSimple() {
+    /*public function testCalculatePriceNewUser() {
         $config = self::$config;
 
         $productRatePlanID = $config->getUsualProductRatePlanID();
@@ -118,9 +118,46 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
         $calculation = Bf_PricingCalculator::requestPriceCalculation($requestEntity);
 
         var_export($calculation);
+    }*/
+
+    public function testCalculatePriceNewUserWithHelper() {
+        $config = self::$config;
+
+        $productRatePlanID = $config->getUsualProductRatePlanID();
+
+        $componentNameToValueMap = array(
+            'Devices used, fixed' => 15,
+            'Devices used, tiered' => 100,
+            );
+
+        $requestEntity = Bf_PriceRequest::forPricingComponentsByName($componentNameToValueMap, $productRatePlanID);
+
+        //var_export($requestEntity);
+        $calculation = Bf_PricingCalculator::requestPriceCalculation($requestEntity);
+
+        var_export($calculation);
     }
 
-    /*public function testCalculatePrice() {
+    /*public function testCalculatePriceNewUserWithHelper2() {
+        $config = self::$config;
+
+        $productRatePlanID = $config->getUsualProductRatePlanID();
+        $productRatePlan = Bf_ProductRatePlan::getByID($productRatePlanID); 
+
+        $componentNameToValueMap = array(
+            'Devices used, fixed' => 15,
+            'Devices used, tiered' => 100,
+            );
+
+        $requestEntity = Bf_PriceRequest::forPricingComponentsByName($componentNameToValueMap, null, $productRatePlan);
+
+        //var_export($requestEntity);
+        $calculation = Bf_PricingCalculator::requestPriceCalculation($requestEntity);
+
+        var_export($calculation);
+    }*/
+
+    /*public function unfinishedTestCalculatePrice() {
         $config = self::$config;
 
         $subscriptionID = $config->getUsualSubscriptionID();

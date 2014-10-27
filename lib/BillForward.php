@@ -49,8 +49,8 @@ spl_autoload_register(function($className) {
             'Bf_PricingComponentValue' => $baseDir . '/BFPHPClient/Entities/PricingComponent/PricingComponentValue.php',
             'Bf_PricingComponentValueAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/PricingComponentValueAmendment.php',
             'Bf_PricingComponentValueChange' => $baseDir . '/BFPHPClient/Entities/PricingComponent/PricingComponentValueChange.php',
-            'Bf_Product' => $baseDir . '/BFPHPClient/Entities/Product.php',
-            'Bf_ProductRatePlan' => $baseDir . '/BFPHPClient/Entities/Subscription/ProductRatePlan.php',
+            'Bf_Product' => $baseDir . '/BFPHPClient/Entities/Product/Product.php',
+            'Bf_ProductRatePlan' => $baseDir . '/BFPHPClient/Entities/Product/ProductRatePlan.php',
             'Bf_Profile' => $baseDir . '/BFPHPClient/Entities/Account/Profile.php',
             'Bf_RawAPIOutput' => $baseDir . '/BFPHPClient/BillForwardClient.php',
             'Bf_ResourcePath' => $baseDir . '/BFPHPClient/Entities/Abstract/ResourcePath.php',
@@ -61,7 +61,7 @@ spl_autoload_register(function($className) {
             'Bf_Subscription' => $baseDir . '/BFPHPClient/Entities/Subscription/Subscription.php',
             'Bf_TaxLine' => $baseDir . '/BFPHPClient/Entities/Invoice/TaxLine.php',
             'Bf_TaxationLink' => $baseDir . '/BFPHPClient/Entities/Invoice/TaxationLink.php',
-            'Bf_UnitOfMeasure' => $baseDir . '/BFPHPClient/Entities/UnitOfMeasure.php',
+            'Bf_UnitOfMeasure' => $baseDir . '/BFPHPClient/Entities/PricingComponent/UnitOfMeasure.php',
             'BillForwardClient' => $baseDir . '/BFPHPClient/BillForwardClient.php',
 
         );
