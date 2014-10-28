@@ -8,6 +8,7 @@ class Bf_Account extends Bf_MutableEntity {
 		parent::doUnserialize($json);
 
 		$this->unserializeArrayEntities('roles', Bf_Role::getClassName(), $json);
+		$this->unserializeArrayEntities('paymentMethods', Bf_PaymentMethod::getClassName(), $json);
 
 		$this->unserializeEntity('profile', Bf_Profile::getClassName(), $json);
 	}
@@ -18,6 +19,14 @@ class Bf_Account extends Bf_MutableEntity {
 	 */
 	public function getRoles() {
 		return $this->roles;
+	}
+
+	/**
+	 * Gets Bf_PaymentMethods for this Bf_Account.
+	 * @return Bf_PaymentMethod[]
+	 */
+	public function getPaymentMethods() {
+		return $this->paymentMethods;
 	}
 
 	/**
