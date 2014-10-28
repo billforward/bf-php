@@ -44,6 +44,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_ProductRatePlan
 	 */
 	public function getProductRatePlan() {
+		// if this is just a model made on our end, we might not have the product rate plan yet
+		if (!$this->productRatePlan) {
+			$this->productRatePlan = Bf_ProductRatePlan::getByID($this->productRatePlanID);
+		}
 		return $this->productRatePlan;
 	}
 
@@ -113,6 +117,85 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}
 
 		return $this->getValueOfPricingComponent($pricingComponent);
+	}
+
+	/**
+	 * Maps this Bf_Subscription's 'pricingComponentValues' to the named pricing components and values.
+	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
+	 * @return Bf_Subscription ($this)
+	 */
+	public function setValuesOfPricingComponentsByName(array $namesToValues) {
+		$propertiesList = array();
+		$valuesList = array();
+
+		// convert namesToValues to a more generic 'entity property map' to values
+		foreach ($namesToValues as $key => $value) {
+			$propToValue = array(
+				'name' => $key
+				);
+			array_push($propertiesList, $propToValue);
+			array_push($valuesList, $value);
+		}
+
+		return $this->setValuesOfPricingComponentsByProperties($propertiesList, $valuesList);
+	}
+
+	/**
+	 * Maps this Bf_Subscription's 'pricingComponentValues' to the matched (by property map) pricing components and values.
+	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
+	 * @param array List of values to assign to respective pricing components; array(103, 2)
+	 * @return Bf_Subscription ($this)
+	 */
+	public function setValuesOfPricingComponentsByProperties(array $propertiesList, array $valuesList) {
+		if (!is_array($propertiesList)) {
+			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
+		}
+
+		if (!is_array($valuesList)) {
+			throw new \Exception('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
+		}
+
+		$productRatePlan = $this->getProductRatePlan();
+
+		// ensure that model begins with at least an empty array
+		if (!is_array($this->pricingComponentValues)) {
+			$this->pricingComponentValues = array();
+		}
+
+		// this is the array into which we will be inserting
+		$pricingComponentValues = $this->pricingComponentValues;
+
+		foreach ($propertiesList as $key => $value) {
+			if (!is_array($value)) {
+				throw new \Exception('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$value);
+			}
+			$pricingComponent = $productRatePlan->getPricingComponentWithProperties($value);
+
+			$pricingComponentValue = new Bf_PricingComponentValue(array(
+	            'pricingComponentID' => $pricingComponent->id,
+	            'value' => $valuesList[$key],
+	            ));
+
+			$overwrote = false;
+			foreach ($pricingComponentValues as $key => $value) {
+				// find (if exists) matching pricing component value to overwrite
+				if ($value->pricingComponentID === $pricingComponentValue->pricingComponentID) {
+					// overwrite with the new model
+					$pricingComponentValues[$key] = $pricingComponentValue;
+					$overwrote = true;
+					break;
+				}
+			}
+			if (!$overwrote) {
+				// insert this new value in
+				array_push($pricingComponentValues, $pricingComponentValue);
+			}
+		}
+
+		// set our model to use the new list
+		$this->pricingComponentValues = $pricingComponentValues;
+
+		return $this;
 	}
 
 	public static function initStatics() {

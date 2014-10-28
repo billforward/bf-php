@@ -20,7 +20,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testCreate() {
+	/*public function testCreate() {
 		$client = self::$client;
 		$config = self::$config;
 
@@ -40,9 +40,39 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// TODO API: why is 'productID' 'required'? surely it can (and should) grab this from PRP. Otherwise user can mismatch them.
 
 		$response = Bf_Subscription::create($sub);
+	}*/
+
+	public function testCreateWithValues() {
+		$client = self::$client;
+		$config = self::$config;
+		
+		$accountID = $config->getUsualAccountID();
+		$productID = $config->getUsualProductID();
+		$productRatePlanID = $config->getUsualProductRatePlanID();
+
+    	// create model of subscription to product rate plan
+		$sub = new Bf_Subscription(array(
+			'type' => 'Subscription',
+			'productID' => $productID,
+			'productRatePlanID' => $productRatePlanID,
+			'accountID' => $accountID,
+			'name' => 'Memorable Bf_Subscription',
+			));
+
+		// map pricing component names to values
+        $componentNameToValueMap = array(
+            'Devices used, fixed' => 15,
+            'Devices used, tiered' => 100,
+            );
+
+        // assign values to pricing components matching those names
+        $sub->setValuesOfPricingComponentsByName($componentNameToValueMap);
+
+        // create modelled subscription via API
+		$response = Bf_Subscription::create($sub);
 	}
 
-	public function testStart() {
+	/*public function testStart() {
 		$client = self::$client;
 		$config = self::$config;
 
@@ -59,9 +89,7 @@ Class Bf_Subscription_OneOffTest extends \PHPUnit_Framework_TestCase {
 
 			var_export($response);
 		}
-	}
-
-
+	}*/
 
 	// TODO API: Bf_Subscription cannot obviously be updated; complains that subscription ID already exists.
 	/*
