@@ -198,6 +198,30 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $this;
 	}
 
+	/**
+	 * Gets all Bf_PaymentMethod[] from an account, and associates to this Bf_Subscription
+	 * as Bf_PaymentMethodSubscriptionLink models.
+	 * @param Bf_Account the Bf_Account from which to take the payment methods.
+	 * @return Bf_Subscription ($this)
+	 */
+	public function usePaymentMethodsFromAccount(Bf_Account $account) {
+		// list of all Payment methods on account that will be linked to this Subscription
+		$paymentMethodSubscriptionLinks = array();
+
+		foreach($account->getPaymentMethods() as $paymentMethod) {
+			// create link to Payment Method
+			$paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink(array(
+			  'paymentMethodID' => $paymentMethod->id
+			  ));
+
+			// add to list of links
+			array_push($paymentMethodSubscriptionLinks, $paymentMethodSubscriptionLink);
+		}
+
+		$this->paymentMethodSubscriptionLinks = $paymentMethodSubscriptionLinks;
+		return $this;
+	}
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'subscription');
 	}

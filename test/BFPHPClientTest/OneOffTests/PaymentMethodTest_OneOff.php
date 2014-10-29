@@ -9,6 +9,8 @@ echo "Running (one-off) Payment Method tests for BillForward PHP Client Library.
 
 use BillForwardClient;
 use Bf_PaymentMethod;
+use Bf_Account;
+use Bf_Subscription;
 use BFPHPClientTest\TestConfig;
 Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
@@ -46,5 +48,32 @@ Class Bf_PaymentMethod_OneOffTest extends \PHPUnit_Framework_TestCase {
 		// TODO API: 'reusable' is an optional field that is not mentioned in docs
 
 		$response = Bf_PaymentMethod::create($paymentMethod);
+	}
+
+	public function testAssociateToSubscriptionWithHelper() {
+		// this test is actually good-citizen!
+		$client = self::$client;
+		$config = self::$config;
+
+		$accountID = $config->getUsualAccountID();
+		$paymentMethodID = $config->getUsualPaymentMethodID();
+		$productRatePlanID = $config->getUsualProductRatePlanID();
+		$productID = $config->getUsualProductID();
+    	
+    	$account = Bf_Account::getByID($accountID);
+		$paymentMethod = Bf_PaymentMethod::getByID($paymentMethodID);
+
+		$sub = new Bf_Subscription(array(
+			'type'              => 'Subscription',
+			'productID'         => $productID,
+			'productRatePlanID' => $productRatePlanID,
+			'accountID'         => $accountID,
+			'name'              => 'Memorable Subscription',
+			'description'       => 'Memorable Subscription Description'
+			));
+
+		$sub->usePaymentMethodsFromAccount($account);
+
+		var_export($sub);
 	}
 }
