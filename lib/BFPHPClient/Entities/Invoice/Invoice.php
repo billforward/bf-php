@@ -122,6 +122,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	/**
 	 * Changes the value of whichever Bf_PricingComponentValue corresponds to a Bf_PricingComponent which recruits
 	 * the provided Bf_UnitOfMeasure.
+	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ENUM['immediate', 'delayed'] When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
 	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
