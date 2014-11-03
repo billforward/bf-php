@@ -84,6 +84,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			);
 
 		$pricingComponentValues = $this->getPricingComponentValues();
+
 		return Bf_BillingEntity::fromCollectionFindFirstWhoMatchesProperties($pricingComponentValues, $properties);
 	}
 

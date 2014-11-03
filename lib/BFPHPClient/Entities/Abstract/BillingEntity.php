@@ -60,7 +60,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		if (sizeof($matchingEntities) > 0) {
 			return $matchingEntities[0];
 		} else {
-			throw new OutOfBoundsException('No entity matched the provided properties.');
+			throw new OutOfBoundsException('No entity matched the provided properties. Properties: <'.json_encode($props).'>, collection: <'.json_encode($collection).'>.');
 		}	
 	}
 

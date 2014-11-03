@@ -21,7 +21,7 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 		self::$client = self::$config->getClient();
 	}
 
-	public function testIssue() {
+	/*public function testIssue() {
 		$client = self::$client;
     	
     	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
@@ -55,9 +55,9 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 
 		// look at created amendment
 		var_export($createdAmendment);
-	}
+	}*/
 
-	public function testIssueUsingHelper() {
+	/*public function testIssueUsingHelper() {
 		$client = self::$client;
     	
     	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
@@ -67,17 +67,23 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 
 		$createdAmendment = $invoice->changeValueOfPricingComponentWhoseNameMatches('Devices used, tiered', 51, 'immediate', 'Immediate');
 		var_export($createdAmendment);
-	}
+	}*/
 
 	public function testIssueUsingHelper2() {
 		$client = self::$client;
     	
     	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
     	// works at least on Paid invoices.
-    	$invoiceID = 'E422C79D-4351-4D93-A103-320A5E4E1174';
-		$invoice = Bf_Invoice::getByID('E422C79D-4351-4D93-A103-320A5E4E1174');
+    	$invoiceID = '43600BBC-5682-4F5C-8DB1-BFFD9BE08C29';
+		$invoice = Bf_Invoice::getByID($invoiceID);
 
-		$createdAmendment = $invoice->upgrade('Devices', 10);
+		// map pricing component names to values
+		$componentNameToValueMap = array(
+			'CPU' => 10,
+			'Bandwidth' => 20
+			);
+
+		$createdAmendment = $invoice->upgrade($componentNameToValueMap, 'immediate', 'Immediate');
 		var_export($createdAmendment);
 	}
 }

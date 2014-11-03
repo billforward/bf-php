@@ -52,7 +52,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @return Bf_PricingComponentValueAmendment
 	 */
-	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, array $pricingComponentProperties, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
 		if (!is_array($propertiesList)) {
 			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
@@ -63,7 +63,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$subscription = Bf_Subscription::getByID($this->subscriptionID);
 
-		$componentCharges = array();
+		$componentChanges = array();
 
 		foreach ($propertiesList as $key => $propertyMap) {
 			if (!is_array($propertyMap)) {
@@ -73,19 +73,19 @@ class Bf_Invoice extends Bf_MutableEntity {
 			$newValue = $valuesList[$key];
 
 			$pricingComponentValue = $subscription->getValueOfPricingComponentWithProperties($propertyMap);
-			$componentCharge = new Bf_ComponentCharge(array(
+			$componentCharge = new Bf_ComponentChange(array(
 				'logicalComponentID' => $pricingComponentValue->pricingComponentID,
 				'oldValue' => $pricingComponentValue->value,
 				'newValue' => $newValue
 			));
 
-			array_push($componentCharges, $componentCharge)
+			array_push($componentChanges, $componentCharge);
 		}
 		
 		$amendment = new Bf_PricingComponentValueAmendment(array(
 			'subscriptionID' => $subscription->id,
 			'invoiceID' => $this->id,
-			'componentCharges' => $componentCharges,
+			'componentChanges' => $componentChanges,
 			'mode' => $changeMode,
 			'invoicingType' => $invoicingType,
 			'logicalComponentID' => $pricingComponentValue->pricingComponentID
@@ -113,9 +113,10 @@ class Bf_Invoice extends Bf_MutableEntity {
 				'name' => $key
 				);
 			array_push($propertiesList, $pricingComponentPropertyMap);
+			array_push($valuesList, $value);
 		}
 
-		return $this->changeValueOfPricingComponentWhosePropertiesMatch($propertiesList, $valuesList, $changeMode, $invoicingType);
+		return $this->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, $changeMode, $invoicingType);
 	}
 
 	/**
