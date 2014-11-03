@@ -46,22 +46,46 @@ class Bf_Invoice extends Bf_MutableEntity {
 	/**
 	 * Changes the value of whichever Bf_PricingComponentValue corresponds to a Bf_PricingComponent whose properties match
 	 * all those provided.
-	 * @param array The properties by which a Bf_PricingComponent will be found, instrumental to finding its corresponding Bf_PricingComponentValue on the Bf_Subscription
-	 * @param float the new value to which the Bf_PricingComponentValue will be changed
+	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
+	 * @param array List of values to assign to respective pricing components; array(103, 2)
 	 * @param string ENUM['immediate', 'delayed'] When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
 	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @return Bf_PricingComponentValueAmendment
 	 */
-	public function changeValueOfPricingComponentWhosePropertiesMatch(array $pricingComponentProperties, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, array $pricingComponentProperties, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+		if (!is_array($propertiesList)) {
+			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
+		}
+
+		if (!is_array($valuesList)) {
+			throw new \Exception('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
+		}
+
 		$subscription = Bf_Subscription::getByID($this->subscriptionID);
 
-		$pricingComponentValue = $subscription->getValueOfPricingComponentWithProperties($pricingComponentProperties);
+		$componentCharges = array();
 
+		foreach ($propertiesList as $key => $propertyMap) {
+			if (!is_array($propertyMap)) {
+				throw new \Exception('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
+			}
+
+			$newValue = $valuesList[$key];
+
+			$pricingComponentValue = $subscription->getValueOfPricingComponentWithProperties($propertyMap);
+			$componentCharge = new Bf_ComponentCharge(array(
+				'logicalComponentID' => $pricingComponentValue->pricingComponentID,
+				'oldValue' => $pricingComponentValue->value,
+				'newValue' => $newValue
+			));
+
+			array_push($componentCharges, $componentCharge)
+		}
+		
 		$amendment = new Bf_PricingComponentValueAmendment(array(
 			'subscriptionID' => $subscription->id,
 			'invoiceID' => $this->id,
-			'oldValue' => $pricingComponentValue->value,
-			'newValue' => $newValue,
+			'componentCharges' => $componentCharges,
 			'mode' => $changeMode,
 			'invoicingType' => $invoicingType,
 			'logicalComponentID' => $pricingComponentValue->pricingComponentID
@@ -74,55 +98,36 @@ class Bf_Invoice extends Bf_MutableEntity {
 	/**
 	 * Changes the value of whichever Bf_PricingComponentValue corresponds to a Bf_PricingComponent whose name
 	 * matches the one provided.
-	 * @param array The name by which a Bf_PricingComponent will be found, instrumental to finding its corresponding Bf_PricingComponentValue on the Bf_Subscription
-	 * @param float the new value to which the Bf_PricingComponentValue will be changed
+	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ENUM['immediate', 'delayed'] When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
 	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @return Bf_PricingComponentValueAmendment
 	 */
-	public function changeValueOfPricingComponentWhoseNameMatches($name, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
-		$properties = array(
-			'chargeModel' => 'tiered',
-			'name' => $name
-			);
+	public function changeValueOfPricingComponentsByName(array $namesToValues, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+		$propertiesList = array();
+		$valuesList = array();
 
-		return $this->changeValueOfPricingComponentWhosePropertiesMatch($properties, $newValue, $changeMode, $invoicingType);
+		foreach($namesToValues as $key => $value) {
+			// from pricing component name, create a dictionary of identifying properties
+			$pricingComponentPropertyMap = array(
+				'name' => $key
+				);
+			array_push($propertiesList, $pricingComponentPropertyMap);
+		}
+
+		return $this->changeValueOfPricingComponentWhosePropertiesMatch($propertiesList, $valuesList, $changeMode, $invoicingType);
 	}
 
 	/**
 	 * Changes the value of whichever Bf_PricingComponentValue corresponds to a Bf_PricingComponent which recruits
 	 * the provided Bf_UnitOfMeasure.
-	 * @param Bf_UnitOfMeasure The unit of measure by which a Bf_PricingComponent will be found, instrumental to finding its corresponding Bf_PricingComponentValue on the Bf_Subscription. In cases where multiple pricing components on the Bf_ProductRatePlan recruit the same Bf_UnitOfMeasure, the first Bf_PricingComponent encountered will be picked.
-	 * @param float the new value to which the Bf_PricingComponentValue will be changed
+	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ENUM['immediate', 'delayed'] When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
 	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @return Bf_PricingComponentValueAmendment
 	 */
-	public function changeValueOfPricingComponentWhoseUoMMatches(Bf_UnitOfMeasure $unitOfMeasure, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
-		$properties = array(
-			'chargeModel' => 'tiered',
-			'unitOfMeasureID' => $unitOfMeasure->id
-			);
-
-		return $this->changeValueOfPricingComponentWhosePropertiesMatch($properties, $newValue, $changeMode, $invoicingType);
-	}
-
-	/**
-	 * Changes the value of whichever Bf_PricingComponentValue corresponds to a Bf_PricingComponent which recruits
-	 * the provided Bf_UnitOfMeasure.
-	 * @param string The Bf_UnitOfMeasure name by which a Bf_PricingComponent will be found, instrumental to finding its corresponding Bf_PricingComponentValue on the Bf_Subscription. In cases where multiple pricing components on the Bf_ProductRatePlan recruit the same Bf_UnitOfMeasure, the first Bf_PricingComponent encountered will be picked.
-	 * @param float the new value to which the Bf_PricingComponentValue will be changed
-	 * @param string ENUM['immediate', 'delayed'] When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
-	 * @param string ENUM['Immediate', 'Aggregated'] Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @return Bf_PricingComponentValueAmendment
-	 */
-	public function upgrade($unitOfMeasureName, $newValue, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
-		$uomProperties = array(
-			'name' => $unitOfMeasureName
-			);
-		$unitOfMeasure = Bf_UnitOfMeasure::getAllThenGrabFirstWithProperties($uomProperties);
-
-		return $this->changeValueOfPricingComponentWhoseUoMMatches($unitOfMeasure, $newValue, $changeMode, $invoicingType);
+	public function upgrade(array $namesToValues, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+		return $this->changeValueOfPricingComponentsByName($namesToValues, $changeMode, $invoicingType);
 	}
 
 	public static function initStatics() {
