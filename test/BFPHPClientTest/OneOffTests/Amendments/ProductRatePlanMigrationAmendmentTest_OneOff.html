@@ -1,0 +1,41 @@
+<?php
+namespace BFPHPClientTest\OneOffTests;
+/**One-off tests are ones which cannot be repeated (excepting manual
+ * modification of database or test).
+ * For example, creating the same 'new Bf_Account' twice, fails (causes clash).
+ * So we hide from the testrunner here, and only run when we want to.
+ */
+echo "Running (one-off) Bf_ProductRatePlanMigrationAmendment tests for BillForward PHP Client Library.\n";
+
+use Bf_Subscription;
+use Bf_ProductRatePlanMigrationAmendment;
+use BFPHPClientTest\TestConfig;
+Class Bf_ProductRatePlanMigrationAmendment_OneOffTest extends \PHPUnit_Framework_TestCase {
+	protected static $client = NULL;
+	protected static $config = NULL;
+
+	public static function setUpBeforeClass() {
+		self::$config = new TestConfig();
+		self::$client = self::$config->getClient();
+	}
+
+	public function testMigrateWithMappings() {
+		$client = self::$client;
+
+		$subscriptionID = 'E962B901-DB0C-4BE5-8E29-AF1F6F59F666';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
+
+		// 'Other Gold' C9F5BB57-DE63-49BE-973B-56F331313EDA
+		// 'Gold' 		8FE8761D-82B2-4363-9977-8D5E6018F0B6
+		$newProductRatePlanID = 'C9F5BB57-DE63-49BE-973B-56F331313EDA';
+
+		// map pricing component names to values
+		$componentNameToValueMap = array(
+			'CPU' => 1,
+			'Bandwidth' => 2
+			);
+
+		$createdAmendment = $subscription->migratePlan($componentNameToValueMap, $newProductRatePlanID);
+		var_export($createdAmendment);
+	}
+}
