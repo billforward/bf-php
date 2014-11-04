@@ -23,45 +23,16 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 
 	public function testIssueUsingHelper() {
 		$client = self::$client;
-    	
-    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
-    	// works at least on Paid invoices.
-    	$invoiceID = '04875733-0440-430A-9D48-546E6F9A4F71';
-		$invoice = Bf_Invoice::getByID($invoiceID);
+
+		$subscriptionID = 'E962B901-DB0C-4BE5-8E29-AF1F6F59F666';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
 
 		// map pricing component names to values
 		$componentNameToValueMap = array(
-			'CPU' => 10,
-			'Bandwidth' => 20
+			'CPU' => 5,
+			'Bandwidth' => 7
 			);
 
-		$createdAmendment = $invoice->upgrade($componentNameToValueMap, 'immediate', 'Immediate');
-		var_export($createdAmendment);
-	}
-
-	public function testIssueUsingHelper2() {
-		$client = self::$client;
-    	
-    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
-    	// works at least on Paid invoices.
-    	$invoiceID = '04875733-0440-430A-9D48-546E6F9A4F71';
-		$invoice = Bf_Invoice::getByID($invoiceID);
-
-		// map pricing component names to values
-		$propertiesList = array(
-			array(
-				'id' => '2C112AD7-1A1F-4C49-8FE6-83115DCA29C5'
-				),
-			array(
-				'id' => '2C2A5C82-9AD6-4278-B7E6-3A1E6E64F2BE'
-				)
-			);
-		$valuesList = array(
-			10,
-			20
-			);
-
-		$createdAmendment = $invoice->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, 'immediate', 'Immediate');
-		var_export($createdAmendment);
+		$createdAmendment = $subscription->upgrade($componentNameToValueMap, 'immediate', 'Immediate');
 	}
 }

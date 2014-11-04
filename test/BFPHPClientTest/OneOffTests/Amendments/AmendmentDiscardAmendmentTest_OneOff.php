@@ -24,7 +24,7 @@ Class Bf_AmendmentDiscardAmendment_OneOffTest extends \PHPUnit_Framework_TestCas
 		$client = self::$client;
     	
     	// gets existing amendment. sorry for magic number; it's useful to me at least. :)
-    	$amendmentID = '82EAD04F-9058-4B3E-B45D-E0B9D5F73225';
+    	$amendmentID = 'CDC3FB81-EDB8-402D-B6EB-EADB9710C02F';
 
 		$fetched_amendment = Bf_Amendment::getByID($amendmentID);
 
