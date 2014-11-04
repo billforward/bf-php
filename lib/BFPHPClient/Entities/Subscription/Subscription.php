@@ -384,8 +384,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param string ID of the plan to migrate to.
+	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param Bf_ProductRatePlan (Alternative parameter to avoid extra API request) The plan to migrate to.
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */

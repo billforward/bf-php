@@ -53,7 +53,7 @@ spl_autoload_register(function($className) {
             'Bf_PricingComponentValueMigrationAmendmentMapping' => $baseDir . '/BFPHPClient/Entities/PricingComponent/PricingComponentValueMigrationAmendmentMapping.php',
             'Bf_Product' => $baseDir . '/BFPHPClient/Entities/Product/Product.php',
             'Bf_ProductRatePlan' => $baseDir . '/BFPHPClient/Entities/Product/ProductRatePlan.php',
-            'Bf_ProductRatePlanMigrationAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/PricingComponentValueMigrationAmendmentMapping.php',
+            'Bf_ProductRatePlanMigrationAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/ProductRatePlanMigrationAmendment.php',
             'Bf_Profile' => $baseDir . '/BFPHPClient/Entities/Account/Profile.php',
             'Bf_RawAPIOutput' => $baseDir . '/BFPHPClient/BillForwardClient.php',
             'Bf_ResourcePath' => $baseDir . '/BFPHPClient/Entities/Abstract/ResourcePath.php',
