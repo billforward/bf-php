@@ -348,6 +348,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		
 		$amendment = new Bf_ProductRatePlanMigrationAmendment(array(
 			'subscriptionID' => $this->id,
+			'productRatePlanID' => $newPlan->id,
 			'mappings' => $mappings,
 			'invoicingType' => $invoicingType
 			));
