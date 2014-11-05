@@ -35,5 +35,16 @@ class Bf_Amendment extends Bf_InsertableEntity {
 
 		return $entities;
 	}
+
+	public function discard() {
+		// create model of amendment
+		$amendment = new Bf_AmendmentDiscardAmendment(array(
+			'amendmentToDiscardID' => $this->id,
+			'subscriptionID' => $this->subscriptionID
+			));
+
+		$createdAmendment = Bf_AmendmentDiscardAmendment::create($amendment);
+		return $createdAmendment;
+	}
 }
 Bf_Amendment::initStatics();

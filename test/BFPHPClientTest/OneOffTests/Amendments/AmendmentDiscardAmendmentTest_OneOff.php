@@ -37,4 +37,17 @@ Class Bf_AmendmentDiscardAmendment_OneOffTest extends \PHPUnit_Framework_TestCas
 		$createdAmendment = Bf_AmendmentDiscardAmendment::create($amendment);
 		var_export($createdAmendment);
 	}
+
+	public function testIssueWithHelper() {
+		$client = self::$client;
+    	
+    	// gets existing amendment. sorry for magic number; it's useful to me at least. :)
+    	$amendmentID = 'F650EA52-7491-422C-967B-0C550E6F7347';
+
+		$fetched_amendment = Bf_Amendment::getByID($amendmentID);
+
+		$createdAmendment = $fetched_amendment->discard();
+
+		var_export($createdAmendment);
+	}
 }

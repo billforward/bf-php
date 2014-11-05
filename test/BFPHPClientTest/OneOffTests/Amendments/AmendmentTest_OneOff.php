@@ -46,6 +46,31 @@ Class Bf_AmendmentDiscardAmendment_OneOffTest extends \PHPUnit_Framework_TestCas
 		var_export($amendments);
 	}
 
+	public function testGetPendingBySubscriptionID() {
+		$client = self::$client;
+    	
+    	// gets existing amendment. sorry for magic number; it's useful to me at least. :)
+    	$subscriptionID = 'E962B901-DB0C-4BE5-8E29-AF1F6F59F666';
+
+    	// newest 'created' first
+    	$queryParams = array(
+    		'records' => 100,
+    		'order_by' => 'created',
+    		'order' => 'DESC'
+    		);
+
+		$amendments = Bf_Amendment::getForSubscription($subscriptionID, $queryParams);
+
+		$pendingAmendments = array();
+		foreach ($amendments as $key => $amendment) {
+			if ($amendment->state === 'Pending') {
+				array_push($pendingAmendments, $amendment);
+			}
+		}
+
+		var_export($pendingAmendments);
+	}
+
 	public function testGetAll() {
 		$client = self::$client;
 
