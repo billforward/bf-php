@@ -31,6 +31,21 @@ Class Bf_AmendmentDiscardAmendment_OneOffTest extends \PHPUnit_Framework_TestCas
 		var_export($amendment);
 	}
 
+	public function testGetBySubscriptionID() {
+		$client = self::$client;
+    	
+    	// gets existing amendment. sorry for magic number; it's useful to me at least. :)
+    	$subscriptionID = 'E962B901-DB0C-4BE5-8E29-AF1F6F59F666';
+
+    	$queryParams = array(
+    		'records' => 100
+    		);
+
+		$amendments = Bf_Amendment::getForSubscription($subscriptionID, $queryParams);
+
+		var_export($amendments);
+	}
+
 	public function testGetAll() {
 		$client = self::$client;
 
