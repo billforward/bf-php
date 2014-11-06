@@ -138,7 +138,7 @@ class BillForwardClient {
     public function doRetire($endpoint, array $params) {
         $urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->CallAPI_Unvalidated('RETIRE', $urlFull, json_encode($params), true);
+        $response = $this->CallAPI_Unvalidated('DELETE', $urlFull, json_encode($params), true);
 
         static::handleError($response);
 

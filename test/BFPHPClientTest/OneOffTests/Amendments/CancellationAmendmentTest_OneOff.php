@@ -8,6 +8,7 @@ namespace BFPHPClientTest\OneOffTests;
 echo "Running (one-off) Bf_CancellationAmendment tests for BillForward PHP Client Library.\n";
 
 use Bf_Invoice;
+use Bf_Subscription;
 use Bf_CancellationAmendment;
 use BFPHPClientTest\TestConfig;
 Class Bf_CancellationAmendment_OneOffTest extends \PHPUnit_Framework_TestCase {
@@ -22,18 +23,47 @@ Class Bf_CancellationAmendment_OneOffTest extends \PHPUnit_Framework_TestCase {
 	public function testIssue() {
 		$client = self::$client;
     	
-    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
-    	$invoiceID = 'AEC4DF60-D472-41A9-B0A5-F94E5612DFFE';
-		$invoice = Bf_Invoice::getByID($invoiceID);
+    	$subscriptionID = '54099787-12F0-422E-8FAC-1504AF034A24';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
 
 		$amendment = new Bf_CancellationAmendment(array(
 			'subscriptionID' => $invoice->subscriptionID,
-			'invoiceID' => $invoice->id,
 			'serviceEnd' => 'Immediate', // or 'AtPeriodEnd'
-			'source' => 'PHP library test'
 			));
 
 		$createdAmendment = Bf_CancellationAmendment::create($amendment);
+		var_export($createdAmendment);
+	}
+
+	public function testIssueViaHelperImmediateUntilServiceEnd() {
+		$client = self::$client;
+    	
+    	$subscriptionID = 'DA35D225-B11B-4DCD-9626-3B490A655A4D';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
+
+		$createdAmendment = $subscription->cancel('Immediate');
+		var_export($createdAmendment);
+	}
+
+	public function testIssueViaHelperDeferredImmediate() {
+		$client = self::$client;
+    	
+    	$subscriptionID = '9E9A31FD-59B2-4BA9-B572-91AA3B8E08EF';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
+
+		$time = time()+60;
+
+		$createdAmendment = $subscription->cancel('Immediate', $time);
+		var_export($createdAmendment);
+	}
+
+	public function testIssueViaHelperDeferredUntilPeriodEndImmediate() {
+		$client = self::$client;
+    	
+    	$subscriptionID = 'BD26F39B-C3D6-4D7D-A806-9DCABEC75128';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
+
+		$createdAmendment = $subscription->cancel('Immediate', 'AtPeriodEnd');
 		var_export($createdAmendment);
 	}
 }

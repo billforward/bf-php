@@ -230,11 +230,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
 	 * @param array List of values to assign to respective pricing components; array(103, 2)
-	 * @param string ENUM['immediate', 'delayed'] (Default: 'immediate') When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
 		if (!is_array($propertiesList)) {
 			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
@@ -269,6 +269,21 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'invoicingType' => $invoicingType
 			));
 
+		$date = NULL; // defaults to Immediate
+		if (is_int($actioningTime)) {
+			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
+		} else if ($actioningTime === 'AtPeriodEnd') {
+			if (!is_null($this->currentPeriodEnd)) {
+				$date = $this->currentPeriodEnd;
+			} else {
+				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end.');
+			}
+		}
+
+		if (!is_null($date)) {
+			$amendment->actioningTime = $date;
+		}
+
 		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
 		return $createdAmendment;
 	}
@@ -276,11 +291,12 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param string ENUM['immediate', 'delayed'] (Default: 'immediate') When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
+	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function changeValueOfPricingComponentsByName(array $namesToValues, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
+	public function changeValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
 		$propertiesList = array();
 		$valuesList = array();
 
@@ -293,19 +309,19 @@ class Bf_Subscription extends Bf_MutableEntity {
 			array_push($valuesList, $value);
 		}
 
-		return $this->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, $changeMode, $invoicingType);
+		return $this->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $actioningTime);
 	}
 
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ENUM['immediate', 'delayed'] (Default: 'immediate') When the change happens. <immediate>: Immediately, <delayed>: At the start of the next billing period
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function upgrade(array $namesToValues, $changeMode = 'immediate', $invoicingType = 'Aggregated') {
-		return $this->changeValueOfPricingComponentsByName($namesToValues, $changeMode, $invoicingType);
+	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
+		return $this->changeValueOfPricingComponentsByName($namesToValues, $invoicingType, $actioningTime);
 	}
 
 	//// MIGRATE PLAN VIA AMENDMENT
@@ -315,12 +331,12 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
 	 * @param array List of values to assign to respective pricing components; array(103, 2)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param Bf_ProductRatePlan The plan to migrate to.
-	 * @param mixed[int $timestamp, 'Immediate', 'PeriodEnd'] Default: 'Immediate'. When to action the migration amendment
+	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', Bf_ProductRatePlan $newPlan, $actioningTime = 'Immediate') {
+	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
 		if (!is_array($propertiesList)) {
 			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
@@ -357,7 +373,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$date = NULL; // defaults to Immediate
 		if (is_int($actioningTime)) {
 			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'PeriodEnd') {
+		} else if ($actioningTime === 'AtPeriodEnd') {
 			if (!is_null($this->currentPeriodEnd)) {
 				$date = $this->currentPeriodEnd;
 			} else {
@@ -376,12 +392,13 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param Bf_ProductRatePlan The plan to migrate to.
-	 * @param mixed[int $timestamp, 'Immediate', 'PeriodEnd'] Default: 'Immediate'. When to action the migration amendment
+	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migrateWithValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', Bf_ProductRatePlan $newPlan, $actioningTime = 'Immediate') {
+	public function migrateWithValueOfPricingComponentsByName(array $namesToValues, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
 		$propertiesList = array();
 		$valuesList = array();
 
@@ -394,7 +411,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			array_push($valuesList, $value);
 		}
 
-		return $this->migrateWithValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $newPlan, $actioningTime);
+		return $this->migrateWithValueOfPricingComponentByProperties($propertiesList, $valuesList, $newPlan, $invoicingType, $actioningTime);
 	}
 
 	/**
@@ -403,7 +420,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ID of the plan to migrate to.
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'PeriodEnd'] Default: 'Immediate'. When to action the migration amendment
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @param Bf_ProductRatePlan (Alternative parameter to avoid extra API request) The plan to migrate to.
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
@@ -413,8 +430,43 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$newPlan = Bf_ProductRatePlan::getByID($newPlanID);
 		}
 
-		return $this->migrateWithValueOfPricingComponentsByName($namesToValues, $invoicingType, $newPlan, $actioningTime);
-	}	
+		return $this->migrateWithValueOfPricingComponentsByName($namesToValues, $newPlan, $invoicingType, $actioningTime);
+	}
+
+	//// CANCEL VIA AMENDMENT
+
+	/**
+	 * Cancels subscription at a specified time.
+	 * @param string ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') Specifies whether the service will end immediately on cancellation or if it will continue until the end of the current period.
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the cancellation amendment
+	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
+	 */
+	public function cancel($serviceEnd = 'AtPeriodEnd', $actioningTime = 'Immediate') {
+		// create model of amendment
+		$amendment = new Bf_CancellationAmendment(array(
+		  'subscriptionID' => $this->id,
+		  'serviceEnd' => $serviceEnd
+		  ));
+
+		$date = NULL; // defaults to Immediate
+		if (is_int($actioningTime)) {
+			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
+		} else if ($actioningTime === 'AtPeriodEnd') {
+			if (!is_null($this->currentPeriodEnd)) {
+				$date = $this->currentPeriodEnd;
+			} else {
+				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end.');
+			}
+		}
+
+		if (!is_null($date)) {
+			$amendment->actioningTime = $date;
+		}
+
+		// create amendment using API
+		$createdAmendment = Bf_CancellationAmendment::create($amendment);
+		return $createdAmendment;
+	}
 
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'subscription');

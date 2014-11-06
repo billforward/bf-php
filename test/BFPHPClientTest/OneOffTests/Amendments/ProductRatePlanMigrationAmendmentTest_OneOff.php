@@ -35,7 +35,7 @@ Class Bf_ProductRatePlanMigrationAmendment_OneOffTest extends \PHPUnit_Framework
 			'Bandwidth' => 20
 			);
 
-		$createdAmendment = $subscription->migratePlan($componentNameToValueMap, $newProductRatePlanID, 'Immediate', 'PeriodEnd');
+		$createdAmendment = $subscription->migratePlan($componentNameToValueMap, $newProductRatePlanID, 'Immediate', 'AtPeriodEnd');
 		var_export($createdAmendment);
 	}
 

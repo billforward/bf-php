@@ -21,18 +21,52 @@ Class Bf_PricingComponentValueAmendment_OneOffTest extends \PHPUnit_Framework_Te
 		self::$client = self::$config->getClient();
 	}
 
-	public function testIssueUsingHelper() {
+	public function testIssueUsingHelperPeriodEnd() {
 		$client = self::$client;
 
-		$subscriptionID = 'E962B901-DB0C-4BE5-8E29-AF1F6F59F666';
+		$subscriptionID = '54099787-12F0-422E-8FAC-1504AF034A24';
 		$subscription = Bf_Subscription::getByID($subscriptionID);
 
 		// map pricing component names to values
 		$componentNameToValueMap = array(
-			'CPU' => 5,
-			'Bandwidth' => 7
+			'CPU' => 10,
+			'Bandwidth' => 20
 			);
 
-		$createdAmendment = $subscription->upgrade($componentNameToValueMap, 'immediate', 'Immediate');
+		$createdAmendment = $subscription->upgrade($componentNameToValueMap, 'Immediate', 'AtPeriodEnd');
+		var_export($createdAmendment);
+	}
+
+	public function testIssueUsingHelperSpecifiedTime() {
+		$client = self::$client;
+
+		$subscriptionID = '54099787-12F0-422E-8FAC-1504AF034A24';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
+
+		// map pricing component names to values
+		$componentNameToValueMap = array(
+			'CPU' => 50,
+			'Bandwidth' => 70
+			);
+
+		$time = time()+2*60; // time 2 mins from now
+		$createdAmendment = $subscription->upgrade($componentNameToValueMap, 'Immediate', $time);
+		var_export($createdAmendment);
+	}
+
+	public function testIssueUsingHelperImmediate() {
+		$client = self::$client;
+
+		$subscriptionID = '54099787-12F0-422E-8FAC-1504AF034A24';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
+
+		// map pricing component names to values
+		$componentNameToValueMap = array(
+			'CPU' => 14,
+			'Bandwidth' => 14
+			);
+
+		$createdAmendment = $subscription->upgrade($componentNameToValueMap, 'Immediate');
+		var_export($createdAmendment);
 	}
 }
