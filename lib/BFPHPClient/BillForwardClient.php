@@ -135,6 +135,16 @@ class BillForwardClient {
 		return $response;
 	}
 
+    public function doRetire($endpoint, array $params) {
+        $urlFull = $this->urlRoot.$endpoint;
+
+        $response = $this->CallAPI_Unvalidated('RETIRE', $urlFull, json_encode($params), true);
+
+        static::handleError($response);
+
+        return $response;
+    }
+
 	    //todo google codeigniter rest
     /**
      * @param $method "GET"/"POST"/...

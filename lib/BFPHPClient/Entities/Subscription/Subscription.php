@@ -317,9 +317,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array List of values to assign to respective pricing components; array(103, 2)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param Bf_ProductRatePlan The plan to migrate to.
+	 * @param mixed[int $timestamp, 'Immediate', 'PeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', Bf_ProductRatePlan $newPlan) {
+	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', Bf_ProductRatePlan $newPlan, $actioningTime = 'Immediate') {
 		if (!is_array($propertiesList)) {
 			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
@@ -353,6 +354,21 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'invoicingType' => $invoicingType
 			));
 
+		$date = NULL; // defaults to Immediate
+		if (is_int($actioningTime)) {
+			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
+		} else if ($actioningTime === 'PeriodEnd') {
+			if (!is_null($this->currentPeriodEnd)) {
+				$date = $this->currentPeriodEnd;
+			} else {
+				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end.');
+			}
+		}
+
+		if (!is_null($date)) {
+			$amendment->actioningTime = $date;
+		}
+
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
 		return $createdAmendment;
 	}
@@ -362,9 +378,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param Bf_ProductRatePlan The plan to migrate to.
+	 * @param mixed[int $timestamp, 'Immediate', 'PeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migrateWithValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', Bf_ProductRatePlan $newPlan) {
+	public function migrateWithValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', Bf_ProductRatePlan $newPlan, $actioningTime = 'Immediate') {
 		$propertiesList = array();
 		$valuesList = array();
 
@@ -377,7 +394,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			array_push($valuesList, $value);
 		}
 
-		return $this->migrateWithValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $newPlan);
+		return $this->migrateWithValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $newPlan, $actioningTime);
 	}
 
 	/**
@@ -386,16 +403,17 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ID of the plan to migrate to.
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param mixed[int $timestamp, 'Immediate', 'PeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @param Bf_ProductRatePlan (Alternative parameter to avoid extra API request) The plan to migrate to.
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migratePlan(array $namesToValues, $newPlanID = NULL, $invoicingType = 'Aggregated', Bf_ProductRatePlan $newPlan = NULL) {
+	public function migratePlan(array $namesToValues, $newPlanID = NULL, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', Bf_ProductRatePlan $newPlan = NULL) {
 		if (is_null($newPlan)) {
 			// fetch plan for you
 			$newPlan = Bf_ProductRatePlan::getByID($newPlanID);
 		}
 
-		return $this->migrateWithValueOfPricingComponentsByName($namesToValues, $invoicingType, $newPlan);
+		return $this->migrateWithValueOfPricingComponentsByName($namesToValues, $invoicingType, $newPlan, $actioningTime);
 	}	
 
 	public static function initStatics() {
