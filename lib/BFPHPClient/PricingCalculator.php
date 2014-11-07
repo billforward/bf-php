@@ -35,9 +35,9 @@ class Bf_PricingCalculator {
 	 * specified AmendmentPriceRequest entity.
 	 * Returns an entity which embodies the response.
 	 * @param Bf_AmendmentPriceRequest $requestEntity 
-	 * @return Bf_PriceCalculation $responseEntity
+	 * @return Bf_AmendmentPriceNTime $responseEntity
 	 */
-	public static function requestAmendmentPriceAndTime(Bf_AmendmentPriceRequest $requestEntity) {
+	public static function requestUpgradePrice(Bf_AmendmentPriceRequest $requestEntity) {
 		$entity = $requestEntity;
 		$serial = $entity->getSerialized();
 
@@ -46,13 +46,13 @@ class Bf_PricingCalculator {
 
 		$endpointPrefix = static::getResourcePath()
 		->getPath();
-		$endpointPostfix = "/coupon-instance/initialisation";
+		$endpointPostfix = "/amendment-cost";
 		$endpoint = $endpointPrefix.$endpointPostfix;
 
 		$response = $client
 		->doPost($endpoint, $serial);
 
-		$constructedEntity = Bf_PriceCalculation::callMakeEntityFromResponseStatic($response, $client);
+		$constructedEntity = Bf_AmendmentPriceNTime::callMakeEntityFromResponseStatic($response, $client);
 
 		return $constructedEntity;
 	}
