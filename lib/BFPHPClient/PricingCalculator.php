@@ -37,7 +37,7 @@ class Bf_PricingCalculator {
 	 * @param Bf_AmendmentPriceRequest $requestEntity 
 	 * @return Bf_AmendmentPriceNTime $responseEntity
 	 */
-	public static function requestUpgradePrice(Bf_AmendmentPriceRequest $requestEntity) {
+	/*public static function requestUpgradePrice(Bf_AmendmentPriceRequest $requestEntity) {
 		$entity = $requestEntity;
 		$serial = $entity->getSerialized();
 
@@ -55,18 +55,18 @@ class Bf_PricingCalculator {
 		$constructedEntity = Bf_AmendmentPriceNTime::callMakeEntityFromResponseStatic($response, $client);
 
 		return $constructedEntity;
-	}
+	}*/
 
 	/**
-	 * Requests a price-calculation. Request is built using specified PricingCalculator entity, plus
-	 * specified AmendmentPriceRequest entity.
-	 * Returns an entity which embodies the response.
+	 * Requests a calculation of the price required to upgrade the subscription to the specified values.
+	 * The price is worked out by applying the higher cost to only the remaining time in the billing period (pro-rata'd).
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string (option 1) ID of the subscription to calculate price for
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. The time at which the upgrade would take place.
 	 * @param Bf_Subscription (option 2) model of the subscription to calculate price for; provide this to avoid fetching from API
-	 * @return array Price now and after (array('now' => Bf_PriceCalculation, 'after' => Bf_PriceCalculation, 'priceDiff' => int))
+	 * @return Bf_AmendmentPriceNTime $responseEntity
 	 */
-	public static function requestPriceNowVsAfter(array $namesToValues, $subscriptionID = NULL, Bf_Subscription $subscriptionModel = NULL) {
+	public static function requestUpgradePrice(array $namesToValues, $subscriptionID = NULL, $asOfTime = 'Immediate', Bf_Subscription $subscriptionModel = NULL) {
 		$subscription;
 		if (is_null($subscriptionModel)) {
 			if (is_null($subscriptionID)) {
@@ -89,16 +89,58 @@ class Bf_PricingCalculator {
 
 		$afterPriceRequest = Bf_PriceRequest::forPricingComponentsByName($namesToValues, NULL, $productRatePlan);
 
+		$asOfDate = NULL; // defaults to Immediate
+		if (is_int($asOfTime)) {
+			$asOfDate = Bf_BillingEntity::makeBillForwardDate($asOfTime);
+		} else if ($asOfTime === 'AtPeriodEnd') {
+			if (!is_null($subscription->currentPeriodEnd)) {
+				$asOfDate = $subscription->currentPeriodEnd;
+				$asOfTime = Bf_BillingEntity::makeUTCTimeFromBillForwardDate($subscription->currentPeriodEnd);
+			} else {
+				throw new \Exception('Cannot set As Of Time to period end, because the subscription does not declare a period end.');
+			}
+		} else {
+			$asOfTime = time();
+			$asOfDate = Bf_BillingEntity::makeBillForwardDate($asOfTime);
+		}
+
+		echo "\n";
+		var_export($asOfDate);
+		echo "\n";
+		var_export($asOfTime);
+		echo "\n";
+
 		$nowPriceRequestCalculated = static::requestPriceCalculation($nowPriceRequest);
 		$afterPriceRequestCalculated = static::requestPriceCalculation($afterPriceRequest);
 
 		$priceDiff = $afterPriceRequestCalculated->discountedCost - $nowPriceRequestCalculated->discountedCost;
 
-		return array(
+		$periodSize = Bf_BillingEntity::makeUTCTimeFromBillForwardDate($subscription->currentPeriodEnd) - Bf_BillingEntity::makeUTCTimeFromBillForwardDate($subscription->currentPeriodStart);
+		$periodRemaining = Bf_BillingEntity::makeUTCTimeFromBillForwardDate($subscription->currentPeriodEnd) - $asOfTime;
+
+		// var_export($periodSize);
+		// var_export($periodRemaining);
+
+		$fractionRemaining = $periodRemaining/$periodSize;
+
+		// var_export($fractionRemaining);
+
+		$proRataPrice = $priceDiff*$fractionRemaining;
+
+		$calculationModel = new Bf_AmendmentPriceNTime(array(
+			'@type' => 'amendmentPriceNTime',
+			'days' => $periodRemaining.' Seconds',
+			'cost' => $proRataPrice,
+			'asOfDate' => $asOfDate
+			));
+
+		return $calculationModel;
+
+		/*return array(
 			'now' => $nowPriceRequestCalculated,
 			'after' => $afterPriceRequestCalculated,
 			'priceDiff' => $priceDiff
-			);
+			);*/
 	}
 
 	public static function getResourcePath() {

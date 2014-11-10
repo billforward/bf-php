@@ -134,7 +134,7 @@ class Bf_AmendmentPriceRequest extends Bf_MutableEntity {
 		$model = new Bf_AmendmentPriceRequest(array(
             'subscription' => $subscription,
             'componentValues' => $componentValues,
-            'asOfDate' => $subscription->currentPeriodStart//Bf_BillingEntity::makeBillForwardDate(time()+60*60*24*32)//Bf_BillingEntity::makeBillForwardDate(time())
+            'asOfDate' => Bf_BillingEntity::makeBillForwardDate(time()) //$subscription->currentPeriodStart//Bf_BillingEntity::makeBillForwardDate(time()+60*60*24*32)//Bf_BillingEntity::makeBillForwardDate(time())
             ));
 
 		return $model;

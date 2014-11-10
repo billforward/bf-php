@@ -137,41 +137,20 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
 
         var_export($calculation);
     }*/
-
-    
-    // API support under investigation
-    public function testCalculateUpgradePriceWithHelper() {
-        $config = self::$config;
-
-        $subscriptionID = '68002165-209E-43D0-8E5E-A7C8AA7548C6';
-
-        // map pricing component names to values
-        $componentNameToValueMap = array(
-            'CPU' => 100,
-            'Bandwidth' => 100
-            );
-
-        $requestEntity = Bf_AmendmentPriceRequest::forPricingComponentsByName($componentNameToValueMap, $subscriptionID);
-
-        //$requestEntity->printJson();
-        $calculation = Bf_PricingCalculator::requestUpgradePrice($requestEntity);
-
-        var_export($calculation);
-    }
     
 
     public function testCalculateUpgradePriceWithFallbackHelper() {
         $config = self::$config;
 
-        $subscriptionID = '68002165-209E-43D0-8E5E-A7C8AA7548C6';
+        $subscriptionID = '8D0D3253-F6A6-4990-9C4D-F160BB66A91A';
 
         // map pricing component names to values
         $componentNameToValueMap = array(
             'CPU' => 100,
             'Bandwidth' => 100
             );
-        
-        $calculation = Bf_PricingCalculator::requestPriceNowVsAfter($componentNameToValueMap, $subscriptionID);
+
+        $calculation = Bf_PricingCalculator::requestUpgradePrice($componentNameToValueMap, $subscriptionID);
 
         var_export($calculation);
     }

@@ -254,8 +254,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 			$pricingComponentValue = $this->getValueOfPricingComponentWithProperties($propertyMap);
 			$componentChange = new Bf_ComponentChange(array(
-				'logicalComponentID' => $pricingComponentValue->pricingComponentID,
-				'oldValue' => $pricingComponentValue->value,
+				'pricingComponentID' => $pricingComponentValue->pricingComponentID,
 				'newValue' => $newValue
 			));
 

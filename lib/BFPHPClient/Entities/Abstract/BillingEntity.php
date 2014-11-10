@@ -301,8 +301,17 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		// replace "+0000 with Z"
 		$formattedTimezone = substr($isoFormatted, 0, strlen($isoFormatted)-5).'Z';
 
-		var_export($formattedTimezone);
 		return $formattedTimezone;
+    }
+
+    /**
+     * Returns PHP time integer from BillForward's UTC ISO8601 string.
+     * @param string The BillForward-formatted time
+     * @return int The timestamp
+     */
+    public static function makeUTCTimeFromBillForwardDate($date) {
+    	$dateTime = new DateTime($date, new DateTimeZone('UTC'));
+    	return $dateTime->getTimestamp();
     }
 
     public function getJson() {
