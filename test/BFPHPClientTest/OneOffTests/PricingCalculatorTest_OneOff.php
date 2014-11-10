@@ -120,7 +120,7 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
         var_export($calculation);
     }*/
 
-    public function testCalculatePriceNewUserWithHelper() {
+    /*public function testCalculatePriceNewUserWithHelper() {
         $config = self::$config;
 
         $productRatePlanID = $config->getUsualProductRatePlanID();
@@ -136,23 +136,42 @@ Class Bf_PricingCalculator_OneOffTest extends \PHPUnit_Framework_TestCase {
         $calculation = Bf_PricingCalculator::requestPriceCalculation($requestEntity);
 
         var_export($calculation);
-    }
+    }*/
 
+    
+    // API support under investigation
     public function testCalculateUpgradePriceWithHelper() {
         $config = self::$config;
 
-        $subscriptionID = '549790F5-E2DE-4BB4-A75A-A8D17EDF3C06';
+        $subscriptionID = '68002165-209E-43D0-8E5E-A7C8AA7548C6';
 
         // map pricing component names to values
         $componentNameToValueMap = array(
-            'CPU' => 10,
-            'Bandwidth' => 20
+            'CPU' => 100,
+            'Bandwidth' => 100
             );
 
         $requestEntity = Bf_AmendmentPriceRequest::forPricingComponentsByName($componentNameToValueMap, $subscriptionID);
 
-        $requestEntity->printJson();
+        //$requestEntity->printJson();
         $calculation = Bf_PricingCalculator::requestUpgradePrice($requestEntity);
+
+        var_export($calculation);
+    }
+    
+
+    public function testCalculateUpgradePriceWithFallbackHelper() {
+        $config = self::$config;
+
+        $subscriptionID = '68002165-209E-43D0-8E5E-A7C8AA7548C6';
+
+        // map pricing component names to values
+        $componentNameToValueMap = array(
+            'CPU' => 100,
+            'Bandwidth' => 100
+            );
+        
+        $calculation = Bf_PricingCalculator::requestPriceNowVsAfter($componentNameToValueMap, $subscriptionID);
 
         var_export($calculation);
     }
