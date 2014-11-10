@@ -232,9 +232,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array List of values to assign to respective pricing components; array(103, 2)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
+	 * @param string ENUM['Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
+	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
 		if (!is_array($propertiesList)) {
 			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
@@ -258,13 +259,20 @@ class Bf_Subscription extends Bf_MutableEntity {
 				'newValue' => $newValue
 			));
 
+			if (!is_null($changeModeOverride)) {
+				if ($changeModeOverride === 'Immediate') {
+					$componentChange->changeMode = 'immediate';
+				} else if ($changeModeOverride === 'Delayed') {
+					$componentChange->changeMode = 'delayed';
+				}
+			}
+
 			array_push($componentChanges, $componentChange);
 		}
 		
 		$amendment = new Bf_PricingComponentValueAmendment(array(
 			'subscriptionID' => $this->id,
 			'componentChanges' => $componentChanges,
-			'mode' => $changeMode,
 			'invoicingType' => $invoicingType
 			));
 
@@ -293,9 +301,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
+	 * @param string ENUM['Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function changeValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
+	public function changeValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
 		$propertiesList = array();
 		$valuesList = array();
 
@@ -308,19 +317,20 @@ class Bf_Subscription extends Bf_MutableEntity {
 			array_push($valuesList, $value);
 		}
 
-		return $this->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $actioningTime);
+		return $this->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $actioningTime, $changeModeOverride);
 	}
 
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
+	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type. <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the upgrade amendment
+	 * @param string ENUM['Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
-		return $this->changeValueOfPricingComponentsByName($namesToValues, $invoicingType, $actioningTime);
+	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
+		return $this->changeValueOfPricingComponentsByName($namesToValues, $invoicingType, $actioningTime, $changeModeOverride);
 	}
 
 	//// MIGRATE PLAN VIA AMENDMENT

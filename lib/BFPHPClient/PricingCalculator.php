@@ -104,12 +104,6 @@ class Bf_PricingCalculator {
 			$asOfDate = Bf_BillingEntity::makeBillForwardDate($asOfTime);
 		}
 
-		echo "\n";
-		var_export($asOfDate);
-		echo "\n";
-		var_export($asOfTime);
-		echo "\n";
-
 		$nowPriceRequestCalculated = static::requestPriceCalculation($nowPriceRequest);
 		$afterPriceRequestCalculated = static::requestPriceCalculation($afterPriceRequest);
 
