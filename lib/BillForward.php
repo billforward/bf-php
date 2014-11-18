@@ -22,6 +22,7 @@ spl_autoload_register(function($className) {
             'Bf_Address' => $baseDir . '/BFPHPClient/Entities/Account/Address.php',
             'Bf_Amendment' => $baseDir . '/BFPHPClient/Entities/Amendments/Amendment.php',
             'Bf_AmendmentDiscardAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/AmendmentDiscardAmendment.php',
+            'Bf_AmendmentPriceNTime' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/AmendmentPriceNTime.php',
             'Bf_AmendmentPriceRequest' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/AmendmentPriceRequest.php',
             'Bf_AmendmentPriceRequestCodeType' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/AmendmentPriceRequestCodeType.php',
             'Bf_AuthorizeNetToken' => $baseDir . '/BFPHPClient/Entities/Tokens/AuthorizeNetToken.php',
