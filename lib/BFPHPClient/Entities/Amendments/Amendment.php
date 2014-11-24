@@ -7,6 +7,10 @@ class Bf_Amendment extends Bf_InsertableEntity {
 		self::$_resourcePath = new Bf_ResourcePath('amendments', 'amendment');
 	}
 
+	/**
+	 * Gets Bf_Amendments for a given Bf_Subscription
+	 * @return Bf_Subscriptions[]
+	 */
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
 		$client = NULL;
 		if (is_null($customClient)) {

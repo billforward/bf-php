@@ -14,6 +14,14 @@ class Bf_Account extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Fetches Bf_Subscriptions for this Bf_Account.
+	 * @return Bf_Subscription[]
+	 */
+	public function getSubscriptions($options = NULL, $customClient = NULL) {
+		return Bf_Subscription::getForAccount($this->id, $options = NULL, $customClient = NULL);
+	}
+
+	/**
 	 * Gets Bf_Roles for this Bf_Account.
 	 * @return Bf_Role[]
 	 */

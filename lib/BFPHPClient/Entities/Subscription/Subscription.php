@@ -16,6 +16,55 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_Subscriptions for a given Bf_Account
+	 * @return Bf_Subscription[]
+	 */
+	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$endpoint = "/account/".$accountID;
+		$fullRoute = $apiRoute.$endpoint;
+		
+		$response = $client->doGet($fullRoute, $options);
+		
+		$json = $response->json();
+		$results = $json['results'];
+
+		$entities = array();
+
+		foreach($results as $value) {
+			$constructedEntity = new $entityClass($value, $client);
+			array_push($entities, $constructedEntity);
+		}
+
+		return $entities;
+	}
+
+	/**
+	 * Fetches Bf_Amendments for this Bf_Subscription.
+	 * @return Bf_Amendment[]
+	 */
+	public function getAmendments($options = NULL, $customClient = NULL) {
+		return Bf_Amendment::getForSubscription($this->id, $options = NULL, $customClient = NULL);
+	}
+
+	/**
+	 * Fetches Bf_Invoices for this Bf_Subscription.
+	 * @return Bf_Invoice[]
+	 */
+	public function getInvoices($options = NULL, $customClient = NULL) {
+		return Bf_Invoice::getForSubscription($this->id, $options = NULL, $customClient = NULL);
+	}
+
+	/**
 	 * Gets Bf_PricingComponentValueChanges for this Bf_Subscription.
 	 * @return Bf_PricingComponentValueChange[]
 	 */
