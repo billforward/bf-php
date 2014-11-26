@@ -178,6 +178,12 @@ class BillForwardClient {
                 break;
             case "GET":
                 if ($data) {
+                    foreach($data as $key => $value) {
+                        if(is_bool($value)) {
+                            $data[$key] = $value ? 'true' : 'false';
+                        }
+                    }
+
                     $query = strpos($request, '?') !== FALSE ? '' : '?';
                     if($query == '?') {
                         $url = sprintf("%s?%s", $url, http_build_query($data));

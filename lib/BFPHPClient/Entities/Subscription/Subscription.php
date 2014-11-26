@@ -16,6 +16,82 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets all versions of Bf_Subscription for a given consistent ID
+	 * @return Bf_Subscription[]
+	 */
+	public static function getAllVersionsForID($id, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		// empty IDs are no good!
+		if (!$id) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		if (is_null($options) || !is_array($options)) {
+			$options = array();
+		}
+		$options['include_retired'] = true;
+
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$endpoint = "/$id";
+		$fullRoute = $apiRoute.$endpoint;
+
+		$response = $client->doGet($fullRoute, $options);
+
+		$json = $response->json();
+		$results = $json['results'];
+
+		$entities = array();
+
+		foreach($results as $value) {
+			$constructedEntity = new $entityClass($value, $client);
+			array_push($entities, $constructedEntity);
+		}
+
+		return $entities;
+	}
+
+	/**
+	 * Gets Bf_Subscription for a given version iD
+	 * @return Bf_Subscription
+	 */
+	public static function getByVersionID($versionID, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		// empty IDs are no good!
+		if (!$versionID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$endpoint = "/version/$versionID";
+		$fullRoute = $apiRoute.$endpoint;
+
+		$response = $client->doGet($fullRoute, $options);
+		$json = $response->json();
+
+		$results = $json['results'];
+
+		$firstMatch = $results[0];
+
+		return new $entityClass($firstMatch, $client);
+	}
+
+	/**
 	 * Gets Bf_Subscriptions for a given Bf_Account
 	 * @return Bf_Subscription[]
 	 */
@@ -46,6 +122,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}
 
 		return $entities;
+	}
+
+	/**
+	 * Fetches all versions of Bf_Subscription for this Bf_Subscription.
+	 * @return Bf_Subscription[]
+	 */
+	public function getAllVersions($options = NULL, $customClient = NULL) {
+		return Bf_Subscription::getAllVersionsForID($this->id, $options = NULL, $customClient = NULL);
 	}
 
 	/**
