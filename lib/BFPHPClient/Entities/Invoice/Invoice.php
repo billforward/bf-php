@@ -76,6 +76,72 @@ class Bf_Invoice extends Bf_MutableEntity {
 		return $entities;
 	}
 
+	/**
+	 * Gets Bf_Invoices for a given Bf_Subscription version
+	 * @return Bf_Invoice[]
+	 */
+	public static function getForSubscriptionVersion($subscriptionVersionID, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$endpoint = "/subscription/version/".$subscriptionVersionID;
+		$fullRoute = $apiRoute.$endpoint;
+		
+		$response = $client->doGet($fullRoute, $options);
+		
+		$json = $response->json();
+		$results = $json['results'];
+
+		$entities = array();
+
+		foreach($results as $value) {
+			$constructedEntity = new $entityClass($value, $client);
+			array_push($entities, $constructedEntity);
+		}
+
+		return $entities;
+	}
+
+	/**
+	 * Gets Bf_Invoices for a given Bf_Account
+	 * @return Bf_Invoice[]
+	 */
+	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		$entityClass = static::getClassName();
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$endpoint = "/account/".$accountID;
+		$fullRoute = $apiRoute.$endpoint;
+		
+		$response = $client->doGet($fullRoute, $options);
+		
+		$json = $response->json();
+		$results = $json['results'];
+
+		$entities = array();
+
+		foreach($results as $value) {
+			$constructedEntity = new $entityClass($value, $client);
+			array_push($entities, $constructedEntity);
+		}
+
+		return $entities;
+	}
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('invoices', 'invoice');
 	}

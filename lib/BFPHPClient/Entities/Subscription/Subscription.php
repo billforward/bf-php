@@ -340,7 +340,12 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function usePaymentMethodsFromAccount(Bf_Account $account) {
 		// list of all Payment methods on account that will be linked to this Subscription
-		$paymentMethodSubscriptionLinks = array();
+		$paymentMethodSubscriptionLinks = $this->paymentMethodSubscriptionLinks;
+
+		// set existing subscription links as deleted
+		foreach($paymentMethodSubscriptionLinks as $paymentMethodSubscriptionLink) {
+			$paymentMethodSubscriptionLink->deleted = true;
+		}
 
 		foreach($account->getPaymentMethods() as $paymentMethod) {
 			// create link to Payment Method

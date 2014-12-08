@@ -33,7 +33,9 @@ class Bf_InvoiceLine extends Bf_MutableEntity {
 		// consult parent for further unserialization
 		parent::doUnserialize($json);
 
-		$this->unserializeEntity('unitOfMeasure', Bf_UnitOfMeasure::getClassName(), $json);
+		// apparently not guaranteed to exist. let's not enforce unserialization of unit of measure.
+		// TODO: make this conditional rather than just off.
+		//$this->unserializeEntity('unitOfMeasure', Bf_UnitOfMeasure::getClassName(), $json);
 	}
 
 	/**
