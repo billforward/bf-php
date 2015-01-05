@@ -511,7 +511,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 ***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour) {
+	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated') {
 		if (!is_array($propertiesList)) {
 			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
