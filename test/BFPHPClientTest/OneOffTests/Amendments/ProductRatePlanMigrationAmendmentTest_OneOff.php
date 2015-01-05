@@ -79,4 +79,24 @@ Class Bf_ProductRatePlanMigrationAmendment_OneOffTest extends \PHPUnit_Framework
 		$createdAmendment = $subscription->migratePlan($componentNameToValueMap, $newProductRatePlanID, 'Immediate');
 		var_export($createdAmendment);
 	}
+
+	public function testMigrateWithMappingsPeriodEndOverridePricingBehaviour() {
+		$client = self::$client;
+
+		$subscriptionID = 'A4747B8A-1ECE-49CA-9888-7EB52073085A';
+		$subscription = Bf_Subscription::getByID($subscriptionID);
+
+		// 'A Sound Plan' 8AE5B829-0D0D-436D-BCDF-5612C410B139
+		// 'I love it when a Plan comes together' 		EBA12D79-32B7-4178-904B-574A782B42C6
+		$newProductRatePlanID = 'F91D1334-5438-4EB6-AAB0-BD3BEB2A5AF2';
+
+		// map pricing component names to values
+		$componentNameToValueMap = array(
+			'CPU' => 10,
+			'Bandwidth' => 20
+			);
+
+		$createdAmendment = $subscription->migratePlan($componentNameToValueMap, $newProductRatePlanID, 'Immediate', 'AtPeriodEnd', 'None');
+		var_export($createdAmendment);
+	}
 }
