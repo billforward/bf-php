@@ -78,7 +78,7 @@ class Bf_CreditNote extends Bf_MutableEntity {
 	public static function getRemainingCreditForCurrency($creditNotes, $currency = 'USD') {
 		$remainingNominalValue = 0;
 
-		for ($creditNotes as $creditNote) {
+		foreach ($creditNotes as $creditNote) {
 			if ($creditNote->currency === $currency) {
 				$remainingNominalValue += $creditNote->remainingNominalValue;
 			}
