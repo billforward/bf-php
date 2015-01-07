@@ -18,7 +18,7 @@ class Bf_Account extends Bf_MutableEntity {
 	 * @return Bf_Subscription[]
 	 */
 	public function getSubscriptions($options = NULL, $customClient = NULL) {
-		return Bf_Subscription::getForAccount($this->id, $options = NULL, $customClient = NULL);
+		return Bf_Subscription::getForAccount($this->id, $options, $customClient);
 	}
 
 	/**
@@ -47,6 +47,10 @@ class Bf_Account extends Bf_MutableEntity {
 
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('accounts', 'account');
+	}
+
+	public function getCreditNotes($options = NULL, $customClient = NULL) {
+		return Bf_CreditNote::getForAccount($this->id, $options, $customClient);
 	}
 
 	/**

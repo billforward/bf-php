@@ -71,7 +71,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Subscription[]
 	 */
 	public function getAllVersions($options = NULL, $customClient = NULL) {
-		return Bf_Subscription::getAllVersionsForID($this->id, $options = NULL, $customClient = NULL);
+		return Bf_Subscription::getAllVersionsForID($this->id, $options, $customClient);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Amendment[]
 	 */
 	public function getAmendments($options = NULL, $customClient = NULL) {
-		return Bf_Amendment::getForSubscription($this->id, $options = NULL, $customClient = NULL);
+		return Bf_Amendment::getForSubscription($this->id, $options, $customClient);
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Invoice[]
 	 */
 	public function getInvoices($options = NULL, $customClient = NULL) {
-		return Bf_Invoice::getForSubscription($this->id, $options = NULL, $customClient = NULL);
+		return Bf_Invoice::getForSubscription($this->id, $options, $customClient);
 	}
 
 	/**

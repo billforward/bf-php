@@ -147,7 +147,7 @@ Invoke with:
 
 ```
 cd build
-gradlew
+./gradlew
 ```
 
 ###Step 3. Run gradle setup
@@ -167,7 +167,7 @@ Invoke with:
 
 ```
 cd build
-gradlew setup
+./gradlew setup
 ```
 
 
@@ -205,7 +205,7 @@ This test — `BuildSampleDataTest_OneOff.php` — creates many entities on the 
 Running this test is the standard way of preparing a new user account to have tests run against it.
 
 
-We use phpunit as our testrunner. If you have run `gradlew setup`, you will find already a phpunit binary in `vendor/bin/phpunit`.
+We use phpunit as our testrunner. If you have run `./gradlew setup`, you will find already a phpunit binary in `vendor/bin/phpunit`.
 
 (Requires phpunit on PATH).
 
@@ -239,7 +239,7 @@ After adding, renaming or moving a class (ie, changing the classmap), use the bu
 Specifically, cd into `/build` and invoke:
 
 ```
-gradlew regenerateClassmap recompileClasspath
+./gradlew regenerateClassmap recompileClasspath
 ```
 
 The newly-generated `BillForward.php` should be part of any commit.

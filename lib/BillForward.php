@@ -32,6 +32,7 @@ spl_autoload_register(function($className) {
             'Bf_ComponentChange' => $baseDir . '/BFPHPClient/Entities/PricingComponent/ComponentChange.php',
             'Bf_ComponentCost' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/ComponentCost.php',
             'Bf_ComponentDiscount' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/ComponentDiscount.php',
+            'Bf_CreditNote' => $baseDir . '/BFPHPClient/Entities/CreditNote.php',
             'Bf_InsertableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/InsertableEntity.php',
             'Bf_Invoice' => $baseDir . '/BFPHPClient/Entities/Invoice/Invoice.php',
             'Bf_InvoiceLine' => $baseDir . '/BFPHPClient/Entities/Invoice/InvoiceLine.php',
