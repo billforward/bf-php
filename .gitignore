@@ -3,3 +3,5 @@ vendor/
 dist/
 composer.lock
 composer.phar
+
+*.zip
