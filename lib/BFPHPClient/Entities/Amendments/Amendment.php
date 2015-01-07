@@ -9,6 +9,7 @@ class Bf_Amendment extends Bf_InsertableEntity {
 
 	/**
 	 * Gets Bf_Amendments for a given Bf_Subscription
+	 * @param string ID of the Bf_Subscription
 	 * @return Bf_Subscriptions[]
 	 */
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {

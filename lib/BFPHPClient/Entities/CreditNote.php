@@ -23,6 +23,7 @@ class Bf_CreditNote extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_CreditNotes for a given Bf_Account
+	 * @param string ID of the Bf_Account
 	 * @return Bf_CreditNote[]
 	 */
 	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
@@ -38,6 +39,7 @@ class Bf_CreditNote extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_CreditNotes for a given Bf_Subscription
+	 * @param string ID of the Bf_Subscription
 	 * @return Bf_CreditNote[]
 	 */
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
@@ -53,6 +55,7 @@ class Bf_CreditNote extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_CreditNotes for a given Bf_Invoice
+	 * @param string ID of the Bf_Invoice
 	 * @return Bf_CreditNote[]
 	 */
 	public static function getForInvoice($invoiceID, $options = NULL, $customClient = NULL) {
@@ -68,7 +71,8 @@ class Bf_CreditNote extends Bf_MutableEntity {
 
 	/**
 	 * Gets nominal remaining value of some collection of credit notes, for the specified currency.
-	 *
+	 * @param Bf_CreditNote[] The collection of credit notes
+	 * @param ISO_4217_Currency_Code The currency code
 	 * @return int
 	 */
 	public static function getRemainingCreditForCurrency($creditNotes, $currency = 'USD') {

@@ -53,6 +53,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Invoices for a given Bf_Subscription
+	 * @param string ID of the Bf_Subscription
 	 * @return Bf_Invoice[]
 	 */
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
@@ -68,6 +69,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Invoices for a given Bf_Subscription version
+	 * @param string version ID of the Bf_Subscription
 	 * @return Bf_Invoice[]
 	 */
 	public static function getForSubscriptionVersion($subscriptionVersionID, $options = NULL, $customClient = NULL) {
@@ -83,6 +85,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Invoices for a given Bf_Account
+	 * @param string ID of the Bf_Account
 	 * @return Bf_Invoice[]
 	 */
 	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {

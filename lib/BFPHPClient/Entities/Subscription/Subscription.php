@@ -18,6 +18,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Gets all versions of Bf_Subscription for a given consistent ID
+	 * @param string ID of the Bf_Subscription
 	 * @return Bf_Subscription[]
 	 */
 	public static function getAllVersionsForID($id, $options = NULL, $customClient = NULL) {
@@ -38,6 +39,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Subscription for a given version iD
+	 * @param string version ID of the Bf_Subscription
 	 * @return Bf_Subscription
 	 */
 	public static function getByVersionID($versionID, $options = NULL, $customClient = NULL) {
@@ -53,6 +55,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Subscriptions for a given Bf_Account
+	 * @param string version ID of the Bf_Account
 	 * @return Bf_Subscription[]
 	 */
 	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
@@ -96,6 +99,22 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function getCreditNotes($options = NULL, $customClient = NULL) {
 		return Bf_CreditNote::getForSubscription($this->id, $options, $customClient);
+	}
+
+	/**
+	 * Issues against the Bf_Subscription, credit of the specified value and currency.
+	 * @param int Nominal value of credit note
+	 * @param ISO_4217_Currency_Code The currency code
+	 * @return Bf_CreditNote[]
+	 */
+	public function issueCredit($value, $currency = 'USD') {
+		$creditNote = new Bf_CreditNote(array(
+			'subscriptionID' => $this->id,
+			'nominalValue' => $value,
+			'currency' => $currency
+			));
+
+		return Bf_CreditNote::create($creditNote);
 	}
 
 	/**
