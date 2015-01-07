@@ -44,7 +44,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Gets Bf_CreditNotes for this Bf_Subscription.
+	 * Gets Bf_CreditNotes for this Bf_Invoice.
 	 * @return Bf_CreditNote[]
 	 */
 	public function getCreditNotes($options = NULL, $customClient = NULL) {
