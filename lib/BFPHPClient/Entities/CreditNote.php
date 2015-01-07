@@ -35,5 +35,52 @@ class Bf_CreditNote extends Bf_MutableEntity {
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
+
+	/**
+	 * Gets Bf_CreditNotes for a given Bf_Subscription
+	 * @return Bf_CreditNote[]
+	 */
+	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$subscriptionID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		$endpoint = "/subscription/$subscriptionID";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_CreditNotes for a given Bf_Invoice
+	 * @return Bf_CreditNote[]
+	 */
+	public static function getForInvoice($invoiceID, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$invoiceID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		$endpoint = "/invoice/$invoiceID";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets nominal remaining value of some collection of credit notes, for the specified currency.
+	 *
+	 * @return int
+	 */
+	public static function getRemainingCreditForCurrency($creditNotes, $currency = 'USD') {
+		$remainingNominalValue = 0;
+
+		for ($creditNotes as $creditNote) {
+			if ($creditNote->currency === $currency) {
+				$remainingNominalValue += $creditNote->remainingNominalValue;
+			}
+		}
+
+		return $remainingNominalValue;
+	}
 }
 Bf_CreditNote::initStatics();

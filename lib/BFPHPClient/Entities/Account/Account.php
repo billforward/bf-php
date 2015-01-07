@@ -49,8 +49,25 @@ class Bf_Account extends Bf_MutableEntity {
 		self::$_resourcePath = new Bf_ResourcePath('accounts', 'account');
 	}
 
+	/**
+	 * Gets Bf_CreditNotes for this Bf_Account.
+	 * @return Bf_CreditNote[]
+	 */
 	public function getCreditNotes($options = NULL, $customClient = NULL) {
 		return Bf_CreditNote::getForAccount($this->id, $options, $customClient);
+	}
+
+	/**
+	 * Gets nominal remaining value of all credit notes on this account, for the specified currency.
+	 *
+	 * NOTE: As with all API calls, this counts by default only the first 10 credit notes.
+	 * Override by passing into $options: array('records' => 100); or however many credit notes you expect is a reasonable upper limit.
+	 * @return int
+	 */
+	public function getRemainingCreditForCurrency($currency = 'USD', $options = NULL, $customClient = NULL) {
+		$creditNotes = $this->getCreditNotes($options, $customClient);
+
+		return Bf_CreditNote::getRemainingCreditForCurrency($creditNotes, $currency);
 	}
 
 	/**
