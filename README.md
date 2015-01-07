@@ -245,3 +245,30 @@ Specifically, cd into `/build` and invoke:
 The newly-generated `BillForward.php` should be part of any commit.
 
 Confirm also that the usual unit test run passes (run `phpunit` from the project root). Refer to the 'Setup' section for instructions on configuring your test run.
+
+#Release automation
+
+Calculates date and major/minor version of release, generates and names zipped release in root dir, tags commit with version string, pushes tag.
+
+You will still need to go to GitHub and draft a release of the tagged commit (so you can add release notes and attach the zipped file).
+
+New major version:
+
+```bash
+cd build
+sh ./releaseHelpers/release incrementMajorVer
+```
+
+Same major version:
+
+```bash
+cd build
+sh ./releaseHelpers/release
+```
+
+Untag latest release:
+
+```bash
+cd build
+sh ./releaseHelpers/delete
+```
