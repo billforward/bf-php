@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# get latest tag
+latestTag=$(git describe --abbrev=0 --tags)
+
+# delete tag
+git tag -d $latestTag
+# push tag change
+git push origin :refs/tags/$latestTag

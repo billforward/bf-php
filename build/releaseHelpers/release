@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# run me from build/ so I can find Gradle
+# sh ./releaseHelpers/release incrementMajorVer
+
+increment=0
+if [ -z "$1" ]
+	then
+    	echo "No argument supplied; will re-use version"
+	else
+    	echo "Argument supplied; will increment version"
+    	increment=1
+fi
+
+# year=$(date +%Y)
+
+# day=$(date +%-j)
+latestTag=$(git describe --abbrev=0 --tags)
+
+currentMajorVer=$(echo $latestTag | sed -E s/v\([0-9]*\)\..*/\\1/)
+incrementedMajorVer=$(( $currentMajorVer + $increment ))
+
+currentDateString=$(echo $latestTag | sed -E s/v[0-9]*\.\([0-9]*\.[0-9]*\).*/\\1/)
+dateString=$(date +%Y.%-j)
+
+newMinorVer=
+
+# current date string matches latest date string
+if [ "$currentDateString" == "$dateString" ]
+	then
+	# gotta increment minor ver
+	currentMinorVer=$(echo $latestTag | sed -E s/v[0-9]*\.[0-9]*\.[0-9]*\.//)
+	if [ -z "$currentMinorVer" ]
+		then
+	    	echo "No minor version; will increment upon 0"
+	    	currentMinorVer=0
+		else
+	    	echo "Minor version exists; will increment upon $currentMinorVer"
+	fi
+	newMinorVer=$(( $currentMinorVer + 1 ))
+	newMinorVer=.$newMinorVer
+fi
+
+# work out full-qualified version number for this release
+qualified=v$incrementedMajorVer.$dateString$newMinorVer
+
+echo $qualified
+
+# make dist folder
+./gradlew makeDist
+
+# zip dist folder
+zip -r ../$qualified.zip ../dist
+
+# tag commit
+git tag $qualified
+
+# push tags
+git push --tags
