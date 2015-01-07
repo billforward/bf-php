@@ -195,35 +195,21 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	public static function getByID($id, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
-
 		// empty IDs are no good!
 		if (!$id) {
     		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$entityClass = static::getClassName();
-
-		$apiRoute = $entityClass::getResourcePath()->getPath();
 		$endpoint = "/$id";
-		$fullRoute = $apiRoute.$endpoint;
 
-		$response = $client->doGet($fullRoute, $options);
-		$json = $response->json();
-
-		$results = $json['results'];
-
-		$firstMatch = $results[0];
-
-		return new $entityClass($firstMatch, $client);
+		return static::getFirst($endpoint, $options, $customClient);
 	}
 
 	public static function getAll($options = NULL, $customClient = NULL) {
+		return static::getCollection('', $options, $customClient);
+	}
+
+	protected static function getCollectionRaw($endpoint, $options = NULL, $customClient = NULL) {
 		$client = NULL;
 		if (is_null($customClient)) {
 			$client = static::getSingletonClient();
@@ -234,12 +220,27 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$entityClass = static::getClassName();
 
 		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$fullRoute = $apiRoute;
-
+		$fullRoute = $apiRoute.$endpoint;
+		
 		$response = $client->doGet($fullRoute, $options);
-
+		
 		$json = $response->json();
-		$results = $json['results'];
+		return $json['results'];
+	}
+
+	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		$entityClass = static::getClassName();
+
+		$results = static::getCollectionRaw($endpoint, $options, $client);
+
+		$entityClass = static::getClassName();
 
 		$entities = array();
 
@@ -249,6 +250,25 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 
 		return $entities;
+	}
+
+	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL) {
+		$client = NULL;
+		if (is_null($customClient)) {
+			$client = static::getSingletonClient();
+		} else {
+			$client = $customClient;
+		}
+
+		$entityClass = static::getClassName();
+		
+		$results = static::getCollectionRaw($endpoint, $options, $client);
+
+		$entityClass = static::getClassName();
+
+		$firstMatch = $results[0];
+
+		return new $entityClass($firstMatch, $client);
 	}
 
 	public static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {

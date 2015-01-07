@@ -23,32 +23,9 @@ class Bf_Organisation extends Bf_MutableEntity {
 	}
 
 	public static function getMine($options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
-
-		$entityClass = static::getClassName();
-
-		$apiRoute = $entityClass::getResourcePath()->getPath();
 		$endpoint = "/mine";
-		$fullRoute = $apiRoute.$endpoint;
 		
-		$response = $client->doGet($fullRoute, $options);
-		
-		$json = $response->json();
-		$results = $json['results'];
-
-		$entities = array();
-
-		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
-			array_push($entities, $constructedEntity);
-		}
-
-		return $entities;
+		return static::getCollection($endpoint, $options, $customClient);
 	}
 }
 Bf_Organisation::initStatics();

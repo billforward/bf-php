@@ -12,32 +12,14 @@ class Bf_Amendment extends Bf_InsertableEntity {
 	 * @return Bf_Subscriptions[]
 	 */
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
+		// empty IDs are no good!
+		if (!$subscriptionID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$entityClass = static::getClassName();
-
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$endpoint = "/subscription/".$subscriptionID;
-		$fullRoute = $apiRoute.$endpoint;
+		$endpoint = "/subscription/$subscriptionID";
 		
-		$response = $client->doGet($fullRoute, $options);
-		
-		$json = $response->json();
-		$results = $json['results'];
-
-		$entities = array();
-
-		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
-			array_push($entities, $constructedEntity);
-		}
-
-		return $entities;
+		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	public function discard() {

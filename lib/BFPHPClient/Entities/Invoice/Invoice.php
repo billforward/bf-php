@@ -48,32 +48,14 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @return Bf_Invoice[]
 	 */
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
+		// empty IDs are no good!
+		if (!$subscriptionID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$entityClass = static::getClassName();
+		$endpoint = "/subscription/$subscriptionID";
 
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$endpoint = "/subscription/".$subscriptionID;
-		$fullRoute = $apiRoute.$endpoint;
-		
-		$response = $client->doGet($fullRoute, $options);
-		
-		$json = $response->json();
-		$results = $json['results'];
-
-		$entities = array();
-
-		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
-			array_push($entities, $constructedEntity);
-		}
-
-		return $entities;
+		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
@@ -81,32 +63,14 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @return Bf_Invoice[]
 	 */
 	public static function getForSubscriptionVersion($subscriptionVersionID, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
+		// empty IDs are no good!
+		if (!$subscriptionVersionID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$entityClass = static::getClassName();
+		$endpoint = "/subscription/version/$subscriptionVersionID";
 
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$endpoint = "/subscription/version/".$subscriptionVersionID;
-		$fullRoute = $apiRoute.$endpoint;
-		
-		$response = $client->doGet($fullRoute, $options);
-		
-		$json = $response->json();
-		$results = $json['results'];
-
-		$entities = array();
-
-		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
-			array_push($entities, $constructedEntity);
-		}
-
-		return $entities;
+		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
@@ -114,32 +78,14 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @return Bf_Invoice[]
 	 */
 	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
+		// empty IDs are no good!
+		if (!$accountID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$entityClass = static::getClassName();
-
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$endpoint = "/account/".$accountID;
-		$fullRoute = $apiRoute.$endpoint;
+		$endpoint = "/account/$accountID";
 		
-		$response = $client->doGet($fullRoute, $options);
-		
-		$json = $response->json();
-		$results = $json['results'];
-
-		$entities = array();
-
-		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
-			array_push($entities, $constructedEntity);
-		}
-
-		return $entities;
+		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	public static function initStatics() {
