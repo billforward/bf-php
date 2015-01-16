@@ -52,6 +52,14 @@ class Bf_Invoice extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Fetches all versions of Bf_Invoice for this Bf_Invoice.
+	 * @return Bf_Invoice[]
+	 */
+	public function getAllVersions($options = NULL, $customClient = NULL) {
+		return static::getAllVersionsForID($this->id, $options, $customClient);
+	}
+
+	/**
 	 * Issues the invoice (now, or at a scheduled time).
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the issuance amendment.
 	 * @return Bf_IssueInvoiceAmendment The created amendment.
@@ -122,6 +130,59 @@ class Bf_Invoice extends Bf_MutableEntity {
 		}
 
 		$endpoint = "/subscription/$subscriptionID";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_Invoices for a given state
+	 * @param string ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] State upon which to search
+	 * @return Bf_Invoice[]
+	 */
+	public static function getByState($state, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$state) {
+    		trigger_error("Cannot lookup unspecified state!", E_USER_ERROR);
+		}
+
+		$endpoint = "/state/$state";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_Invoice for a given version ID
+	 * @param string version ID of the Bf_Invoice
+	 * @return Bf_Invoice
+	 */
+	public static function getByVersionID($invoiceVersionID, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$invoiceVersionID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		$endpoint = "/version/$invoiceVersionID";
+
+		return static::getFirst($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets all versions of Bf_Invoice for a given consistent ID
+	 * @param string ID of the Bf_Invoice
+	 * @return Bf_Invoice[]
+	 */
+	public static function getAllVersionsForID($id, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$id) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		if (is_null($options) || !is_array($options)) {
+			$options = array();
+		}
+		$options['include_retired'] = true;
+
+		$endpoint = "/$id";
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}

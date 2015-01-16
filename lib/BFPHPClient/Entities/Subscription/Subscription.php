@@ -38,7 +38,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Gets Bf_Subscription for a given version iD
+	 * Gets Bf_Subscription for a given version ID
 	 * @param string version ID of the Bf_Subscription
 	 * @return Bf_Subscription
 	 */
@@ -51,6 +51,54 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$endpoint = "/version/$versionID";
 
 		return static::getFirst($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_Subscriptions for a given product ID
+	 * @param string ID of the Bf_Product upon which to search
+	 * @return Bf_Subscription[]
+	 */
+	public static function getByProductID($productID, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$productID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		$endpoint = "/product/$productID";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_Subscriptions for a given rate plan ID
+	 * @param string ID of the Bf_ProductRatePlan upon which to search
+	 * @return Bf_Subscription[]
+	 */
+	public static function getByRatePlanID($productRatePlanID, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$productRatePlanID) {
+    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+		}
+
+		$endpoint = "/product-rate-plan/$productRatePlanID";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_Subscriptions for a given state
+	 * @param string ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] State upon which to search
+	 * @return Bf_Subscription[]
+	 */
+	public static function getByState($state, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$state) {
+    		trigger_error("Cannot lookup unspecified state!", E_USER_ERROR);
+		}
+
+		$endpoint = "/state/$state";
+
+		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
