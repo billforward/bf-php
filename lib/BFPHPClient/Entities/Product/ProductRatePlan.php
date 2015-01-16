@@ -38,6 +38,14 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Fetches Bf_Subscriptions for this Bf_ProductRatePlan.
+	 * @return Bf_Subscription[]
+	 */
+	public function getSubscriptions($options = NULL, $customClient = NULL) {
+		return Bf_Subscription::getByRatePlanID($this->id, $options, $customClient);
+	}
+
+	/**
 	 * Returns (if existent; otherwise NULL) the Bf_PricingComponent whose name matching the one 
 	 * provided.
 	 * @param string the name upon which to match

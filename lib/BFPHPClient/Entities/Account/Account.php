@@ -22,6 +22,14 @@ class Bf_Account extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Fetches Bf_Invoices for this Bf_Account.
+	 * @return Bf_Invoice[]
+	 */
+	public function getInvoices($options = NULL, $customClient = NULL) {
+		return Bf_Invoice::getForAccount($this->id, $options, $customClient);
+	}
+
+	/**
 	 * Gets Bf_Roles for this Bf_Account.
 	 * @return Bf_Role[]
 	 */
