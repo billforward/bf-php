@@ -36,4 +36,16 @@ Class Bf_InvoiceRecalculationAmendment_OneOffTest extends \PHPUnit_Framework_Tes
 		$createdAmendment = Bf_InvoiceRecalculationAmendment::create($amendment);
 		var_export($createdAmendment);
 	}
+
+	public function testIssueUsingHelper() {
+		$client = self::$client;
+    	
+    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
+    	// specifically this needs to point to a pending invoice.
+    	$invoiceID = 'C9017A9A-24A9-47BD-ABD9-1B162361455C';
+		$invoice = Bf_Invoice::getByID($invoiceID);
+
+		$createdAmendment = $invoice->recalculate();
+		var_export($createdAmendment);
+	}
 }

@@ -86,5 +86,28 @@ class Bf_CreditNote extends Bf_MutableEntity {
 
 		return $remainingNominalValue;
 	}
+
+	/**
+	 * Issues this credit note to the specified Bf_Account
+	 * @param string ID of the account to which credit should be issued
+	 * @return Bf_CreditNote The issued credit note returned by the API
+	 */
+	public function issueToAccount($accountID) {
+		$this->accountID = $accountID;
+
+		return Bf_CreditNote::create($this);
+	}
+
+	/**
+	 * Issues this credit note to the specified Bf_Subscription
+	 * @param string ID of the subscription to which credit should be issued
+	 * @param string ID of the account to whom the subscription belongs
+	 * @return Bf_CreditNote The issued credit note returned by the API
+	 */
+	public function issueToSubscription($subscriptionID) {
+		$this->subscriptionID = $subscriptionID;
+
+		return Bf_CreditNote::create($this);
+	}
 }
 Bf_CreditNote::initStatics();

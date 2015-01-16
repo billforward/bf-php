@@ -334,6 +334,23 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	return $dateTime->getTimestamp();
     }
 
+    /**
+     * Fetches (if necessary) entity by ID from API.
+     * Otherwise returns entity as-is.
+     * @param mixed ENUM[string $id, static $entity] Reference to the entity. <$id>: Fetches entity by ID. <$entity>: Returns entity as-is.
+     * @return static The gotten entity.
+     */
+    public static function fetchIfNecessary($entityReference) {
+    	if (is_string($entityReference)) {
+    		// fetch entity by ID
+    		return static::getByID($entityReference);
+    	}
+    	if (is_subclass_of($entityReference, get_called_class())) {
+    		return $entityReference;
+    	}
+    	throw new \Exception('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
+    }
+
     public function getJson() {
     	return json_encode($this, JSON_PRETTY_PRINT);
     }

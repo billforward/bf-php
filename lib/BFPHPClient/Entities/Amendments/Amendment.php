@@ -33,5 +33,45 @@ class Bf_Amendment extends Bf_InsertableEntity {
 		$createdAmendment = Bf_AmendmentDiscardAmendment::create($amendment);
 		return $createdAmendment;
 	}
+
+	/**
+	 * Parses into a BillForward timestamp the actioning time for some amendment
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the issuance amendment.
+	 * @param mixed[NULL, string $subscriptionID, Bf_Subscription $subscription] (Default: NULL) Reference to subscription (required only for 'AtPeriodEnd' time).
+	 * @return string The BillForward-formatted time.
+	 */
+	public static function parseActioningTime($actioningTime, $subscription = NULL) {
+		$date = NULL; // defaults to Immediate
+		if (is_int($actioningTime)) {
+			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
+		} else if ($actioningTime === 'AtPeriodEnd') {
+			// we need to consult subscription
+			if (is_null($subscription)) {
+				throw new \Exception('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
+			}
+			$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
+			if (!is_null($subscriptionFetched->currentPeriodEnd)) {
+				$date = $subscriptionFetched->currentPeriodEnd;
+			} else {
+				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
+			}
+		}
+		return $date;
+	}
+
+	/**
+	 * Assigns to this amendment the specified actioning time.
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the issuance amendment.
+	 * @param mixed[NULL, string $subscriptionID, Bf_Subscription $subscription] (Default: NULL) Reference to subscription (required only for 'AtPeriodEnd' time).
+	 * @return static The modified Bf_Amendment model.
+	 */
+	public function applyActioningTime($actioningTime, $subscription = NULL) {
+		$parsedActioningTime = static::parseActioningTime($actioningTime, $this->subscriptionID);
+		// if null, defaults to 'Immediate'
+		if (!is_null($parsedActioningTime)) {
+			$this->actioningTime = $parsedActioningTime;
+		}
+		return $this;
+	}
 }
 Bf_Amendment::initStatics();

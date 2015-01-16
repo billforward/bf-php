@@ -61,16 +61,15 @@ class Bf_Account extends Bf_MutableEntity {
 	 * Issues to the Bf_Account, credit of the specified value and currency.
 	 * @param int Nominal value of credit note
 	 * @param ISO_4217_Currency_Code The currency code
-	 * @return Bf_CreditNote[]
+	 * @return Bf_CreditNote
 	 */
 	public function issueCredit($value, $currency = 'USD') {
 		$creditNote = new Bf_CreditNote(array(
-			'accountID' => $this->id,
 			'nominalValue' => $value,
 			'currency' => $currency
 			));
 
-		return Bf_CreditNote::create($creditNote);
+		return $creditNote->issueToAccount($this->id);
 	}
 
 	/**

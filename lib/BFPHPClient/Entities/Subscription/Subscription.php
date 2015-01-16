@@ -105,16 +105,15 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Issues against the Bf_Subscription, credit of the specified value and currency.
 	 * @param int Nominal value of credit note
 	 * @param ISO_4217_Currency_Code The currency code
-	 * @return Bf_CreditNote[]
+	 * @return Bf_CreditNote
 	 */
 	public function issueCredit($value, $currency = 'USD') {
 		$creditNote = new Bf_CreditNote(array(
-			'subscriptionID' => $this->id,
 			'nominalValue' => $value,
 			'currency' => $currency
 			));
 
-		return Bf_CreditNote::create($creditNote);
+		return $creditNote->issueToSubscription($this->id);
 	}
 
 	/**
@@ -355,7 +354,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array List of values to assign to respective pricing components; array(103, 2)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
-	 * @param string ENUM['Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
+	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
 	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
@@ -424,7 +423,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
-	 * @param string ENUM['Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
+	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
 	public function changeValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
@@ -449,7 +448,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type. <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the upgrade amendment
-	 * @param string ENUM['Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
+	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
 	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {

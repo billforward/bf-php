@@ -52,6 +52,65 @@ class Bf_Invoice extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Issues the invoice (now, or at a scheduled time).
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the issuance amendment.
+	 * @return Bf_IssueInvoiceAmendment The created amendment.
+	 */
+	public function issue($actioningTime = 'Immediate') {
+		$amendment = new Bf_IssueInvoiceAmendment(array(
+			'subscriptionID' => $this->subscriptionID,
+			'invoiceID' => $this->id
+			));
+
+		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
+
+		$createdAmendment = Bf_IssueInvoiceAmendment::create($amendment);
+		return $createdAmendment;
+	}
+
+	/**
+	 * Recalculates the invoice (now, or at a scheduled time).
+	 * @param string ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') State to which the invoice will be moved following the recalculation.
+	 * @param string ENUM['RecalculateAsLatestSubscriptionVersion', 'RecalculateAsCurrentSubscriptionVersion'] (Default: 'RecalculateAsLatestSubscriptionVersion') How to recalculate the invoice.
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the recalculation amendment.
+	 * @return Bf_InvoiceRecalculationAmendment The created amendment.
+	 */
+	public function recalculate($newInvoiceState = 'Pending', $recalculationBehaviour = 'RecalculateAsLatestSubscriptionVersion', $actioningTime = 'Immediate') {
+		$amendment = new Bf_InvoiceRecalculationAmendment(array(
+			'subscriptionID' => $this->subscriptionID,
+			'invoiceID' => $this->id
+			));
+
+		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
+
+		$amendment->recalculationBehaviour = $recalculationBehaviour;
+
+		if (!is_null($newInvoiceState)) {
+			$amendment->newInvoiceState = $newInvoiceState;
+		}
+
+		$createdAmendment = Bf_InvoiceRecalculationAmendment::create($amendment);
+		return $createdAmendment;
+	}
+
+	/**
+	 * Retries execution of the invoice (now, or at a scheduled time).
+	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the 'next execution attempt' amendment.
+	 * @return Bf_InvoiceNextExecutionAttemptAmendment The created amendment.
+	 */
+	public function attemptRetry($actioningTime = 'Immediate') {
+		$amendment = new Bf_InvoiceNextExecutionAttemptAmendment(array(
+			'subscriptionID' => $this->subscriptionID,
+			'invoiceID' => $this->id
+			));
+
+		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
+
+		$createdAmendment = Bf_InvoiceNextExecutionAttemptAmendment::create($amendment);
+		return $createdAmendment;
+	}
+
+	/**
 	 * Gets Bf_Invoices for a given Bf_Subscription
 	 * @param string ID of the Bf_Subscription
 	 * @return Bf_Invoice[]

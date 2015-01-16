@@ -57,4 +57,29 @@ Class Bf_InvoiceNextExecutionAttemptAmendment_OneOffTest extends \PHPUnit_Framew
 		$createdAmendment = Bf_InvoiceNextExecutionAttemptAmendment::create($amendment);
 		var_export($createdAmendment);
 	}
+
+	public function testIssueUsingHelperImmediate() {
+		$client = self::$client;
+    	
+    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
+    	$invoiceID = 'C9017A9A-24A9-47BD-ABD9-1B162361455C';
+		$invoice = Bf_Invoice::getByID($invoiceID);
+
+		$createdAmendment = $invoice->attemptRetry();
+		var_export($createdAmendment);
+	}
+
+	public function testIssueUsingHelperFuture() {
+		$client = self::$client;
+    	
+    	// gets existing invoice. sorry for magic number; it's useful to me at least. :)
+    	$invoiceID = 'C9017A9A-24A9-47BD-ABD9-1B162361455C';
+		$invoice = Bf_Invoice::getByID($invoiceID);
+
+		// timestamp 2 mins from now
+		$time = time()+2*60;
+
+		$createdAmendment = $invoice->attemptRetry($time);
+		var_export($createdAmendment);
+	}
 }
