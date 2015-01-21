@@ -30,8 +30,62 @@ class Bf_Coupon extends Bf_MutableEntity {
 		return $model;
 	}
 
-	public function setDiscounts() {
+	/**
+	 * Adds a collection of Bf_CouponDiscounts to this Bf_Coupon model.
+	 * @param string ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
+	 ***
+	 *  <percentageDiscount>
+	 *  Discounts from the price of the specified pricing component: a percentage.
+	 *  Example: $amount = 31 // 31% discount
+	 *
+	 *  <cashDiscount>
+	 *  Discounts from the price of the specified pricing component: a lump sum.
+	 *  Example: $amount = 31 // $31 discount
+	 *
+	 *  <unitsFree>
+	 *  Discounts from the price of the specified pricing component: a quantity of units.
+	 *  Example: $amount = 31 // 31 ice creams free
+	 ***
+	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
+	 * @return Bf_Coupon The modified coupon model.
+	 */
+	protected function addDiscounts($discountNature, $pricingComponentsToAmounts) {
+		$newDiscounts = array();
+		foreach($pricingComponentsToAmounts as $pricingComponentIdentifier => $amount) {
+			$newDiscount = Bf_CouponDiscount::construct($discountNature, $pricingComponentIdentifier, $amount);
+			array_push($newDiscounts, $newDiscount);
+		}
+		$currentDiscounts = $this->discounts;
+		$concatenatedDiscounts = array_merge($currentDiscounts, $newDiscounts);
 
+		$this->discounts = $concatenatedDiscounts;
+	}
+
+	/**
+	 * Adds a collection of percentage CounponDiscounts to this Bf_Coupon model.
+	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
+	 * @return Bf_Coupon The modified coupon model.
+	 */
+	public function addPercentageDiscounts($pricingComponentsToAmounts) {
+		return $this->addDiscounts('percentageDiscount', $pricingComponentsToAmounts);
+	}
+
+	/**
+	 * Adds a collection of cash CounponDiscounts to this Bf_Coupon model.
+	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
+	 * @return Bf_Coupon The modified coupon model.
+	 */
+	public function addCashDiscounts($pricingComponentsToAmounts) {
+		return $this->addDiscounts('cashDiscount', $pricingComponentsToAmounts);
+	}
+
+	/**
+	 * Adds a collection of 'free units' CounponDiscounts to this Bf_Coupon model.
+	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
+	 * @return Bf_Coupon The modified coupon model.
+	 */
+	public function addFreeUnits($pricingComponentsToAmounts) {
+		return $this->addDiscounts('unitsFree', $pricingComponentsToAmounts);
 	}
 }
 Bf_Coupon::initStatics();

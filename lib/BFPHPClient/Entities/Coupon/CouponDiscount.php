@@ -10,7 +10,6 @@ class Bf_CouponDiscount extends Bf_MutableEntity {
 	/**
 	 * Constructs a Bf_CouponDiscount model.
 	 * @param string ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
-	 * @param union[string ($id | $name) | Bf_PricingComponent $entity] The pricing component to which the discount is applied. <string>: ID or name of the Bf_PricingComponent. <Bf_PricingComponent>: The Bf_PricingComponent.
 	 ***
 	 *  <percentageDiscount>
 	 *  Discounts from the price of the specified pricing component: a percentage.
@@ -23,8 +22,8 @@ class Bf_CouponDiscount extends Bf_MutableEntity {
 	 *  <unitsFree>
 	 *  Discounts from the price of the specified pricing component: a quantity of units.
 	 *  Example: $amount = 31 // 31 ice creams free
-	 *  
 	 ***
+	 * @param union[string ($id | $name) | Bf_PricingComponent $entity] The pricing component to which the discount is applied. <string>: ID or name of the Bf_PricingComponent. <Bf_PricingComponent>: The Bf_PricingComponent.
 	 * @param number The magnitude of the discount being conferred.
 	 * @return Bf_CouponDiscount The created coupon discount.
 	 */
