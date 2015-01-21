@@ -353,7 +353,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
     /**
      * Unifies type of 'entity' (which owns an identifier) and 'string' identifiers; enables consumer to distill from the reference a string identifier.
-     * @param mixed ENUM[string ($id | $name), static $entity] Reference to the entity. <$id | $name>: Returns $id or $name as-is. <$entity>: Returns $entity->id.
+     * @param union[string ($id | $name) | static $entity] Reference to the entity. <string>: $id or $name of the entity. <static>: An $entity object from which $entity->id can be ascertained.
      * @return string ID by which the referenced entity can be gotten.
      */
     public static function getIdentifier($entityReference) {
