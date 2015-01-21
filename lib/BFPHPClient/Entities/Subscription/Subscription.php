@@ -515,27 +515,27 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
 	 ***
-	 *  No migration charge will be issued at all.
 	 *  <None>
+	 *  No migration charge will be issued at all.
 	 *
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
 	 *  <Full>
+	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
 	 *  
+	 *  <Difference>
 	 *  The migration cost will be the difference between the in advance components  
 	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  <Difference>
 	 *  
+	 *  <DifferenceProRated>
 	 *  The migration cost will be the difference between the in advance components  
 	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  <DifferenceProRated>
 	 *  
+	 *  <ProRated>
 	 *  This value has two definitions.
 	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
 	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
 	 *  
 	 *   2. We are migration to a plan of a different period duration. 
 	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 *  <ProRated>
 	 ***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */

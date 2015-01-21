@@ -337,7 +337,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     /**
      * Fetches (if necessary) entity by ID from API.
      * Otherwise returns entity as-is.
-     * @param mixed ENUM[string $id, static $entity] Reference to the entity. <$id>: Fetches entity by ID. <$entity>: Returns entity as-is.
+     * @param union[string $id | static $entity] Reference to the entity. <string>: ID by which the entity can be gotten. <static>: The gotten entity.
      * @return static The gotten entity.
      */
     public static function fetchIfNecessary($entityReference) {
