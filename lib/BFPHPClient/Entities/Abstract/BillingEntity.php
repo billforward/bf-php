@@ -351,6 +351,25 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	throw new \Exception('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
+    /**
+     * Unifies type of 'entity' (which owns an identifier) and 'string' identifiers; enables consumer to distill from the reference a string identifier.
+     * @param mixed ENUM[string ($id | $name), static $entity] Reference to the entity. <$id | $name>: Returns $id or $name as-is. <$entity>: Returns $entity->id.
+     * @return string ID by which the referenced entity can be gotten.
+     */
+    public static function getIdentifier($entityReference) {
+    	if (is_string($entityReference)) {
+    		// already an identifier; return verbatim
+    		return $entityReference;
+    	}
+    	if (is_subclass_of($entityReference, get_called_class())) {
+    		// pluck identifier out of entity object
+    		if ($entityReference->id)
+    		return $entityReference->id;
+    		throw new \Exception('Cannot distill identifier from referenced entity; referenced entity does not declare an ID. Perhaps this entity is not a persisted entity retrieved from the API?');
+    	}
+    	throw new \Exception('Cannot distill identifier from referenced entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
+    }
+
     public function getJson() {
     	return json_encode($this, JSON_PRETTY_PRINT);
     }
