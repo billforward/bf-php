@@ -66,7 +66,7 @@ class Bf_Amendment extends Bf_InsertableEntity {
 	 * @return static The modified Bf_Amendment model.
 	 */
 	public function applyActioningTime($actioningTime, $subscription = NULL) {
-		$parsedActioningTime = static::parseActioningTime($actioningTime, $this->subscriptionID);
+		$parsedActioningTime = static::parseActioningTime($actioningTime, $subscription);
 		// if null, defaults to 'Immediate'
 		if (!is_null($parsedActioningTime)) {
 			$this->actioningTime = $parsedActioningTime;
