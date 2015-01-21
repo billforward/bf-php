@@ -31,7 +31,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Adds a collection of percentage CounponDiscounts to this Bf_Coupon model.
+	 * Adds a collection of percentage CouponDiscounts to this Bf_Coupon model.
 	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
 	 * @return Bf_Coupon The modified coupon model.
 	 */
@@ -40,7 +40,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Adds a collection of cash CounponDiscounts to this Bf_Coupon model.
+	 * Adds a collection of cash CouponDiscounts to this Bf_Coupon model.
 	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
 	 * @return Bf_Coupon The modified coupon model.
 	 */
@@ -49,7 +49,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Adds a collection of 'free units' CounponDiscounts to this Bf_Coupon model.
+	 * Adds a collection of 'free units' CouponDiscounts to this Bf_Coupon model.
 	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
 	 * @return Bf_Coupon The modified coupon model.
 	 */
