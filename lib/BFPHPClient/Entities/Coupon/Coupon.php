@@ -24,7 +24,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	/**
 	 * Assigns to this Bf_Coupon a Bf_ProductRatePlan and Bf_Product.
 	 * @param union[string ($id | $name) | Bf_ProductRatePlan $ratePlan] The product discounted by the coupon. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
-	 * @param union[string ($id | $name) | Bf_Product $entity | NULL] (Default: NULL) The product discounted by the coupon. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product. <NULL>: Refer to the product recruited by the Bf_ProductRatePlan.
+	 * @param union[string ($id | $name) | Bf_Product $entity | NULL] (Default: NULL) The product discounted by the coupon. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product. <NULL>: Fetch first result for Bf_ProductRatePlan (if identifying rate plan by name, please ensure this rate plan's name is unique), and use its Bf_Product.
 	 * @return Bf_Coupon The modified coupon model.
 	 */
 	public function setRatePlan($ratePlan, $product = NULL) {
