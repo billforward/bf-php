@@ -22,7 +22,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Assigns to this Bf_Coupon a Bf_ProductRatePlan.
+	 * Assigns to this Bf_Coupon a Bf_ProductRatePlan and Bf_Product.
 	 * @param union[string ($id | $name) | Bf_ProductRatePlan $ratePlan] The product discounted by the coupon. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @param union[string ($id | $name) | Bf_Product $entity | NULL] (Default: NULL) The product discounted by the coupon. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product. <NULL>: Refer to the product recruited by the Bf_ProductRatePlan.
 	 * @return Bf_Coupon The modified coupon model.
@@ -98,6 +98,19 @@ class Bf_Coupon extends Bf_MutableEntity {
 		$concatenatedDiscounts = array_merge($currentDiscounts, $newDiscounts);
 
 		$this->discounts = $concatenatedDiscounts;
+	}
+
+	/**
+	 * Gets Bf_Coupons for a given subscription ID
+	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription upon which to search. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_Coupon[]
+	 */
+	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
+		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
+
+		$endpoint = "/subscription/$subscriptionIdentifier";
+
+		return static::getCollection($endpoint, $options, $customClient);
 	}
 }
 Bf_Coupon::initStatics();

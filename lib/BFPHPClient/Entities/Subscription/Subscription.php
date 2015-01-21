@@ -150,6 +150,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_Coupons for this Bf_Subscription.
+	 * @return Bf_Coupon[]
+	 */
+	public function getCoupons($options = NULL, $customClient = NULL) {
+		return Bf_Coupon::getForSubscription($this->id, $options, $customClient);
+	}
+
+	/**
 	 * Issues against the Bf_Subscription, credit of the specified value and currency.
 	 * @param int Nominal value of credit note
 	 * @param ISO_4217_Currency_Code The currency code
