@@ -35,8 +35,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	public function addPercentageDiscounts($pricingComponentsToAmounts) {
-		return $this->addDiscounts('percentageDiscount', $pricingComponentsToAmounts);
+	public function addPercentageDiscounts($percentageDiscounts) {
+		return $this->addDiscounts('percentageDiscount', $percentageDiscounts);
 	}
 
 	/**
@@ -44,8 +44,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	public function addCashDiscounts($pricingComponentsToAmounts) {
-		return $this->addDiscounts('cashDiscount', $pricingComponentsToAmounts);
+	public function addCashDiscounts($cashDiscounts) {
+		return $this->addDiscounts('cashDiscount', $cashDiscounts);
 	}
 
 	/**
@@ -53,8 +53,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	public function addFreeUnits($pricingComponentsToAmounts) {
-		return $this->addDiscounts('unitsFree', $pricingComponentsToAmounts);
+	public function addFreeUnits($freeUnits) {
+		return $this->addDiscounts('unitsFree', $freeUnits);
 	}
 
 	/**
@@ -76,9 +76,9 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	protected function addDiscounts($discountNature, $pricingComponentsToAmounts) {
+	protected function addDiscounts($discountNature, $componentToAmountMap) {
 		$newDiscounts = array();
-		foreach($pricingComponentsToAmounts as $pricingComponentIdentifier => $amount) {
+		foreach($componentToAmountMap as $pricingComponentIdentifier => $amount) {
 			$newDiscount = Bf_CouponDiscount::construct($discountNature, $pricingComponentIdentifier, $amount);
 			array_push($newDiscounts, $newDiscount);
 		}
