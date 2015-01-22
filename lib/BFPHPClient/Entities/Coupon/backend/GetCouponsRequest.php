@@ -1,10 +1,14 @@
 <?php
 
-class Bf_GetCouponsResponse extends Bf_BillingEntity {
+/*
+ * This is not a real entity in BF, but models how a GET request can be made
+ * to the subscriptions controller and receive (something like) a coupon in response.
+ */
+class Bf_GetCouponsRequest extends Bf_BillingEntity {
 	protected static $_resourcePath;
 
 	public static function initStatics() {
-		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'GetCouponsResponse');
+		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'GetCouponsRequest');
 	}
 
 	public static function getCouponsForSubscription($subscription, $options = NULL, $customClient = NULL) {
@@ -17,4 +21,4 @@ class Bf_GetCouponsResponse extends Bf_BillingEntity {
 		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
 	}
 }
-Bf_GetCouponsResponse::initStatics();
+Bf_GetCouponsRequest::initStatics();

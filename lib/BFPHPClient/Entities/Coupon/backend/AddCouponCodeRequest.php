@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * This entity models how a POST request can be made
+ * to the subscriptions controller and receive (something like) a coupon in response.
+ */
 class Bf_AddCouponCodeRequest extends Bf_BillingEntity {
 	protected static $_resourcePath;
 
