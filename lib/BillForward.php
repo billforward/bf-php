@@ -19,6 +19,7 @@ spl_autoload_register(function($className) {
         $classMap = array(
             'Bf_APIConfiguration' => $baseDir . '/BFPHPClient/Entities/Organisation/APIConfiguration.php',
             'Bf_Account' => $baseDir . '/BFPHPClient/Entities/Account/Account.php',
+            'Bf_AddCouponCodeResponse' => $baseDir . '/BFPHPClient/Entities/Coupon/backend/AddCouponCodeResponse.php',
             'Bf_Address' => $baseDir . '/BFPHPClient/Entities/Account/Address.php',
             'Bf_Amendment' => $baseDir . '/BFPHPClient/Entities/Amendments/Amendment.php',
             'Bf_AmendmentDiscardAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/AmendmentDiscardAmendment.php',

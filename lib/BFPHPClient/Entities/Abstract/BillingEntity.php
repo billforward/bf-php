@@ -209,15 +209,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return static::getCollection('', $options, $customClient);
 	}
 
-	protected static function getCollectionRaw($endpoint, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
-
-		$entityClass = static::getClassName();
+	protected static function getCollectionRaw($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 
 		$apiRoute = $entityClass::getResourcePath()->getPath();
 		$fullRoute = $apiRoute.$endpoint;
@@ -228,19 +222,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $json['results'];
 	}
 
-	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
-
-		$entityClass = static::getClassName();
+	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 
 		$results = static::getCollectionRaw($endpoint, $options, $client);
-
-		$entityClass = static::getClassName();
 
 		$entities = array();
 
@@ -252,19 +238,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entities;
 	}
 
-	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
-
-		$entityClass = static::getClassName();
+	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 		
 		$results = static::getCollectionRaw($endpoint, $options, $client);
-
-		$entityClass = static::getClassName();
 
 		$firstMatch = $results[0];
 
