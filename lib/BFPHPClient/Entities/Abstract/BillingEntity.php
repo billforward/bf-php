@@ -221,6 +221,20 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $constructedEntity;
 	}
 
+	protected static function putAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+		$response = $client->doPut($endpoint, $payload);
+
+		$updatedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		return $updatedEntity;
+	}
+
+	protected static function retireAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+		$response = $client->doRetire($endpoint, $payload);
+
+		$retiredEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		return $retiredEntity;
+	}
+
 	protected static function responseToEntityCollection(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
 		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 

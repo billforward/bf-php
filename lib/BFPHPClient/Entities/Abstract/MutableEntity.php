@@ -11,17 +11,15 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 
 		$endpoint = static::getResourcePath()->getPath();
 
-		$response = $client->doPut($endpoint, $serial);
-
-		$constructedEntity = static::responseToFirstEntity($response, $client);
-		return $constructedEntity;
+		$updatedEntity = static::putAndGrabFirst($endpoint, $serial, $client);
+		return $updatedEntity;
 	}
 
 	/**
 	 * Asks API to retire existing instance of this entity.
 	 * Many BillForward entities lack 'retire' support.
 	 * You could try also setting the 'deleted' boolean on an entity.
-	 * @return Bf_MutableEntity the updated Entity.
+	 * @return Bf_MutableEntity the retired Entity.
 	 */
 	public function retire() {
 		$serial = $this->getSerialized();
@@ -29,9 +27,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 
 		$endpoint = static::getResourcePath()->getPath();
 
-		$response = $client->doRetire($endpoint, $serial);
-
-		$retiredEntity = static::responseToFirstEntity($response, $client);
+		$retiredEntity = static::retireAndGrabFirst($endpoint, $serial, $client);
 		return $retiredEntity;
 	}
 }
