@@ -101,29 +101,38 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_Coupon by coupon code
+	 * @param string The Coupon code of the sought Bf_Coupon.
+	 * @return Bf_Coupon The fetched Bf_Coupon.
+	 */
+	public static function getByCode($couponCode, $options = NULL, $customClient = NULL) {
+		return static::getByID($couponCode, $options = NULL, $customClient = NULL);
+	}
+
+	/**
 	 * Gets Bf_Coupons for a given subscription ID
 	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription upon which to search. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
-	 * @return Bf_Coupon[]
+	 * @return Bf_Coupon[] The fetched Bf_Coupons.
 	 */
 	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
 		return Bf_GetCouponsRequest::getCouponsForSubscription($subscription, $options = NULL, $customClient = NULL);
 	}
 
 	/**
-	 * Gets for this Coupon's base code a list of available derived unique coupon codes.
-	 * @param string The base Coupon code for which to find available derived codes.
-	 * @return Bf_Coupon[]
+	 * Gets for this Coupon's base code a list of available unique coupon codes.
+	 * @param string The base Coupon code for which to find available Unique codes.
+	 * @return Bf_Coupon[] The fetched applicable coupons.
 	 */
-	public function getDerivedCodes($options = NULL, $customClient = NULL) {
-		return static::getDerivedCodesForBaseCode($this->couponCode, $options, $customClient);
+	public function getUniqueCodes($options = NULL, $customClient = NULL) {
+		return static::getUniqueCodesFromBaseCode($this->couponCode, $options, $customClient);
 	}
 
 	/**
 	 * Gets a list of available unique coupon codes derived from a specified base code.
-	 * @param string The base Coupon code for which to find available derived codes.
-	 * @return Bf_Coupon[]
+	 * @param string The base Coupon code for which to find available unique codes.
+	 * @return Bf_Coupon[] The fetched applicable coupons.
 	 */
-	public static function getDerivedCodesForBaseCode($baseCode, $options = NULL, $customClient = NULL) {
+	public static function getUniqueCodesFromBaseCode($baseCode, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$baseCode) {
     		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
@@ -132,6 +141,29 @@ class Bf_Coupon extends Bf_MutableEntity {
 		$endpoint = "/$baseCode/codes";
 
 		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Creates unique coupon codes derived from this coupon's base code. These can be applied to subscriptions.
+	 * @param string The base Coupon code for which to create unique codes.
+	 * @return Bf_Coupon[] The created applicable coupons.
+	 */
+	public function createUniqueCodes($quantity) {
+		return static::createUniqueCodesFromBaseCode($this->couponCode, $quantity);
+	}
+
+	/**
+	 * Creates unique coupon codes derived from a specified base code. These can be applied to subscriptions.
+	 * @param string The base Coupon code for which to create unique codes.
+	 * @return Bf_Coupon[] The created applicable coupons.
+	 */
+	public static function createUniqueCodesFromBaseCode($baseCode, $quantity) {
+		$coupon = new Bf_Coupon();
+		$coupon->quantity = $quantity;
+
+		$endpoint = "/$baseCode/codes";
+
+		return static::postEntityAndGrabFirst($endpoint, $coupon, $client);
 	}
 
 	/**

@@ -7,12 +7,8 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 	 * @return the created Entity.
 	 */
 	public static function create(Bf_InsertableEntity $entity) {
-		$serial = $entity->getSerialized();
-		$client = $entity->getClient();
-
 		$endpoint = static::getResourcePath()->getPath();
 
-		$constructedEntity = static::postAndGrabFirst($endpoint, $serial, $client);
-		return $constructedEntity;
+		return static::postEntityAndGrabFirst($endpoint, $entity, $client);
 	}
 }

@@ -214,6 +214,13 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return static::getCollection('', $options, $customClient);
 	}
 
+	protected static function postEntityAndGrabFirst($endpoint, $entity, $responseEntity = NULL) {
+		$serial = $entity->getSerialized();
+		$client = $entity->getClient();
+
+		return static::postAndGrabFirst($endpoint, $serial, $client, $responseEntity);
+	}
+
 	protected static function postAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
 		$response = $client->doPost($endpoint, $payload);
 
