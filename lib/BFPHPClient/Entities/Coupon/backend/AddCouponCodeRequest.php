@@ -21,5 +21,12 @@ class Bf_AddCouponCodeRequest extends Bf_BillingEntity {
 		$constructedEntity = static::postAndGrabFirst($endpoint, $serial, $client, $responseEntity);
 		return $constructedEntity;
 	}
+
+	public static function applyCouponCodeToSubscription($couponCode, $subscription) {
+		$coupon = new Bf_Coupon();
+		$coupon->couponCode = $couponCode;
+
+		return static::applyCouponToSubscription($coupon, $subscription);
+	}
 }
 Bf_AddCouponCodeRequest::initStatics();

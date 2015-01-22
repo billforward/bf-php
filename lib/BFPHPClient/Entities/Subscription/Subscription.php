@@ -508,6 +508,15 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Applies Bf_Coupon to this Bf_Subscription
+	 * @param string The Coupon code to apply to this subscription
+	 * @return Bf_Coupon The applied coupon.
+	 */
+	public function applyCouponCode($couponCode) {
+		return Bf_Coupon::applyCouponCodeToSubscription($couponCode, $this);
+	}
+
+	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
