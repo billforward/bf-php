@@ -110,6 +110,31 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets for this Coupon's base code a list of available derived unique coupon codes.
+	 * @param string The base Coupon code for which to find available derived codes.
+	 * @return Bf_Coupon[]
+	 */
+	public function getDerivedCodes($options = NULL, $customClient = NULL) {
+		return static::getDerivedCodesForBaseCode($this->couponCode, $options, $customClient);
+	}
+
+	/**
+	 * Gets a list of available unique coupon codes derived from a specified base code.
+	 * @param string The base Coupon code for which to find available derived codes.
+	 * @return Bf_Coupon[]
+	 */
+	public static function getDerivedCodesForBaseCode($baseCode, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$baseCode) {
+    		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
+		}
+
+		$endpoint = "/$baseCode/codes";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
 	 * Applies Bf_Coupon to the specified Bf_Subscription
 	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_Coupon The applied coupon.
@@ -134,6 +159,11 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @return Bf_Coupon The retired coupon.
 	 */
 	public static function retireCouponCode($couponCode) {
+		// empty IDs are no good!
+		if (!$couponCode) {
+    		trigger_error("Cannot lookup empty coupon code!", E_USER_ERROR);
+		}
+
 		$client = Bf_BillingEntity::getSingletonClient();
 		$endpoint = "/$couponCode";
 
