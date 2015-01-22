@@ -214,25 +214,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return static::getCollection('', $options, $customClient);
 	}
 
-	protected static function getCollectionRaw($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function responseToEntityCollection(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
 		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$fullRoute = $apiRoute.$endpoint;
-		
-		$response = $client->doGet($fullRoute, $options);
-		
 		$results = $response->getResults();
-		return $results;
-	}
-
-	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
-		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
-
-		$results = static::getCollectionRaw($endpoint, $options, $client);
-
 		$entities = array();
 
 		foreach($results as $value) {
@@ -243,15 +228,41 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entities;
 	}
 
-	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function responseToFirstEntity(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
 		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
-		
-		$results = static::getCollectionRaw($endpoint, $options, $client);
 
-		$firstMatch = $results[0];
+		$firstMatch = $response->getFirstResult();
 
 		$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $firstMatch, $client);
+		return $constructedEntity;
+	}
+
+	protected static function getResponseRaw($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$fullRoute = $apiRoute.$endpoint;
+		
+		$response = $client->doGet($fullRoute, $options);
+		return $response;
+	}
+
+	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+
+		$response = static::getResponseRaw($endpoint, $options, $client);
+
+		$entities = static::responseToEntityCollection($response, $client, $responseEntity);
+		return $entities;
+	}
+
+	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		
+		$response = static::getResponseRaw($endpoint, $options, $client);
+
+		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $constructedEntity;
 	}
 

@@ -6,7 +6,7 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 	 * @param the Entity to create.
 	 * @return the created Entity.
 	 */
-	public static function create(Bf_InsertableEntity $entity) {
+	public static function create(Bf_InsertableEntity $entity, $responseEntity = NULL) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
 
@@ -14,27 +14,7 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 
 		$response = $client->doPost($endpoint, $serial);
 
-		$constructedEntity = static::makeEntityFromResponseStatic($response, $client);
-
+		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $constructedEntity;
-	}
-
-	protected static function makeEntityFromResponseStatic(Bf_RawAPIOutput $response, BillForwardClient $client) {
-		// For now assume that request succeeds, and also that user only wanted to create one entity.
-		$probablyOnlyEntity = $payload->getFirstResult();
-
-		$entityClass = static::getClassName();
-		
-		$constructedEntity = new $entityClass($probablyOnlyEntity, $client);
-
-		return $constructedEntity;
-	}
-
-	protected function makeEntityFromResponse(Bf_RawAPIOutput $response) {
-		$client = $this->getClient();
-
-		$thisClass = static::getClassName();
-
-		return $thisClass::makeEntityFromResponseStatic($response, $client);
 	}
 }

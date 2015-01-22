@@ -6,17 +6,14 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 	 * @return the updated Entity.
 	 */
 	public function save() {
-		$serial = $this->getSerialized($this);
+		$serial = $this->getSerialized();
+		$client = $this->getClient();
 
-		$client = $this
-		->getClient();
-
-		$endpoint = static::getResourcePath()
-		->getPath();
+		$endpoint = static::getResourcePath()->getPath();
 
 		$response = $client->doPut($endpoint, $serial);
-		$constructedEntity = $this->makeEntityFromResponse($response);
 
+		$constructedEntity = static::responseToFirstEntity($response, $client);
 		return $constructedEntity;
 	}
 
@@ -27,17 +24,14 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 	 * @return the updated Entity.
 	 */
 	public function retire() {
-		$serial = $this->getSerialized($this);
+		$serial = $this->getSerialized();
+		$client = $this->getClient();
 
-		$client = $this
-		->getClient();
-
-		$endpoint = static::getResourcePath()
-		->getPath();
+		$endpoint = static::getResourcePath()->getPath();
 
 		$response = $client->doRetire($endpoint, $serial);
-		$retiredEntity = $this->makeEntityFromResponse($response);
 
+		$retiredEntity = static::responseToFirstEntity($response, $client);
 		return $retiredEntity;
 	}
 }
