@@ -34,8 +34,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param number The magnitude of the discount being conferred.
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	public function addPercentageDiscount($percentageDiscount) {
-		return $this->addDiscount('percentageDiscount', $percentageDiscount);
+	public function addPercentageDiscount($pricingComponent, $amount) {
+		return $this->addDiscount('percentageDiscount', $pricingComponent, $amount);
 	}
 
 	/**
@@ -53,8 +53,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param number The magnitude of the discount being conferred.
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	public function addCashDiscount($cashDiscount) {
-		return $this->addDiscount('cashDiscount', $cashDiscount);
+	public function addCashDiscount($pricingComponent, $amount) {
+		return $this->addDiscount('cashDiscount', $pricingComponent, $amount);
 	}
 
 	/**
@@ -72,8 +72,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param number The magnitude of the discount being conferred.
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	public function addFreeUnitsDiscount($freeUnitsDiscount) {
-		return $this->addDiscount('unitsFree', $freeUnitsDiscount);
+	public function addFreeUnitsDiscount($pricingComponent, $amount) {
+		return $this->addDiscount('unitsFree', $pricingComponent, $amount);
 	}
 
 	/**
@@ -101,11 +101,12 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 *  Discounts from the price of the specified pricing component: a quantity of units.
 	 *  Example: $amount = 31 // 31 ice creams free
 	 ***
-	 * @param Dictionary<string ($id | $name), Number> Map of pricing component identifiers (ID or name) to magnitude of discount; array('Bandwidth usage' => 31)
+	 * @param union[string ($id | $name) | Bf_PricingComponent $entity] The pricing component to which the discount is applied. <string>: ID or name of the Bf_PricingComponent. <Bf_PricingComponent>: The Bf_PricingComponent.
+	 * @param number The magnitude of the discount being conferred.
 	 * @return Bf_Coupon The modified coupon model.
 	 */
-	protected function addDiscount($discountNature, $pricingComponentIdentifier, $amount) {
-		$newDiscount = Bf_CouponDiscount::construct($discountNature, $pricingComponentIdentifier, $amount);
+	protected function addDiscount($discountNature, $pricingComponent, $amount) {
+		$newDiscount = Bf_CouponDiscount::construct($discountNature, $pricingComponent, $amount);
 		array_push($this->discounts, $newDiscount);
 		
 		return $this;
