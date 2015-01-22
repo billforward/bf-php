@@ -1,10 +1,10 @@
 <?php
 
-class Bf_AddCouponCodeResponse extends Bf_BillingEntity {
+class Bf_AddCouponCodeRequest extends Bf_BillingEntity {
 	protected static $_resourcePath;
 
 	public static function initStatics() {
-		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'AddCouponCodeResponse');
+		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'AddCouponCodeRequest');
 	}
 
 	public static function applyCouponToSubscription(Bf_Coupon $coupon, $subscription) {
@@ -18,4 +18,4 @@ class Bf_AddCouponCodeResponse extends Bf_BillingEntity {
 		return $constructedEntity;
 	}
 }
-Bf_AddCouponCodeResponse::initStatics();
+Bf_AddCouponCodeRequest::initStatics();
