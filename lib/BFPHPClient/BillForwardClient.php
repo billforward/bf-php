@@ -23,6 +23,18 @@ class Bf_RawAPIOutput {
     public function getInfo() {
         return $this->info;
     }
+
+    public function getResults() {
+        $json = $this->json();
+        $results = $json['results'];
+        return $results;
+    }
+
+    public function getFirstResult() {
+        $results = $this->getResults();
+        $firstResult = $results[0];
+        return $firstResult;
+    }
 }
 
 class BillForwardClient {

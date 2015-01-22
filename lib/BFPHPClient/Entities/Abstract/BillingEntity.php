@@ -223,8 +223,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		
 		$response = $client->doGet($fullRoute, $options);
 		
-		$json = $response->json();
-		return $json['results'];
+		$results = $response->getResults();
+		return $results;
 	}
 
 	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
