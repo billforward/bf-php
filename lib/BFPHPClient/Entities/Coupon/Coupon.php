@@ -186,7 +186,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Retires coupons by a specified code.
+	 * Retires coupons by the specified code.
 	 * @param string The Coupon code to retire.
 	 * @return Bf_Coupon The retired coupon.
 	 */
