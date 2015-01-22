@@ -22,8 +22,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 		$productIdentifier = Bf_Product::getIdentifier($product);
 		$ratePlanIdentifier = Bf_ProductRatePlan::getIdentifier($ratePlan);
 
-		$this->product = $product;
-		$this->productRatePlan = $ratePlan;
+		$this->product = $productIdentifier;
+		$this->productRatePlan = $ratePlanIdentifier;
 
 		return $this;
 	}
