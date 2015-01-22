@@ -117,5 +117,18 @@ class Bf_Coupon extends Bf_MutableEntity {
 	public function applyToSubscription($subscription) {
 		return Bf_AddCouponCodeResponse::applyCouponToSubscription($this, $subscription);
 	}
+
+	/**
+	 * Retires coupons by a specified code.
+	 * @param string The Coupon code to retire.
+	 * @return Bf_Coupon The retired coupon.
+	 */
+	public static function retireCouponCode($couponCode) {
+		$client = Bf_BillingEntity::getSingletonClient();
+		$endpoint = "/$couponCode";
+
+		$retiredEntity = static::retireAndGrabFirst($endpoint, NULL, $client);
+		return $retiredEntity;
+	}
 }
 Bf_Coupon::initStatics();
