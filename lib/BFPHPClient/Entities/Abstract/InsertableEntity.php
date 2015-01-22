@@ -12,9 +12,7 @@ abstract class Bf_InsertableEntity extends Bf_BillingEntity {
 
 		$endpoint = static::getResourcePath()->getPath();
 
-		$response = $client->doPost($endpoint, $serial);
-
-		$constructedEntity = static::responseToFirstEntity($response, $client);
+		$constructedEntity = static::postAndGrabFirst($endpoint, $serial, $client);
 		return $constructedEntity;
 	}
 }
