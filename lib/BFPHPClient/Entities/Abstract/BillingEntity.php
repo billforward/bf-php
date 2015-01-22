@@ -143,6 +143,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entityArray;
 	}
 
+	public static function constructEntityFromArgs($entityClass, $constructArgs, $client) {
+		$newEntity = new $entityClass($constructArgs, $client);
+		return $newEntity;
+	}
+
 	protected function buildEntity($class, $constructArgs) {
 		$client = $this->getClient();
 		if (!is_array($constructArgs)) {
@@ -163,7 +168,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 				throw new \Exception($errorString);
 			}
 		} else {
-			$newEntity = new $class($constructArgs, $client);
+			$newEntity = Bf_BillingEntity::constructEntityFromArgs($class, $constructArgs, $client);
 		}
 		return $newEntity;
 	}
@@ -231,7 +236,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$entities = array();
 
 		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
+			$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $value, $client);
 			array_push($entities, $constructedEntity);
 		}
 
@@ -246,7 +251,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 		$firstMatch = $results[0];
 
-		return new $entityClass($firstMatch, $client);
+		$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $firstMatch, $client);
+		return $constructedEntity;
 	}
 
 	public static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {

@@ -7,10 +7,10 @@ class Bf_GetCouponsResponse extends Bf_BillingEntity {
 		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'GetCouponsResponse');
 	}
 
-	public static function getCouponsForSubscription() {
+	public static function getCouponsForSubscription($subscription, $options = NULL, $customClient = NULL) {
 		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
 
-		$endpoint = "/subscription/$subscriptionIdentifier";
+		$endpoint = "/$subscriptionIdentifier/coupon";
 
 		$responseEntity = Bf_Coupon::getClassName();
 

@@ -108,5 +108,14 @@ class Bf_Coupon extends Bf_MutableEntity {
 	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
 		return Bf_GetCouponsResponse::getCouponsForSubscription($subscription, $options = NULL, $customClient = NULL);
 	}
+
+	/**
+	 * Applies Bf_Coupon to the specified Bf_Subscription
+	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_Coupon
+	 */
+	public function applyToSubscription($subscription, $options = NULL, $customClient = NULL) {
+		return Bf_GetCouponsResponse::applyCouponToSubscription($this, $subscription, $options = NULL, $customClient = NULL);
+	}
 }
 Bf_Coupon::initStatics();
