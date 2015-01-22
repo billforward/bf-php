@@ -205,7 +205,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$endpoint = "/$id";
+		$encoded = rawurlencode($id);
+
+		$endpoint = "/$encoded";
+		var_export($endpoint);
 
 		return static::getFirst($endpoint, $options, $customClient);
 	}
