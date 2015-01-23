@@ -1,13 +1,23 @@
 <?php
-class CouponTest extends PHPUnit_Framework_TestCase {
-	protected static $client = NULL;
-	protected static $config = NULL;
+namespace BFPHPClientTest;
+class CouponTest extends \PHPUnit_Framework_TestCase {
+	protected static $entities = NULL;
 
 	public static function setUpBeforeClass() {
-		BFPHPClientTest\TestBase::initialize();
+		TestBase::initialize();
+		self::$entities = self::makeRequiredEntities();
 	}
 
 	public static function makeRequiredEntities() {
+		$useExistingOrMakeNew = function($entityClass, $model) {
+			$name = $model->name;
+			$existing = $entityClass::getByID($name);
+			if ($existing) {
+				return $existing;
+			}
+			return $entityClass::getByID($name);
+		};
+
 		$models = array(
 			'account' => Models::Account(),
 			'uom' => array(
@@ -21,29 +31,30 @@ class CouponTest extends PHPUnit_Framework_TestCase {
 				)
 			);
 		$created = array(
-			'account' => Bf_Account::create($models['account']),
+			'account' => \Bf_Account::create($models['account']),
 			'uom' => array(
-				Bf_UnitOfMeasure::create($models['uom'][0]),
-				Bf_UnitOfMeasure::create($models['uom'][1])
+				$useExistingOrMakeNew(\Bf_UnitOfMeasure::getClassName(), $models['uom'][0]),
+				$useExistingOrMakeNew(\Bf_UnitOfMeasure::getClassName(), $models['uom'][1]),
 				),
-			'product' => Bf_Product::create($models['product'])
+			'product' => \Bf_Product::create($models['product'])
 			);
 		// having created product, make rate plan for it
 		$models['pricingComponents'] = array(
 			Models::PricingComponent($created['uom'][0], $models['pricingComponentTierLists'][0]),
-			Models::PricingComponent($created['uom'][1], $models['pricingComponentTierLists'][1])
+			Models::PricingComponent2($created['uom'][1], $models['pricingComponentTierLists'][1])
 			);
 		$models['ratePlan'] = Models::ProductRatePlan($created['product'], $models['pricingComponents']);
-		$created['ratePlan'] = $models['ratePlan'];
+		$created['ratePlan'] = \Bf_ProductRatePlan::create($models['ratePlan']);
 
 		$models['subscription'] = Models::Subscription($created['ratePlan'], $created['account']);
-		$created['subscription'] = $models['subscription'];
+		$created['subscription'] = \Bf_Subscription::create($models['subscription']);
 
 		return $created;
 	}
 
 	public function testCreate()
     {	
+    	var_export(self::$entities);
     	/*
 
 		$this->assertEquals(

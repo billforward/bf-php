@@ -1,8 +1,9 @@
 <?php
+namespace BFPHPClientTest;
 class Models {
 	public static function Account() {
 		//-- Make account with expected profile, profile with expected address
-		$address = new Bf_Address(array(
+		$address = new \Bf_Address(array(
 			'addressLine1' => 'address line 1',
 		    'addressLine2' => 'address line 2',
 		    'addressLine3' => 'address line 3',
@@ -16,14 +17,14 @@ class Models {
 		// make one-item list of addresses
 		$addresses = array($address);
 
-		$profile = new Bf_Profile(array(
+		$profile = new \Bf_Profile(array(
 			'email' => 'chill.guy@sharklasers.com',
 			'firstName' => 'Ruby',
 			'lastName' => 'Red',
 			'addresses' => $addresses,
 			));
 		
-		$account = new Bf_Account(array(
+		$account = new \Bf_Account(array(
 			'profile' => $profile,
 			));
 
@@ -31,7 +32,7 @@ class Models {
 	}
 
 	public static function UnitOfMeasure() {
-		$uom = new Bf_UnitOfMeasure(array(
+		$uom = new \Bf_UnitOfMeasure(array(
 			'name' => 'CPU',
 			'displayedAs' => 'Cycles',
 			'roundingScheme' => 'UP',
@@ -40,7 +41,7 @@ class Models {
 	}
 
 	public static function UnitOfMeasure2() {
-		$uom = new Bf_UnitOfMeasure(array(
+		$uom = new \Bf_UnitOfMeasure(array(
 			'name' => 'Bandwidth',
 			'displayedAs' => 'Mbps',
 			'roundingScheme' => 'UP',
@@ -49,7 +50,7 @@ class Models {
 	}
 
 	public static function MonthlyProduct() {
-		$product = new Bf_Product(array(
+		$product = new \Bf_Product(array(
 			'productType' => 'non-recurring',
 			'state' => 'prod',
 			'name' => 'Monthly non-recurring',
@@ -61,7 +62,7 @@ class Models {
 	}
 
 	public static function FastProduct() {
-		$product = new Bf_Product(array(
+		$product = new \Bf_Product(array(
 			'productType' => 'recurring',
 			'state' => 'prod',
 			'name' => 'Quickly recurring',
@@ -74,19 +75,19 @@ class Models {
 
 	public static function PricingComponentTiers() {
 		$tiers = array(
-			new Bf_PricingComponentTier(array(
+			new \Bf_PricingComponentTier(array(
 			'lowerThreshold' => 0,
 			'upperThreshold' => 0,
 			'pricingType' => 'unit',
 			'price' => 0,
 			)),
-			new Bf_PricingComponentTier(array(
+			new \Bf_PricingComponentTier(array(
 			'lowerThreshold' => 1,
 			'upperThreshold' => 10,
 			'pricingType' => 'unit',
 			'price' => 1,
 			)),
-			new Bf_PricingComponentTier(array(
+			new \Bf_PricingComponentTier(array(
 			'lowerThreshold' => 11,
 			'upperThreshold' => 1000,
 			'pricingType' => 'unit',
@@ -98,19 +99,19 @@ class Models {
 
 	public static function PricingComponentTiers2() {
 		$tiers = array(
-			new Bf_PricingComponentTier(array(
+			new \Bf_PricingComponentTier(array(
 			'lowerThreshold' => 0,
 			'upperThreshold' => 0,
 			'pricingType' => 'unit',
 			'price' => 0,
 			)),
-			new Bf_PricingComponentTier(array(
+			new \Bf_PricingComponentTier(array(
 			'lowerThreshold' => 1,
 			'upperThreshold' => 10,
 			'pricingType' => 'unit',
 			'price' => 0.10,
 			)),
-			new Bf_PricingComponentTier(array(
+			new \Bf_PricingComponentTier(array(
 			'lowerThreshold' => 11,
 			'upperThreshold' => 1000,
 			'pricingType' => 'unit',
@@ -121,7 +122,7 @@ class Models {
 	}
 
 	public static function PricingComponent($unitOfMeasure, $tiers) {
-		$pricingComponent = new Bf_PricingComponent(array(
+		$pricingComponent = new \Bf_PricingComponent(array(
 			'@type' => 'tieredPricingComponent',
 			'chargeModel' => 'tiered',
 			'name' => 'CPU',
@@ -137,7 +138,7 @@ class Models {
 	}
 
 	public static function PricingComponent2($unitOfMeasure, $tiers) {
-		$pricingComponent = new Bf_PricingComponent(array(
+		$pricingComponent = new \Bf_PricingComponent(array(
 			'@type' => 'tieredPricingComponent',
 			'chargeModel' => 'tiered',
 			'name' => 'Bandwidth',
@@ -153,7 +154,7 @@ class Models {
 	}
 
 	public static function ProductRatePlan($product, $pricingComponentsArray) {
-		$prp = new Bf_ProductRatePlan(array(
+		$prp = new \Bf_ProductRatePlan(array(
 			'currency' => 'USD',
 			'name' => 'Gold membership',
 			'pricingComponents' => $pricingComponentsArray,
@@ -163,7 +164,7 @@ class Models {
 	}
 
 	public static function Subscription($ratePlan, $account) {
-		$subscription = new Bf_Subscription(array(
+		$subscription = new \Bf_Subscription(array(
 			'type' => 'Subscription',
 			'productRatePlanID' => $ratePlan->id,
 			'accountID' => $account->id,

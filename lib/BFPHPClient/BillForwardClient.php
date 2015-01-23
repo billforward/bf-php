@@ -32,9 +32,18 @@ class Bf_RawAPIOutput {
 
     public function getFirstResult() {
         $results = $this->getResults();
+
+        if (count($results) <= 0) {
+            throw new Bf_NoMatchingEntityException('No results returned - therefore cannot lookup first member.');
+        }
+
         $firstResult = $results[0];
         return $firstResult;
     }
+}
+
+class Bf_NoMatchingEntityException extends \Exception
+{
 }
 
 class BillForwardClient {

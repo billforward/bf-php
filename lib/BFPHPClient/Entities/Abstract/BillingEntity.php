@@ -208,7 +208,6 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$encoded = rawurlencode($id);
 
 		$endpoint = "/$encoded";
-		var_export($endpoint);
 
 		return static::getFirst($endpoint, $options, $customClient);
 	}

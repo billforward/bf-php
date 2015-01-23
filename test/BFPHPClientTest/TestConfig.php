@@ -38,23 +38,23 @@ class TestConfig {
 	private $usualPaymentMethodLinkID;
 
 	public function __construct() {
-		$this->access_token = '';
-		$this->urlRoot = 'https://api-sandbox.billforward.net/2014.251.0/';
+		$this->access_token = '90b48c89-5438-4469-8f9e-4b29da4104b5';
+		$this->urlRoot = 'http://local.billforward.net:8089/RestAPI/';
 
-        $this->usualLoginAccountID = '';
-		$this->usualLoginUserID = '';
-		$this->usualOrganisationID = '';
-		$this->usualAccountID = '';
-		$this->usualProfileID = '';
-		$this->usualAddressID = '';
-		$this->usualPaymentMethodLinkID = '';
-		$this->usualPaymentMethodID = '';
-		$this->usualProductID = '';
-		$this->usualProductRatePlanID = '';
-		$this->usualFlatPricingComponentID = '';
-		$this->usualTieredPricingComponentID = '';
-		$this->usualSubscriptionID = '';
-		$this->usualUnitOfMeasureID = '';
+$this->usualLoginAccountID = '95EC18AB-509F-44D7-9272-B9B2AB1AC4B4';
+$this->usualLoginUserID = '0B35F31B-A949-4B6D-A277-3CDFEAD11EF1';
+$this->usualOrganisationID = 'D26698C3-D3F2-4B67-A54E-E7CECF09CFB5';
+$this->usualAccountID = '0D3C9D3A-E8A3-4E25-9A4D-9B489928DEA1';
+$this->usualProfileID = '71BCD9FC-B7F4-4660-85C3-760274C123A9';
+$this->usualAddressID = 'C34A2B39-04CA-4A05-A279-B7FF89DCBAD3';
+$this->usualPaymentMethodLinkID = 'A1AE0711-A023-4B15-BB6C-0282BA8B3933';
+$this->usualPaymentMethodID = '894028C4-06B0-4549-9BD0-30FB4320EC01';
+$this->usualProductID = '25C37AB1-234A-4670-8A37-86EBC8F9C8A1';
+$this->usualProductRatePlanID = '7570EF54-BE35-485B-B690-8344E74B7610';
+$this->usualFlatPricingComponentID = '091CFD7E-3EEA-4E56-9519-3C166C361070';
+$this->usualTieredPricingComponentID = '3D8D38B6-5B56-4532-9AB1-229ECD35E644';
+$this->usualSubscriptionID = '19823574-2212-40B9-B045-DB30F18CE352';
+$this->usualUnitOfMeasureID = '8E002C2A-0EA2-4E8F-9E9F-9EE115A63E3D';
 
 		$this->client = new BillForwardClient($this->access_token, $this->urlRoot);
         BillForwardClient::setDefaultClient($this->client);
@@ -156,7 +156,7 @@ class TestConfig {
 	}
 
 	public function getUsualProductDescription() {
-		return 'It can cure the common cold, and being struck by lightning';
+		return 'Purchaseables to which customer has an automatically-renewing, monthly entitlement';
 	}
 
 	/**
@@ -319,12 +319,12 @@ class TestConfig {
 
 		//-- Make product
 		$product = new Bf_Product(array(
-			'productType' => 'non-recurring',
+			'productType' => 'recurring',
 			'state' => 'prod',
-			'name' => 'Month of Paracetamoxyfrusebendroneomycin',
+			'name' => 'Monthly recurring',
 			'description' => $productDescription,
-			'durationPeriod' => 'days',
-			'duration' => 28,
+			'durationPeriod' => 'months',
+			'duration' => 1,
 			));
 		$createdProduct = Bf_Product::create($product);
 		$createdProductID = $createdProduct->id;
