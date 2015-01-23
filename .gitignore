@@ -5,3 +5,5 @@ composer.lock
 composer.phar
 
 *.zip
+
+test/BFPHPClientTest/new/config/config.php

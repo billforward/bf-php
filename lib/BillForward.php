@@ -35,8 +35,6 @@ spl_autoload_register(function($className) {
             'Bf_ComponentDiscount' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/ComponentDiscount.php',
             'Bf_Coupon' => $baseDir . '/BFPHPClient/Entities/Coupon/Coupon.php',
             'Bf_CouponDiscount' => $baseDir . '/BFPHPClient/Entities/Coupon/CouponDiscount.php',
-            'Bf_CouponUniqueCodesRequest' => $baseDir . '/BFPHPClient/Entities/Coupon/backend/CouponUniqueCodesRequest.php',
-            'Bf_CouponUniqueCodesResponse' => $baseDir . '/BFPHPClient/Entities/Coupon/backend/CouponUniqueCodesResponse.php',
             'Bf_CreditNote' => $baseDir . '/BFPHPClient/Entities/CreditNote.php',
             'Bf_GetCouponsRequest' => $baseDir . '/BFPHPClient/Entities/Coupon/backend/GetCouponsRequest.php',
             'Bf_InsertableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/InsertableEntity.php',
