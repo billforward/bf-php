@@ -1,23 +1,20 @@
 <?php
-class Bf_AccountTest extends PHPUnit_Framework_TestCase {
+class CouponTest extends PHPUnit_Framework_TestCase {
 	protected static $client = NULL;
 	protected static $config = NULL;
 
 	public static function setUpBeforeClass() {
-		BFPHPClientTest\TestBase::initialize();
+		TestBase::initialize();
 	}
 
-	public function testGetAll()
+	public static function makeRequiredEntities() {
+		$accountModel = Models::Account();
+		$accountCreated = Bf_Account::create($accountModel);
+	}
+
+	public function testCreate()
     {	
-    	// short alias
-    	$client = self::$client;
     	
-		$accounts = Bf_Account::getAll();
-
-		$firstAccount = $accounts[0];
-
-		$expected = Bf_Account::getResourcePath()->getEntityName();
-		$actual = $firstAccount['@type'];
 
 		$this->assertEquals(
 			$expected,
