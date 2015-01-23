@@ -9,9 +9,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 		$serial = $this->getSerialized();
 		$client = $this->getClient();
 
-		$endpoint = static::getResourcePath()->getPath();
-
-		$updatedEntity = static::putAndGrabFirst($endpoint, $serial, $client);
+		$updatedEntity = static::putAndGrabFirst('', $serial, $client);
 		return $updatedEntity;
 	}
 
@@ -25,9 +23,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 		$serial = $this->getSerialized();
 		$client = $this->getClient();
 
-		$endpoint = static::getResourcePath()->getPath();
-
-		$retiredEntity = static::retireAndGrabFirst($endpoint, $serial, $client);
+		$retiredEntity = static::retireAndGrabFirst('', $serial, $client);
 		return $retiredEntity;
 	}
 }
