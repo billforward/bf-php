@@ -1,4 +1,5 @@
 <?php
+namespace BFPHPClientTest;
 class TestBase {
 	private static $client = NULL;
 	private static $initialized = false;

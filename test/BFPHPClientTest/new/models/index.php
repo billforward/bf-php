@@ -119,4 +119,57 @@ class Models {
 			);
 		return $tiers;
 	}
+
+	public static function PricingComponent($unitOfMeasure, $tiers) {
+		$pricingComponent = new Bf_PricingComponent(array(
+			'@type' => 'tieredPricingComponent',
+			'chargeModel' => 'tiered',
+			'name' => 'CPU',
+			'description' => 'CPU entitlement for the period',
+			'unitOfMeasureID' => $unitOfMeasure->id,
+			'chargeType' => 'subscription',
+			'upgradeMode' => 'immediate',
+			'downgradeMode' => 'immediate',
+			'defaultQuantity' => 0,
+			'tiers' => $tiers
+			));
+		return $pricingComponent;
+	}
+
+	public static function PricingComponent2($unitOfMeasure, $tiers) {
+		$pricingComponent = new Bf_PricingComponent(array(
+			'@type' => 'tieredPricingComponent',
+			'chargeModel' => 'tiered',
+			'name' => 'Bandwidth',
+			'description' => 'Bandwidth consumed during the period',
+			'unitOfMeasureID' => $unitOfMeasure->id,
+			'chargeType' => 'usage',
+			'upgradeMode' => 'immediate',
+			'downgradeMode' => 'immediate',
+			'defaultQuantity' => 0,
+			'tiers' => $tiers
+			));
+		return $pricingComponent;
+	}
+
+	public static function ProductRatePlan($product, $pricingComponentsArray) {
+		$prp = new Bf_ProductRatePlan(array(
+			'currency' => 'USD',
+			'name' => 'Gold membership',
+			'pricingComponents' => $pricingComponentsArray,
+			'productID' => $product->id,
+			));
+		return $prp;
+	}
+
+	public static function Subscription($ratePlan, $account) {
+		$subscription = new Bf_Subscription(array(
+			'type' => 'Subscription',
+			'productRatePlanID' => $ratePlan->id,
+			'accountID' => $account->id,
+			'name' => 'Memorable Subscription',
+			'description' => 'Memorable Subscription Description'
+			));
+		return $subscription;
+	}
 }
