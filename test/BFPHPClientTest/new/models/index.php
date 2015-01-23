@@ -43,7 +43,7 @@ class Models {
 	public static function UnitOfMeasure2() {
 		$uom = new \Bf_UnitOfMeasure(array(
 			'name' => 'Bandwidth',
-			'displayedAs' => 'Mbps',
+			'displayedAs' => 'MB',
 			'roundingScheme' => 'UP',
 			));
 		return $uom;
@@ -155,6 +155,22 @@ class Models {
 			'chargeModel' => 'tiered',
 			'name' => 'Bandwidth',
 			'description' => 'Bandwidth consumed during the period',
+			'unitOfMeasureID' => $unitOfMeasure->id,
+			'chargeType' => 'usage',
+			'upgradeMode' => 'immediate',
+			'downgradeMode' => 'immediate',
+			'defaultQuantity' => 0,
+			'tiers' => $tiers
+			));
+		return $pricingComponent;
+	}
+
+	public static function PricingComponent3($unitOfMeasure, $tiers) {
+		$pricingComponent = new \Bf_PricingComponent(array(
+			'@type' => 'tieredPricingComponent',
+			'chargeModel' => 'tiered',
+			'name' => 'P2P traffic',
+			'description' => 'P2P traffic consumed during the period',
 			'unitOfMeasureID' => $unitOfMeasure->id,
 			'chargeType' => 'usage',
 			'upgradeMode' => 'immediate',

@@ -25,10 +25,12 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 			'uom' => array(
 				Models::UnitOfMeasure(),
 				Models::UnitOfMeasure2(),
+				Models::UnitOfMeasure2(),
 				),
 			'product' => Models::MonthlyRecurringProduct(),
 			'pricingComponentTierLists' => array(
 				Models::PricingComponentTiers(),
+				Models::PricingComponentTiers2(),
 				Models::PricingComponentTiers2()
 				)
 			);
@@ -43,7 +45,8 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		// having created product, make rate plan for it
 		$models['pricingComponents'] = array(
 			Models::PricingComponent($created['uom'][0], $models['pricingComponentTierLists'][0]),
-			Models::PricingComponent2($created['uom'][1], $models['pricingComponentTierLists'][1])
+			Models::PricingComponent2($created['uom'][1], $models['pricingComponentTierLists'][1]),
+			Models::PricingComponent3($created['uom'][1], $models['pricingComponentTierLists'][1])
 			);
 		$models['ratePlan'] = Models::ProductRatePlan($created['product'], $models['pricingComponents']);
 		$created['ratePlan'] = Bf_ProductRatePlan::create($models['ratePlan']);
@@ -76,5 +79,36 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		$coupon->addPercentageDiscount("CPU", 100);
 
 		$createdCoupon = Bf_Coupon::create($coupon);
+    }
+
+    public function testCreateCompound()
+    {	
+    	$subscription = self::$entities['subscription'];
+
+    	//--Discount pricing component by 100% for 3 billing periods
+		// Create model of coupon
+		// unique name for test
+    	$uniqueString = time();
+    	$couponCode = "TEST2_$uniqueString";
+
+		$coupon = new Bf_Coupon(array(
+			'name' => '3 Months free',
+			'couponCode' => $couponCode,
+			'coupons' => 100,
+			'uses' => 3
+		));
+
+		$coupon->setRatePlan('Gold membership');
+
+		// $5 off CPU
+		$coupon->addCashDiscount("CPU", 5);
+		// 5 Mbps free P2P Traffic
+		$coupon->addFreeUnitsDiscount("P2P Traffic", 5);
+		// 10 Mbps free bandwidth
+		$coupon->addFreeUnitsDiscount("Bandwidth", 10);
+
+		$createdCoupon = Bf_Coupon::create($coupon);
+
+		var_export($createdCoupon);
     }
 }
