@@ -395,7 +395,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		// already an identifier; return verbatim
     		return $entityReference;
     	}
-    	if (is_subclass_of($entityReference, get_called_class())) {
+    	if ($entityReference->getClassName() === static::getClassName()) {
     		// pluck identifier out of entity object
     		if ($entityReference->id)
     		return $entityReference->id;

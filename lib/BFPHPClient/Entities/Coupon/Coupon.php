@@ -231,7 +231,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @return Bf_Coupon The retired coupon.
 	 */
 	public static function applyCouponCodeToSubscription($couponCode, $subscription){
-		return Bf_AddCouponCodeRequest::applyCouponToSubscription($couponCode, $subscription);
+		return Bf_AddCouponCodeRequest::applyCouponCodeToSubscription($couponCode, $subscription);
 	}
 
 	/**

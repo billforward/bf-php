@@ -14,10 +14,10 @@ class Bf_AddCouponCodeRequest extends Bf_BillingEntity {
 	public static function applyCouponToSubscription(Bf_Coupon $coupon, $subscription) {
 		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
 
-		$serial = $entity->getSerialized();
-		$client = $entity->getClient();
+		$serial = $coupon->getSerialized();
+		$client = $coupon->getClient();
 
-		$endpoint = "/$subscriptionIdentifier/coupon";
+		$endpoint = "$subscriptionIdentifier/coupon";
 
 		$responseEntity = Bf_Coupon::getClassName();
 
