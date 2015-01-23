@@ -54,7 +54,26 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 
 	public function testCreate()
     {	
-    	var_export(self::$entities['subscription']);
+    	$subscription = self::$entities['subscription'];
+
+    	//--Discount a rate plan by 100% for 3 billing periods
+		// Create model of coupon
+		$coupon = new \Bf_Coupon(array(
+			'name' => '3 Months free',
+			'couponCode' => 'WINTERFUN1',
+			'uses' => 3
+		));
+
+		var_export(self::$entities['ratePlan']);
+
+		$coupon->setRatePlan('Gold membership');
+
+		$coupon->addPercentageDiscount("CPU", 100);
+
+		$createdCoupon = \Bf_Coupon::create($coupon);
+
+		// look at created coupon
+		var_export($createdCoupon);
 
     	/*
 

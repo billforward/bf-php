@@ -106,6 +106,8 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @return Bf_Coupon The modified coupon model.
 	 */
 	protected function addDiscount($discountNature, $pricingComponent, $amount) {
+		if (!$this->discounts)
+			$this->discounts = array();
 		$newDiscount = Bf_CouponDiscount::construct($discountNature, $pricingComponent, $amount);
 		array_push($this->discounts, $newDiscount);
 		
