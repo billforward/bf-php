@@ -160,7 +160,7 @@ class BillForwardClient {
         $urlFull = $this->urlRoot.$endpoint;
         $data = is_null($params) ? null : json_encode($params);
 
-        $response = $this->CallAPI_Unvalidated('DELETE', $urlFull, $data, true);
+        $response = $this->CallAPI_Unvalidated('DELETE', $urlFull, $data, !is_null($data));
 
         static::handleError($response);
 
