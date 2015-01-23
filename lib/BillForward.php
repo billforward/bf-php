@@ -45,6 +45,7 @@ spl_autoload_register(function($className) {
             'Bf_InvoiceRecalculationAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/InvoiceRecalculationAmendment.php',
             'Bf_IssueInvoiceAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/IssueInvoiceAmendment.php',
             'Bf_MutableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/MutableEntity.php',
+            'Bf_NoMatchingEntityException' => $baseDir . '/BFPHPClient/BillForwardClient.php',
             'Bf_Organisation' => $baseDir . '/BFPHPClient/Entities/Organisation/Organisation.php',
             'Bf_PaymentMethod' => $baseDir . '/BFPHPClient/Entities/Account/PaymentMethod.php',
             'Bf_PaymentMethodSubscriptionLink' => $baseDir . '/BFPHPClient/Entities/Subscription/PaymentMethodSubscriptionLink.php',

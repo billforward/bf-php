@@ -1,5 +1,7 @@
 <?php
-namespace BFPHPClientTest;
+use BFPHPClientTest\TestBase;
+use BFPHPClientTest\Models;
+
 class CouponTest extends \PHPUnit_Framework_TestCase {
 	protected static $entities = NULL;
 
@@ -31,12 +33,12 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 				)
 			);
 		$created = array(
-			'account' => \Bf_Account::create($models['account']),
+			'account' => Bf_Account::create($models['account']),
 			'uom' => array(
-				$useExistingOrMakeNew(\Bf_UnitOfMeasure::getClassName(), $models['uom'][0]),
-				$useExistingOrMakeNew(\Bf_UnitOfMeasure::getClassName(), $models['uom'][1]),
+				$useExistingOrMakeNew(Bf_UnitOfMeasure::getClassName(), $models['uom'][0]),
+				$useExistingOrMakeNew(Bf_UnitOfMeasure::getClassName(), $models['uom'][1]),
 				),
-			'product' => \Bf_Product::create($models['product'])
+			'product' => Bf_Product::create($models['product'])
 			);
 		// having created product, make rate plan for it
 		$models['pricingComponents'] = array(
@@ -44,10 +46,10 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 			Models::PricingComponent2($created['uom'][1], $models['pricingComponentTierLists'][1])
 			);
 		$models['ratePlan'] = Models::ProductRatePlan($created['product'], $models['pricingComponents']);
-		$created['ratePlan'] = \Bf_ProductRatePlan::create($models['ratePlan']);
+		$created['ratePlan'] = Bf_ProductRatePlan::create($models['ratePlan']);
 
 		$models['subscription'] = Models::Subscription($created['ratePlan'], $created['account']);
-		$created['subscription'] = \Bf_Subscription::create($models['subscription']);
+		$created['subscription'] = Bf_Subscription::create($models['subscription']);
 
 		return $created;
 	}
@@ -56,14 +58,13 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
     {	
     	$subscription = self::$entities['subscription'];
 
-    	//--Discount a rate plan by 100% for 3 billing periods
+    	//--Discount pricing component by 100% for 3 billing periods
 		// Create model of coupon
-
 		// unique name for test
     	$uniqueString = time();
     	$couponCode = "TEST_$uniqueString";
 
-		$coupon = new \Bf_Coupon(array(
+		$coupon = new Bf_Coupon(array(
 			'name' => '3 Months free',
 			'couponCode' => $couponCode,
 			'coupons' => 100,
@@ -74,6 +75,6 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 
 		$coupon->addPercentageDiscount("CPU", 100);
 
-		$createdCoupon = \Bf_Coupon::create($coupon);
+		$createdCoupon = Bf_Coupon::create($coupon);
     }
 }
