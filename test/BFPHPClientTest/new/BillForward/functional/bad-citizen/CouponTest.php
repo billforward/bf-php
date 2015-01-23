@@ -26,7 +26,7 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 				Models::UnitOfMeasure(),
 				Models::UnitOfMeasure2(),
 				),
-			'product' => Models::MonthlyProduct(),
+			'product' => Models::MonthlyRecurringProduct(),
 			'pricingComponentTierLists' => array(
 				Models::PricingComponentTiers(),
 				Models::PricingComponentTiers2()

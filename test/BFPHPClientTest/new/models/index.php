@@ -49,7 +49,19 @@ class Models {
 		return $uom;
 	}
 
-	public static function MonthlyProduct() {
+	public static function MonthlyRecurringProduct() {
+		$product = new \Bf_Product(array(
+			'productType' => 'recurring',
+			'state' => 'prod',
+			'name' => 'Monthly recurring',
+			'description' => 'Purchaseables to which customer has an automatically-renewing, monthly entitlement',
+			'durationPeriod' => 'months',
+			'duration' => 1,
+			));
+		return $product;
+	}
+
+	public static function MonthlyNonRecurringProduct() {
 		$product = new \Bf_Product(array(
 			'productType' => 'non-recurring',
 			'state' => 'prod',
@@ -61,7 +73,7 @@ class Models {
 		return $product;
 	}
 
-	public static function FastProduct() {
+	public static function FastRecurringProduct() {
 		$product = new \Bf_Product(array(
 			'productType' => 'recurring',
 			'state' => 'prod',

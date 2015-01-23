@@ -212,6 +212,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return static::getFirst($endpoint, $options, $customClient);
 	}
 
+	protected static function prefixPathWithController($path) {
+		$controller = static::getResourcePath()->getPath();
+		$qualified = "$controller/$path";
+		return $qualified;
+	}
+
 	public static function getAll($options = NULL, $customClient = NULL) {
 		return static::getCollection('', $options, $customClient);
 	}
@@ -224,21 +230,24 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	protected static function postAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
-		$response = $client->doPost($endpoint, $payload);
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doPost($url, $payload);
 
 		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $constructedEntity;
 	}
 
 	protected static function putAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
-		$response = $client->doPut($endpoint, $payload);
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doPut($url, $payload);
 
 		$updatedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $updatedEntity;
 	}
 
 	protected static function retireAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
-		$response = $client->doRetire($endpoint, $payload);
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doRetire($url, $payload);
 
 		$retiredEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $retiredEntity;

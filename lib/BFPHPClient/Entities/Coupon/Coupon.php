@@ -178,9 +178,11 @@ class Bf_Coupon extends Bf_MutableEntity {
     		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
 		}
 
-		$endpoint = "/$baseCode/codes";
+		$encoded = rawurlencode($baseCode);
 
-		return static::getCollection($endpoint, $options, $customClient);
+		$endpoint = "/$encoded/codes";
+
+		return static::getFirst($endpoint, $options, $customClient);
 	}
 
 	/**
@@ -198,10 +200,17 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @return Bf_Coupon[] The created applicable coupons.
 	 */
 	public static function createUniqueCodesFromBaseCode($baseCode, $quantity) {
+		// empty IDs are no good!
+		if (!$baseCode) {
+    		trigger_error("Cannot lookup empty coupon code!", E_USER_ERROR);
+		}
+
 		$coupon = new Bf_Coupon();
 		$coupon->quantity = $quantity;
 
-		$endpoint = "/$baseCode/codes";
+		$encoded = rawurlencode($baseCode);
+
+		$endpoint = "$encoded/codes";
 
 		return static::postEntityAndGrabFirst($endpoint, $coupon, $client);
 	}
@@ -236,8 +245,9 @@ class Bf_Coupon extends Bf_MutableEntity {
     		trigger_error("Cannot lookup empty coupon code!", E_USER_ERROR);
 		}
 
+		$endpoint = rawurlencode($couponCode);
+
 		$client = Bf_BillingEntity::getSingletonClient();
-		$endpoint = "/$couponCode";
 
 		$retiredEntity = static::retireAndGrabFirst($endpoint, NULL, $client);
 		return $retiredEntity;
