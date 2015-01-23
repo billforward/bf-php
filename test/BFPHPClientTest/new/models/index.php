@@ -165,11 +165,8 @@ class Models {
 
 	public static function Subscription($ratePlan, $account) {
 		$subscription = new \Bf_Subscription(array(
-			'type' => 'Subscription',
 			'productRatePlanID' => $ratePlan->id,
 			'accountID' => $account->id,
-			'name' => 'Memorable Subscription',
-			'description' => 'Memorable Subscription Description'
 			));
 		return $subscription;
 	}

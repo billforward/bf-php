@@ -54,7 +54,8 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 
 	public function testCreate()
     {	
-    	var_export(self::$entities);
+    	var_export(self::$entities['subscription']);
+
     	/*
 
 		$this->assertEquals(
