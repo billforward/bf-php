@@ -76,20 +76,21 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 
 		$coupon->setRatePlan('Gold membership');
 
-		$coupon->addPercentageDiscount("CPU", 100);
+		$coupon->addPercentageDiscount("CPU", 20);
 
 		$createdCoupon = Bf_Coupon::create($coupon);
 
-		// test application of coupon
-		$lambda = function () use($createdCoupon, $subscription) {
-			$appliedCoupon = $createdCoupon->applyToSubscription($subscription);
-			var_export($appliedCoupon);
-		};
+		$subscription->activate();
 
-		$lambda($createdCoupon, $subscription);
+		$newAdvanceComponents = array(
+			'CPU' => 40
+			);
+		$subscription->upgrade($newAdvanceComponents);
+
+		$appliedCoupon = $createdCoupon->applyToSubscription($subscription);
     }
 
-    public function testCreateCompound()
+    /*public function testCreateCompound()
     {	
     	$subscription = self::$entities['subscription'];
 
@@ -115,7 +116,5 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		$coupon->addFreeUnitsDiscount("Bandwidth", 10);
 
 		$createdCoupon = Bf_Coupon::create($coupon);
-
-		var_export($createdCoupon);
-    }
+    }*/
 }
