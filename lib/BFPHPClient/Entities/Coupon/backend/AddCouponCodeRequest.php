@@ -26,8 +26,6 @@ class Bf_AddCouponCodeRequest extends Bf_BillingEntity {
 
 		$responseEntity = Bf_Coupon::getClassName();
 
-		var_export($serial);
-
 		$constructedEntity = static::postAndGrabFirst($endpoint, $serial, $client, $responseEntity);
 		return $constructedEntity;
 	}
