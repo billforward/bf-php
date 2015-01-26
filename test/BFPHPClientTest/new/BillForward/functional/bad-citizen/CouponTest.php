@@ -79,13 +79,20 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		$coupon->addPercentageDiscount("CPU", 100);
 
 		$createdCoupon = Bf_Coupon::create($coupon);
+
+		// test application of coupon
+		$lambda = function () use($createdCoupon, $subscription) {
+			$appliedCoupon = $createdCoupon->applyToSubscription($subscription);
+			var_export($appliedCoupon);
+		};
+
+		$lambda($createdCoupon, $subscription);
     }
 
     public function testCreateCompound()
     {	
     	$subscription = self::$entities['subscription'];
 
-    	//--Discount pricing component by 100% for 3 billing periods
 		// Create model of coupon
 		// unique name for test
     	$uniqueString = time();
