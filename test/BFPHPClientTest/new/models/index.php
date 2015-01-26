@@ -195,6 +195,7 @@ class Models {
 		$subscription = new \Bf_Subscription(array(
 			'productRatePlanID' => $ratePlan->id,
 			'accountID' => $account->id,
+			'creditEnabled' => true
 			));
 		return $subscription;
 	}
