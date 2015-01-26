@@ -90,7 +90,7 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		$appliedCoupon = $createdCoupon->applyToSubscription($subscription);
     }
 
-    /*public function testCreateCompound()
+    public function testCreateCompound()
     {	
     	$subscription = self::$entities['subscription'];
 
@@ -116,5 +116,5 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		$coupon->addFreeUnitsDiscount("Bandwidth", 10);
 
 		$createdCoupon = Bf_Coupon::create($coupon);
-    }*/
+    }
 }
