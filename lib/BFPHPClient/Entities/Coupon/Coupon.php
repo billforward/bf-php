@@ -82,7 +82,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @return Bf_Coupon The modified coupon model.
 	 */
 	public function addFreeUnitsDiscounts($freeUnitsDiscounts) {
-		return $this->addDiscounts('unitsFree', $addFreeUnitsDiscount);
+		return $this->addDiscounts('unitsFree', $freeUnitsDiscounts);
 	}
 
 	/**
@@ -228,7 +228,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * Applies to specified Bf_Subscription, a coupon by a specified code.
 	 * @param string The Coupon code to apply.
 	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
-	 * @return Bf_Coupon The retired coupon.
+	 * @return Bf_Coupon The applied coupon.
 	 */
 	public static function applyCouponCodeToSubscription($couponCode, $subscription){
 		return Bf_AddCouponCodeRequest::applyCouponCodeToSubscription($couponCode, $subscription);

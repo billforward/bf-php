@@ -57,7 +57,7 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		return $created;
 	}
 
-	public function testCreate()
+	public function testCreateAndApply()
     {	
     	$subscription = self::$entities['subscription'];
 
@@ -80,12 +80,15 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 
 		$createdCoupon = Bf_Coupon::create($coupon);
 
-		$subscription->activate();
-
-		$newAdvanceComponents = array(
-			'CPU' => 40
+		// set initial values of subscription to have some "in advance" component
+		$subscription->pricingComponentValues = array(
+			new Bf_PricingComponentValue(array(
+				'pricingComponentName' => 'CPU',
+				'value' => 40
+				))
 			);
-		$subscription->upgrade($newAdvanceComponents);
+		// activate subscription (this will save the above 'values' change at the same time)
+		$subscription->activate();
 
 		$appliedCoupon = $createdCoupon->applyToSubscription($subscription);
     }
