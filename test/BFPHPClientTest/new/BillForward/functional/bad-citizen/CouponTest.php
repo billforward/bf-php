@@ -57,9 +57,11 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		return $created;
 	}
 
-	public function testCreateAndApply()
-    {	
-    	$subscription = self::$entities['subscription'];
+	protected static $couponUses = 3;
+	protected static $createdCoupon = NULL;
+
+	public function testCreate() {
+		$subscription = self::$entities['subscription'];
 
     	//--Discount pricing component by 100% for 3 billing periods
 		// Create model of coupon
@@ -71,14 +73,24 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 			'name' => '3 Months free',
 			'couponCode' => $couponCode,
 			'coupons' => 100,
-			'uses' => 3
+			'uses' => self::$couponUses
 		));
 
 		$coupon->setRatePlan('Gold membership');
 
 		$coupon->addPercentageDiscount("CPU", 20);
 
-		$createdCoupon = Bf_Coupon::create($coupon);
+		self::$createdCoupon = Bf_Coupon::create($coupon);
+	}
+
+	protected static $appliedCoupon = NULL;
+
+	/**
+     * @depends testCreate
+     */
+	public function testApply()
+    {	
+    	$subscription = self::$entities['subscription'];
 
 		// set initial values of subscription to have some "in advance" component
 		$subscription->pricingComponentValues = array(
@@ -90,7 +102,35 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		// activate subscription (this will save the above 'values' change at the same time)
 		$subscription->activate();
 
-		$appliedCoupon = $createdCoupon->applyToSubscription($subscription);
+		self::$appliedCoupon = self::$createdCoupon->applyToSubscription($subscription);
+    }
+
+    /**
+     * @depends testApply
+     */
+	public function testGetForSubscriptionBefore()
+    {	
+    	$subscription = self::$entities['subscription'];
+    	$coupons = $subscription->getCoupons();
+    	$ourCoupon = $coupons[0];
+
+    	$expected = self::$couponUses;
+    	$actual = $ourCoupon->uses;
+
+    	$this->assertEquals(
+			$expected,
+			$actual,
+			"Subscription has a recognisable coupon applied to it."
+			);
+    }
+
+    /**
+     * @depends testGetForSubscriptionBefore
+     */
+	public function testRemoveAll()
+    {	
+    	$parentCode = self::$appliedCoupon->parentCouponCode;
+    	$removedCoupon = Bf_Coupon::removeCouponCode($parentCode);
     }
 
     public function testCreateCompound()

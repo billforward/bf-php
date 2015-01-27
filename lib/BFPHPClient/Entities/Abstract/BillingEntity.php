@@ -391,6 +391,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
      * @return string ID by which the referenced entity can be gotten.
      */
     public static function getIdentifier($entityReference) {
+    	if (is_null($entityReference)) {
+    		throw new \Exception('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <NULL>.');
+    	}
+    	if (is_array($entityReference)) {
+    		throw new \Exception('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <array>.');
+    	}
     	if (is_string($entityReference)) {
     		// already an identifier; return verbatim
     		return $entityReference;
