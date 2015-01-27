@@ -143,6 +143,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entityArray;
 	}
 
+	public static function constructEntityFromArgs($entityClass, $constructArgs, $client) {
+		$newEntity = new $entityClass($constructArgs, $client);
+		return $newEntity;
+	}
+
 	protected function buildEntity($class, $constructArgs) {
 		$client = $this->getClient();
 		if (!is_array($constructArgs)) {
@@ -163,7 +168,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 				throw new \Exception($errorString);
 			}
 		} else {
-			$newEntity = new $class($constructArgs, $client);
+			$newEntity = Bf_BillingEntity::constructEntityFromArgs($class, $constructArgs, $client);
 		}
 		return $newEntity;
 	}
@@ -200,75 +205,104 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
 		}
 
-		$endpoint = "/$id";
+		$encoded = rawurlencode($id);
+
+		$endpoint = "/$encoded";
 
 		return static::getFirst($endpoint, $options, $customClient);
+	}
+
+	protected static function prefixPathWithController($path) {
+		$controller = static::getResourcePath()->getPath();
+		$qualified = "$controller/$path";
+		return $qualified;
 	}
 
 	public static function getAll($options = NULL, $customClient = NULL) {
 		return static::getCollection('', $options, $customClient);
 	}
 
-	protected static function getCollectionRaw($endpoint, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
+	protected static function postEntityAndGrabFirst($endpoint, $entity, $responseEntity = NULL) {
+		$serial = $entity->getSerialized();
+		$client = $entity->getClient();
 
-		$entityClass = static::getClassName();
-
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$fullRoute = $apiRoute.$endpoint;
-		
-		$response = $client->doGet($fullRoute, $options);
-		
-		$json = $response->json();
-		return $json['results'];
+		return static::postAndGrabFirst($endpoint, $serial, $client, $responseEntity);
 	}
 
-	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
+	protected static function postAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doPost($url, $payload);
 
-		$entityClass = static::getClassName();
+		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		return $constructedEntity;
+	}
 
-		$results = static::getCollectionRaw($endpoint, $options, $client);
+	protected static function putAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doPut($url, $payload);
 
-		$entityClass = static::getClassName();
+		$updatedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		return $updatedEntity;
+	}
 
+	protected static function retireAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doRetire($url, $payload);
+
+		$retiredEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		return $retiredEntity;
+	}
+
+	protected static function responseToEntityCollection(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
+		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
+
+		$results = $response->getResults();
 		$entities = array();
 
 		foreach($results as $value) {
-			$constructedEntity = new $entityClass($value, $client);
+			$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $value, $client);
 			array_push($entities, $constructedEntity);
 		}
 
 		return $entities;
 	}
 
-	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL) {
-		$client = NULL;
-		if (is_null($customClient)) {
-			$client = static::getSingletonClient();
-		} else {
-			$client = $customClient;
-		}
+	protected static function responseToFirstEntity(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
+		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 
-		$entityClass = static::getClassName();
+		$firstMatch = $response->getFirstResult();
+
+		$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $firstMatch, $client);
+		return $constructedEntity;
+	}
+
+	protected static function getResponseRaw($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
+
+		$apiRoute = $entityClass::getResourcePath()->getPath();
+		$fullRoute = $apiRoute.$endpoint;
 		
-		$results = static::getCollectionRaw($endpoint, $options, $client);
+		$response = $client->doGet($fullRoute, $options);
+		return $response;
+	}
 
-		$entityClass = static::getClassName();
+	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 
-		$firstMatch = $results[0];
+		$response = static::getResponseRaw($endpoint, $options, $client);
 
-		return new $entityClass($firstMatch, $client);
+		$entities = static::responseToEntityCollection($response, $client, $responseEntity);
+		return $entities;
+	}
+
+	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		
+		$response = static::getResponseRaw($endpoint, $options, $client);
+
+		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		return $constructedEntity;
 	}
 
 	public static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {
@@ -337,7 +371,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     /**
      * Fetches (if necessary) entity by ID from API.
      * Otherwise returns entity as-is.
-     * @param mixed ENUM[string $id, static $entity] Reference to the entity. <$id>: Fetches entity by ID. <$entity>: Returns entity as-is.
+     * @param union[string $id | static $entity] Reference to the entity. <string>: ID by which the entity can be gotten. <static>: The gotten entity.
      * @return static The gotten entity.
      */
     public static function fetchIfNecessary($entityReference) {
@@ -349,6 +383,31 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		return $entityReference;
     	}
     	throw new \Exception('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
+    }
+
+    /**
+     * Unifies type of 'entity' (which owns an identifier) and 'string' identifiers; enables consumer to distill from the reference a string identifier.
+     * @param union[string ($id | $name) | static $entity] Reference to the entity. <string>: $id or $name of the entity. <static>: An $entity object from which $entity->id can be ascertained.
+     * @return string ID by which the referenced entity can be gotten.
+     */
+    public static function getIdentifier($entityReference) {
+    	if (is_null($entityReference)) {
+    		throw new \Exception('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <NULL>.');
+    	}
+    	if (is_array($entityReference)) {
+    		throw new \Exception('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <array>.');
+    	}
+    	if (is_string($entityReference)) {
+    		// already an identifier; return verbatim
+    		return $entityReference;
+    	}
+    	if ($entityReference->getClassName() === static::getClassName()) {
+    		// pluck identifier out of entity object
+    		if ($entityReference->id)
+    		return $entityReference->id;
+    		throw new \Exception('Cannot distill identifier from referenced entity; referenced entity does not declare an ID. Perhaps this entity is not a persisted entity retrieved from the API?');
+    	}
+    	throw new \Exception('Cannot distill identifier from referenced entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
     public function getJson() {

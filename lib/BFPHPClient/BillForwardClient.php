@@ -23,6 +23,27 @@ class Bf_RawAPIOutput {
     public function getInfo() {
         return $this->info;
     }
+
+    public function getResults() {
+        $json = $this->json();
+        $results = $json['results'];
+        return $results;
+    }
+
+    public function getFirstResult() {
+        $results = $this->getResults();
+
+        if (count($results) <= 0) {
+            throw new Bf_NoMatchingEntityException('No results returned - therefore cannot lookup first member.');
+        }
+
+        $firstResult = $results[0];
+        return $firstResult;
+    }
+}
+
+class Bf_NoMatchingEntityException extends \Exception
+{
 }
 
 class BillForwardClient {
@@ -135,10 +156,11 @@ class BillForwardClient {
 		return $response;
 	}
 
-    public function doRetire($endpoint, array $params) {
+    public function doRetire($endpoint, array $params = null) {
         $urlFull = $this->urlRoot.$endpoint;
+        $data = is_null($params) ? null : json_encode($params);
 
-        $response = $this->CallAPI_Unvalidated('DELETE', $urlFull, json_encode($params), true);
+        $response = $this->CallAPI_Unvalidated('DELETE', $urlFull, $data, !is_null($data));
 
         static::handleError($response);
 

@@ -31,7 +31,7 @@ Class Bf_RoleTest extends \PHPUnit_Framework_TestCase {
 
 		$rolePrivilege = $firstRole['role'];
 
-		$expected = 'admin';
+		$expected = 'public_api';
 		$actual = $rolePrivilege;
 
 		$this->assertEquals(
