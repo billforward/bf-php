@@ -146,7 +146,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @return Bf_Coupon The fetched Bf_Coupon.
 	 */
 	public static function getByCode($couponCode, $options = NULL, $customClient = NULL) {
-		return static::getByID($couponCode, $options = NULL, $customClient = NULL);
+		return static::getByID($couponCode, $options, $customClient);
 	}
 
 	/**
@@ -155,7 +155,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @return Bf_Coupon[] The fetched Bf_Coupons.
 	 */
 	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
-		return Bf_GetCouponsRequest::getCouponsForSubscription($subscription, $options = NULL, $customClient = NULL);
+		return Bf_GetCouponsRequest::getCouponsForSubscription($subscription, $options, $customClient);
 	}
 
 	/**
