@@ -3,24 +3,24 @@ use BFPHPClientTest\TestBase;
 use BFPHPClientTest\Models;
 
 class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
-	protected static $entities = NULL;
 	protected static $models = NULL;
+	protected static $created = NULL;
 
 	public static function setUpBeforeClass() {
 		TestBase::initialize();
-		self::$entities = self::makeRequiredEntities();
+		self::makeRequiredEntities();
 	}
 
 	public static function makeRequiredEntities() {
 		$models = array(
 			'account' => Models::AccountWithJustProfile(),
 			);
-		self::$models = $models;
 		$created = array(
 			'account' => Bf_Account::create($models['account'])
 			);
 
-		return $created;
+		self::$models = $models;
+		self::$created = $created;
 	}
 
 	public function testGetAll()
@@ -42,7 +42,7 @@ class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
     protected static $fetchedProfile = NULL;
 
     public function testGetByID() {
-    	$account = self::$entities['account'];
+    	$account = self::$created['account'];
     	$accountID = $account->id;
 
     	$profile = $account->profile;
@@ -61,7 +61,7 @@ class Bf_ProfileTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testGetProfileViaAccount() {    	
-    	$account = self::$entities['account'];
+    	$account = self::$created['account'];
     	$accountID = $account->id;
 
 		$fetchedAccount = Bf_Account::getByID($accountID);
