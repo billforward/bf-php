@@ -31,6 +31,21 @@ class Models {
 		return $account;
 	}
 
+	public static function AccountWithJustProfile() {
+		//-- Make account with expected profile
+		$profile = new \Bf_Profile(array(
+			'email' => 'chill.guy@sharklasers.com',
+			'firstName' => 'Ruby',
+			'lastName' => 'Red'
+			));
+		
+		$account = new \Bf_Account(array(
+			'profile' => $profile,
+			));
+
+		return $account;
+	}
+
 	public static function UnitOfMeasure() {
 		$uom = new \Bf_UnitOfMeasure(array(
 			'name' => 'CPU',

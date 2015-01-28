@@ -3,9 +3,6 @@ use BFPHPClientTest\TestBase;
 use BFPHPClientTest\Models;
 
 class Bf_AccountTest extends PHPUnit_Framework_TestCase {
-	protected static $client = NULL;
-	protected static $config = NULL;
-
 	public static function setUpBeforeClass() {
 		TestBase::initialize();
 	}
