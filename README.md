@@ -45,7 +45,7 @@ This file will autoload the library.
 ##Invocation
 ###Use credentials to connect to BillForward
 ####Step 1. Getting BillForward credentials
-[Login](https://app-sandbox.billforward.net/login/#/) to (or [https://app-sandbox.billforward.net/register/#/](Register)) your BillForward Sandbox account.
+[Login](https://app-sandbox.billforward.net/login/#/) to (or [Register](https://app-sandbox.billforward.net/register/#/)) your BillForward Sandbox account.
 
 [Grab a Private API token](https://app-sandbox.billforward.net/setup/#/personal/api-keys).
 
@@ -170,7 +170,7 @@ Tests login using the credentials you define in: `test/BFPHPClientTest/new/confi
 Ideally the credentials should refer to an account that exists solely for testing, as tests cause side-effects (entities created upon your organization).
 
 ###Step 1. Register on Sandbox
-[Login](https://app-sandbox.billforward.net/login/#/) to (or [https://app-sandbox.billforward.net/register/#/](Register)) a Sandbox account, that you are happy with using for tests.
+[Login](https://app-sandbox.billforward.net/login/#/) to (or [Register](https://app-sandbox.billforward.net/register/#/)) a Sandbox account, that you are happy with using for tests.
 
 [Grab a Private API token](https://app-sandbox.billforward.net/setup/#/personal/api-keys).
 
