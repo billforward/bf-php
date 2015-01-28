@@ -66,7 +66,7 @@ Class Bf_AddressTest extends \PHPUnit_Framework_TestCase {
 		$cityBefore = $address->city;
 
     	$uniqueString = time();
-    	$newCity = 'Neo Tokyo '.$uniqueString;
+    	$newCity = "Neo Tokyo $uniqueString";
 		$address->city = $newCity;
 
 		$updatedProfile = $profile->save();
