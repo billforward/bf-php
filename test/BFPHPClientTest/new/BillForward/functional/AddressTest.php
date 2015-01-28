@@ -2,7 +2,7 @@
 use BFPHPClientTest\TestBase;
 use BFPHPClientTest\Models;
 
-Class Bf_Address_OneOffTest extends \PHPUnit_Framework_TestCase {
+Class Bf_AddressTest extends \PHPUnit_Framework_TestCase {
 	protected static $entities = NULL;
 
 	public static function setUpBeforeClass() {
