@@ -23,6 +23,51 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 			);
     }
 
+    protected static $loginAccount = NULL;
+    protected static $loginAccountUserID = NULL;
+
+    public function testLoginAccountFound() {    	
+    	// order by userID so that we are likely to see our login user's account
+		$accounts = Bf_Account::getAll(array(
+			'order_by' => 'userID'
+			));
+
+		$found = NULL;
+		foreach ($accounts as $account) {
+			if (array_key_exists('userID', $account)) {
+				$found = $account;
+				break;
+			}
+		}
+
+		self::$loginAccount = $found;
+		self::$loginAccountUserID = $found['userID'];
+
+		$this->assertNotNull($found,
+			"Account is found with a userID set.");
+	}
+
+    /**
+     * @depends testLoginAccountFound
+     */
+	public function testGetByID()
+    {
+    	$loginAccountId = self::$loginAccount->id;
+    	
+		$account = Bf_Account::getByID($loginAccountId);
+
+		$userID = $account['userID'];
+
+		$expected = self::$loginAccountUserID;
+		$actual = $userID;
+
+		$this->assertEquals(
+			$expected,
+			$actual,
+			"Account's user ID matches known value."
+			);
+    }
+
     public function testCreate() {
 		$account = new Bf_Account();
 
