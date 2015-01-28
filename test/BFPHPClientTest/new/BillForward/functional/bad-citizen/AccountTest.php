@@ -47,6 +47,32 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 			"Account is found with a userID set.");
 	}
 
+	/**
+     * @depends testLoginAccountFound
+     */
+	public function testRolePrivilege()
+    {
+		$account = self::$loginAccount;
+
+		$roles = $account->roles;
+
+		$expectedPrivilege = 'admin';
+
+		$found = false;
+		foreach($roles as $role) {
+			$rolePrivilege = $role->role;
+			if ($rolePrivilege === $expectedPrivilege) {
+				$found = true;
+				break;
+			}
+		}
+
+		$this->assertTrue(
+			$found,
+			"Asserting that login user has a known expected privileg."
+			);
+    }
+
     /**
      * @depends testLoginAccountFound
      */
