@@ -1,5 +1,12 @@
 <?php
 namespace BFPHPClientTest;
+
+/* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ * Here be dragons! Please use the 'new/' testbase for writing tests
+ * in future. Otherwise you will have to interact with what lies below. :)
+ * = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+ */
+
 use BillForwardClient;
 use Bf_Account;
 use Bf_Address;
