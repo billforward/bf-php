@@ -60,11 +60,7 @@ class BillForwardClient {
     public static function getDefaultClient() {
         $client = static::$singletonClient;
         if (is_null($client)) {
-            // check for existence of static client instead
-            $client = static::$singletonClient;
-            if (is_null($client)) {
-                throw new Exception('No default BillForwardClient found; cannot make API requests.');
-            }
+            throw new Exception('No default BillForwardClient found; cannot make API requests.');
         }
         return $client;
     }

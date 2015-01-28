@@ -5,7 +5,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	public function setClient(BillForwardClient &$client = NULL) {
-		$this->_client = is_null($client) ? static::getSingletonClient() : $client;
+		$this->_client = $client;
 	}
 
 	public static function getSingletonClient() {
