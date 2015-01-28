@@ -49,4 +49,46 @@ Class Bf_AddressTest extends \PHPUnit_Framework_TestCase {
 			"Type of any returned entity matches known value."
 			);
 	}
+
+	/**
+     * @depends testCreateAddressDirectly
+     */
+	public function testUpdateAddressIndirectly() {
+		$account = self::$entities['account'];
+		$updatedAccount = Bf_Account::getByID($account->id);
+
+		$profile = $updatedAccount->profile;
+
+		$addresses = $profile->addresses;
+		$firstAddress = $addresses[0];
+		$address = $firstAddress;
+
+		$cityBefore = $address->city;
+
+    	$uniqueString = time();
+    	$newCity = 'Neo Tokyo '.$uniqueString;
+		$address->city = $newCity;
+
+		$updatedProfile = $profile->save();
+		$updatedAddresses = $updatedProfile->getAddresses();
+		$updatedFirstAddress = $updatedAddresses[0];
+		$updatedAddress = $updatedFirstAddress;
+
+		$cityAfter = $updatedAddress->city;
+
+		$this->assertNotEquals(
+			$cityBefore,
+			$cityAfter,
+			"Asserting that address's city name changes after update."
+			);
+
+		$expected = $newCity;
+		$actual = $cityAfter;
+
+		$this->assertEquals(
+			$expected,
+			$actual,
+			"Asserting that address's city name changes to expected string after update."
+			);
+	}
 }
