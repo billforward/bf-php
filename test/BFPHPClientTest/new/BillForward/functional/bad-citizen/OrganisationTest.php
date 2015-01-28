@@ -1,16 +1,19 @@
 <?php
-namespace BFPHPClientTest;
-echo "Running Bf_Organisation tests for BillForward PHP Client Library.\n";
+use BFPHPClientTest\TestBase;
+use BFPHPClientTest\Models;
 
-use \BillForwardClient;
-use \Bf_Organisation;
-Class Bf_OrganisationTest extends \PHPUnit_Framework_TestCase {
-	protected static $client = NULL;
-	protected static $config = NULL;
+class Bf_OrganisationTest extends \PHPUnit_Framework_TestCase {
+	protected static $anOrganizationID = NULL;
 
 	public static function setUpBeforeClass() {
-		self::$config = new TestConfig();
-		self::$client = self::$config->getClient();
+		TestBase::initialize();
+
+		$someEntities = Bf_Account::getAll(array(
+			'records' => 1
+			));
+		$anEntity = $someEntities[0];
+
+		self::$anOrganizationID = $anEntity->organizationID;
 	}
 
 	/*// Can't run; no privilege!
@@ -36,26 +39,29 @@ Class Bf_OrganisationTest extends \PHPUnit_Framework_TestCase {
     }*/
 
 	public function testGetMine()
-    {	
-    	// short alias
-		$client = self::$client;
-		$config = self::$config;
-    	
+    {    	
 		$orgs = Bf_Organisation::getMine();
 
 		$firstOrg = $orgs[0];
 
-		$id = $firstOrg
-		->id;
+		$id = $firstOrg->id;
 
-		$expected = $config
-		->getUsualOrganisationID();
+		$expected = self::$anOrganizationID;
 		$actual = $id;
 
 		$this->assertEquals(
 			$expected,
 			$actual,
 			"Asserting that organisation's ID matches known value."
+			);
+
+		$expected = Bf_Organisation::getResourcePath()->getEntityName();
+		$actual = $firstOrg['@type'];
+
+		$this->assertEquals(
+			$expected,
+			$actual,
+			"Asserting that type of any returned entity matches known value."
 			);
     }
 }
