@@ -14,11 +14,14 @@ class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
 	public static function makeRequiredEntities() {
 		$useExistingOrMakeNew = function($entityClass, $model) {
 			$name = $model->name;
-			$existing = $entityClass::getByID($name);
-			if ($existing) {
-				return $existing;
+			try {
+				$existing = $entityClass::getByID($name);
+				if ($existing) {
+					return $existing;
+				}
+			} catch(Bf_NoMatchingEntityException $e) {
+				return $entityClass::create($model);
 			}
-			return $entityClass::getByID($name);
 		};
 
 		$models = array(

@@ -13,11 +13,14 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 	public static function makeRequiredEntities() {
 		$useExistingOrMakeNew = function($entityClass, $model) {
 			$name = $model->name;
-			$existing = $entityClass::getByID($name);
-			if ($existing) {
-				return $existing;
+			try {
+				$existing = $entityClass::getByID($name);
+				if ($existing) {
+					return $existing;
+				}
+			} catch(Bf_NoMatchingEntityException $e) {
+				return $entityClass::create($model);
 			}
-			return $entityClass::getByID($name);
 		};
 
 		$models = array(
@@ -83,10 +86,21 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		self::$createdCoupon = Bf_Coupon::create($coupon);
 	}
 
-	protected static $appliedCoupon = NULL;
+	protected static $fetchedCoupon = NULL;
 
 	/**
      * @depends testCreate
+     */
+	public function testFetch()
+    {
+    	$couponCode = self::$createdCoupon->couponCode;
+		self::$fetchedCoupon = Bf_Coupon::getByCode($couponCode);
+    }
+
+	protected static $appliedCoupon = NULL;
+
+	/**
+     * @depends testFetch
      */
 	public function testApply()
     {	
@@ -102,7 +116,8 @@ class CouponTest extends \PHPUnit_Framework_TestCase {
 		// activate subscription (this will save the above 'values' change at the same time)
 		$subscription->activate();
 
-		self::$appliedCoupon = self::$createdCoupon->applyToSubscription($subscription);
+		self::$appliedCoupon = self::$fetchedCoupon->applyToSubscription($subscription);
+		// self::$appliedCoupon = Bf_Coupon::applyCouponCodeToSubscription(self::$createdCoupon->couponCode, $subscription);
     }
 
     /**
