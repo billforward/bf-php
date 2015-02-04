@@ -22,7 +22,7 @@ class Bf_AddCouponCodeRequest extends Bf_BillingEntity {
 		$serial = $requestEntity->getSerialized();
 		$client = $requestEntity->getClient();
 
-		$endpoint = "$subscriptionIdentifier/coupon";
+		$endpoint = "$subscriptionIdentifier/coupons";
 
 		$responseEntity = Bf_Coupon::getClassName();
 

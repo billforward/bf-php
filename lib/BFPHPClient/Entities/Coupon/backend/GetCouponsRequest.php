@@ -14,7 +14,7 @@ class Bf_GetCouponsRequest extends Bf_BillingEntity {
 	public static function getCouponsForSubscription($subscription, $options = NULL, $customClient = NULL) {
 		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
 
-		$endpoint = "/$subscriptionIdentifier/coupon";
+		$endpoint = "/$subscriptionIdentifier/coupons";
 
 		$responseEntity = Bf_Coupon::getClassName();
 
