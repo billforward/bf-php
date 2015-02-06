@@ -161,7 +161,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	/**
 	 * Gets for this Coupon's base code a list of available unique coupon codes.
 	 * @param string The base Coupon code for which to find available Unique codes.
-	 * @return Bf_Coupon[] The fetched applicable coupons.
+	 * @return Bf_CouponUniqueCodesResponse[] The fetched applicable coupons.
 	 */
 	public function getUniqueCodes($options = NULL, $customClient = NULL) {
 		return static::getUniqueCodesFromBaseCode($this->couponCode, $options, $customClient);
@@ -170,7 +170,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	/**
 	 * Gets a list of available unique coupon codes derived from a specified base code.
 	 * @param string The base Coupon code for which to find available unique codes.
-	 * @return Bf_Coupon[] The fetched applicable coupons.
+	 * @return Bf_CouponUniqueCodesResponse[] The fetched applicable coupons.
 	 */
 	public static function getUniqueCodesFromBaseCode($baseCode, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
@@ -182,13 +182,15 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 		$endpoint = "/$encoded/codes";
 
-		return static::getFirst($endpoint, $options, $customClient);
+		$responseEntity = Bf_CouponUniqueCodesResponse::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
 	}
 
 	/**
 	 * Creates unique coupon codes derived from this coupon's base code. These can be applied to subscriptions.
 	 * @param string The base Coupon code for which to create unique codes.
-	 * @return Bf_Coupon[] The created applicable coupons.
+	 * @return Bf_CouponUniqueCodesResponse[] The created applicable coupons.
 	 */
 	public function createUniqueCodes($quantity) {
 		return static::createUniqueCodesFromBaseCode($this->couponCode, $quantity);
@@ -197,7 +199,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	/**
 	 * Creates unique coupon codes derived from a specified base code. These can be applied to subscriptions.
 	 * @param string The base Coupon code for which to create unique codes.
-	 * @return Bf_Coupon[] The created applicable coupons.
+	 * @return Bf_CouponUniqueCodesResponse[] The created applicable coupons.
 	 */
 	public static function createUniqueCodesFromBaseCode($baseCode, $quantity) {
 		// empty IDs are no good!
@@ -212,7 +214,9 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 		$endpoint = "$encoded/codes";
 
-		return static::postEntityAndGrabFirst($endpoint, $coupon, $client);
+		$responseEntity = Bf_CouponUniqueCodesResponse::getClassName();
+
+		return static::postAndGrabCollection($endpoint, $coupon, $client, $responseEntity);
 	}
 
 	/**
