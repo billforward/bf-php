@@ -20,5 +20,15 @@ class Bf_GetCouponsRequest extends Bf_BillingEntity {
 
 		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
 	}
+
+	public static function getApplicableCouponsForSubscription($subscription, $options = NULL, $customClient = NULL) {
+		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
+
+		$endpoint = "/$subscriptionIdentifier/applicable-coupons";
+
+		$responseEntity = Bf_Coupon::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
+	}
 }
 Bf_GetCouponsRequest::initStatics();

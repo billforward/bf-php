@@ -8,6 +8,27 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Assigns to this Bf_Coupon a Bf_Product.
+	 * 'NULL' $product results in 'All products'.
+	 * Coupon is applicable to all rate plans in the chosen product(s).
+	 * @param union[string ($id | $name) | Bf_Product $entity | NULL] (Default: NULL) The product discounted by the coupon. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product. <NULL>: Coupon becomes product-agnostic (can be applied to all products).
+	 * @return Bf_Coupon The modified coupon model.
+	 */
+	public function setProduct($product = NULL) {
+		// if $product is NULL, Coupon becomes 'product'-agnostic
+		$productIdentifier = is_null($product) ? NULL : Bf_Product::getIdentifier($product);
+
+		$this->product = $productIdentifier;
+
+		// Coupon becomes 'rate plan'-agnostic.
+		// If a product is specified, then coupon can be applied to any rate plan on that product.
+		// If NULL product is specified, then coupon can be applied to any rate plan on any product.
+		$this->productRatePlan = NULL;
+
+		return $this;
+	}
+
+	/**
 	 * Assigns to this Bf_Coupon a Bf_ProductRatePlan and Bf_Product.
 	 * @param union[string ($id | $name) | Bf_ProductRatePlan $ratePlan] The product discounted by the coupon. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @param union[string ($id | $name) | Bf_Product $entity | NULL] (Default: NULL) The product discounted by the coupon. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product. <NULL>: Fetch first result for Bf_ProductRatePlan (if identifying rate plan by name, please ensure this rate plan's name is unique), and use its Bf_Product.
@@ -141,7 +162,55 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Gets Bf_Coupon by coupon code
+	 * Gets for this Coupon's base code a list of available unique coupon codes.
+	 * @param string The base Coupon code for which to find available Unique codes.
+	 * @return Bf_CouponUniqueCodesResponse[] The fetched applicable coupons.
+	 */
+	public function getUniqueCodes($options = NULL, $customClient = NULL) {
+		$baseCode = $this->getBaseCode();
+		return static::getUniqueCodesFromBaseCode($baseCode, $options, $customClient);
+	}
+
+	/**
+	 * Gets a list of subscriptions to which this coupon's base code has been applied.
+	 * @return Bf_Subscription[] The fetched subscriptions.
+	 */
+	public function getSubscriptionApplications($options = NULL, $customClient = NULL) {
+		$baseCode = $this->getBaseCode();
+		return static::getSubscriptionApplicationsForBaseCode($baseCode, $options, $customClient);
+	}
+
+	/**
+	 * Creates unique coupon codes derived from this coupon's base code. These can be applied to subscriptions.
+	 * @param string The base Coupon code for which to create unique codes.
+	 * @return Bf_CouponUniqueCodesResponse[] The created applicable coupons.
+	 */
+	public function createUniqueCodes($quantity) {
+		$baseCode = $this->getBaseCode();
+		return static::createUniqueCodesFromBaseCode($baseCode, $quantity);
+	}
+
+	/**
+	 * Applies Bf_Coupon to the specified Bf_Subscription
+	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_Coupon The applied coupon.
+	 */
+	public function applyToSubscription($subscription) {
+		return Bf_AddCouponCodeRequest::applyCouponToSubscription($this, $subscription);
+	}
+
+	/**
+	 * Returns this coupon's 'base code', irrespective of whether this coupon is a base coupon or unique coupon.
+	 * @return string This coupon's base code.
+	 */
+	public function getBaseCode() {
+		if (!is_null($this->parentCouponCode))
+			return $this->parentCouponCode;
+		return $this->couponCode;
+	}
+
+	/**
+	 * Gets Bf_Coupon by coupon code. 'Base code' or 'unique code' can be used.
 	 * @param string The Coupon code of the sought Bf_Coupon.
 	 * @return Bf_Coupon The fetched Bf_Coupon.
 	 */
@@ -150,7 +219,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Gets Bf_Coupons for a given subscription ID
+	 * Gets Bf_Coupons that have been applied to a given subscription.
 	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription upon which to search. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_Coupon[] The fetched Bf_Coupons.
 	 */
@@ -159,12 +228,13 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Gets for this Coupon's base code a list of available unique coupon codes.
-	 * @param string The base Coupon code for which to find available Unique codes.
-	 * @return Bf_CouponUniqueCodesResponse[] The fetched applicable coupons.
+	 * Gets Bf_Coupons which can be applied to a given subscription.
+	 * Gets coupons by 'base code' only.
+	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription upon which to search. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_Coupon[] The fetched Bf_Coupons.
 	 */
-	public function getUniqueCodes($options = NULL, $customClient = NULL) {
-		return static::getUniqueCodesFromBaseCode($this->couponCode, $options, $customClient);
+	public static function getApplicableToSubscription($subscription, $options = NULL, $customClient = NULL) {
+		return Bf_GetCouponsRequest::getApplicableCouponsForSubscription($subscription, $options, $customClient);
 	}
 
 	/**
@@ -172,7 +242,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param string The base Coupon code for which to find available unique codes.
 	 * @return Bf_CouponUniqueCodesResponse[] The fetched applicable coupons.
 	 */
-	public static function getUniqueCodesFromBaseCode($baseCode, $options = NULL, $customClient = NULL) {
+	public static function getUnusedUniqueCodesFromBaseCode($baseCode, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$baseCode) {
     		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
@@ -188,12 +258,23 @@ class Bf_Coupon extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Creates unique coupon codes derived from this coupon's base code. These can be applied to subscriptions.
-	 * @param string The base Coupon code for which to create unique codes.
-	 * @return Bf_CouponUniqueCodesResponse[] The created applicable coupons.
+	 * Gets a list of applied unique coupons derived from a specified base code.
+	 * @param string The base Coupon code for which to find available unique codes.
+	 * @return Bf_CouponUniqueCodesResponse[] The fetched applicable coupons.
 	 */
-	public function createUniqueCodes($quantity) {
-		return static::createUniqueCodesFromBaseCode($this->couponCode, $quantity);
+	public static function getUsedUniqueCodesFromBaseCode($baseCode, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$baseCode) {
+    		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
+		}
+
+		$encoded = rawurlencode($baseCode);
+
+		$endpoint = "/$encoded/applied";
+
+		$responseEntity = Bf_CouponUniqueCodesResponse::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
 	}
 
 	/**
@@ -216,20 +297,11 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 		$responseEntity = Bf_CouponUniqueCodesResponse::getClassName();
 
-		return static::postAndGrabCollection($endpoint, $coupon, $client, $responseEntity);
+		return static::postEntityAndGrabCollection($endpoint, $coupon, $responseEntity);
 	}
 
 	/**
-	 * Applies Bf_Coupon to the specified Bf_Subscription
-	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
-	 * @return Bf_Coupon The applied coupon.
-	 */
-	public function applyToSubscription($subscription) {
-		return Bf_AddCouponCodeRequest::applyCouponToSubscription($this, $subscription);
-	}
-
-	/**
-	 * Applies to specified Bf_Subscription, a coupon by a specified code.
+	 * Applies to specified Bf_Subscription: a coupon by a specified code.
 	 * @param string The Coupon code to apply.
 	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_Coupon The applied coupon.
@@ -255,6 +327,27 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 		$retiredEntity = static::retireAndGrabFirst($endpoint, NULL, $client);
 		return $retiredEntity;
+	}
+
+	/**
+	 * Gets a list of subscriptions to which the specified coupon code has been applied.
+	 * Expects a 'base' coupon code.
+	 * @param string The Coupon code on which to search.
+	 * @return Bf_Subscription[] The fetched subscriptions.
+	 */
+	public static function getSubscriptionApplicationsForBaseCode($baseCode, $options = NULL, $customClient = NULL) {
+		// empty IDs are no good!
+		if (!$baseCode) {
+    		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
+		}
+
+		$encoded = rawurlencode($baseCode);
+
+		$endpoint = "/$encoded/subscriptions";
+
+		$responseEntity = Bf_Subscription::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);		
 	}
 }
 Bf_Coupon::initStatics();

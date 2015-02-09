@@ -150,11 +150,20 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Gets Bf_Coupons for this Bf_Subscription.
+	 * Gets Bf_Coupons applied to this Bf_Subscription.
 	 * @return Bf_Coupon[]
 	 */
 	public function getCoupons($options = NULL, $customClient = NULL) {
-		return Bf_Coupon::getForSubscription($this->id, $options, $customClient);
+		return Bf_Coupon::getForSubscription($this, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_Coupons which can be applied to this Bf_Subscription.
+	 * Gets coupons by 'base code' only.
+	 * @return Bf_Coupon[]
+	 */
+	public function getApplicableCoupons($options = NULL, $customClient = NULL) {
+		return Bf_Coupon::getApplicableToSubscription($this, $options, $customClient);
 	}
 
 	/**
