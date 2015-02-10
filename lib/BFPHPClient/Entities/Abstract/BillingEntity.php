@@ -236,7 +236,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return static::postAndGrabCollection($endpoint, $serial, $client, $responseEntity);
 	}
 
-	protected static function postAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+	protected static function postAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+		
 		$url = static::prefixPathWithController($endpoint);
 		$response = $client->doPost($url, $payload);
 
@@ -244,7 +246,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $constructedEntity;
 	}
 
-	protected static function postAndGrabCollection($endpoint, $payload, $client, $responseEntity = NULL) {
+	protected static function postAndGrabCollection($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+
 		$url = static::prefixPathWithController($endpoint);
 		$response = $client->doPost($url, $payload);
 
@@ -252,7 +256,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $constructedEntities;
 	}
 
-	protected static function putAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+	protected static function putAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+
 		$url = static::prefixPathWithController($endpoint);
 		$response = $client->doPut($url, $payload);
 
@@ -260,7 +266,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $updatedEntity;
 	}
 
-	protected static function retireAndGrabFirst($endpoint, $payload, $client, $responseEntity = NULL) {
+	protected static function retireAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+
 		$url = static::prefixPathWithController($endpoint);
 		$response = $client->doRetire($url, $payload);
 

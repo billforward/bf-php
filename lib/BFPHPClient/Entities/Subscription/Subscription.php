@@ -118,6 +118,56 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets a list of available payment methods for the specified subscription
+	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_PaymentMethod[] The fetched payment methods.
+	 */
+	public static function getPaymentMethodsOnSubscription($subscription, $options = NULL, $customClient = NULL) {
+		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
+
+		// empty IDs are no good!
+		if (!$subscriptionIdentifier) {
+    		trigger_error("Cannot lookup empty subscription ID!", E_USER_ERROR);
+		}
+
+		$encoded = rawurlencode($subscriptionIdentifier);
+
+		$endpoint = "/$encoded/payment-methods";
+
+		$responseEntity = Bf_PaymentMethod::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
+	}
+
+	/**
+	 * Gets a list of available payment methods for the specified subscription
+	 * @param union[string $id | Bf_PaymentMethod $paymentMethod] The Bf_PaymentMethod which should be removed. <string>: ID of the Bf_PaymentMethod. <Bf_Subscription>: The Bf_Subscription.
+	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_PaymentMethod The removed payment method.
+	 */
+	public static function removePaymentMethodFromSubscription($paymentMethod, $subscription) {
+		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
+		$paymentMethodIdentifier = Bf_PaymentMethod::getIdentifier($paymentMethod);
+
+		// empty IDs are no good!
+		if (!$subscriptionIdentifier)
+    		trigger_error("Cannot lookup empty subscription ID!", E_USER_ERROR);
+
+		// empty IDs are no good!
+		if (!$paymentMethodIdentifier)
+    		trigger_error("Cannot lookup empty subscription ID!", E_USER_ERROR);
+
+		$subEncoded = rawurlencode($subscriptionIdentifier);
+		$paymentMethodEncoded = rawurlencode($paymentMethodIdentifier);
+
+		$endpoint = "$subEncoded/payment-methods/$paymentMethodEncoded";
+
+		$responseEntity = Bf_PaymentMethod::getClassName();
+
+		return static::retireAndGrabFirst($endpoint, NULL, $customClient, $responseEntity);
+	}
+
+	/**
 	 * Fetches all versions of Bf_Subscription for this Bf_Subscription.
 	 * @return Bf_Subscription[]
 	 */
@@ -167,6 +217,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_PaymentMethods which are available to this Bf_Subscription.
+	 * @return Bf_PaymentMethod[]
+	 */
+	public function getPaymentMethods($options = NULL, $customClient = NULL) {
+		return Bf_Subscription::getPaymentMethodsOnSubscription($this, $options, $customClient);
+	}
+
+	/**
 	 * Issues against the Bf_Subscription, credit of the specified value and currency.
 	 * @param int Nominal value of credit note
 	 * @param ISO_4217_Currency_Code The currency code
@@ -208,14 +266,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function getPricingComponentValues() {
 		return $this->pricingComponentValues;
-	}
-
-	/**
-	 * Gets Bf_PaymentMethodSubscriptionLinks for this Bf_Subscription.
-	 * @return Bf_PaymentMethodSubscriptionLink[]
-	 */
-	public function getPaymentMethodSubscriptionLinks() {
-		return $this->paymentMethodSubscriptionLinks;
 	}
 
 	/**
@@ -375,38 +425,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 		// set our model to use the new list
 		$this->pricingComponentValues = $pricingComponentValues;
 
-		return $this;
-	}
-
-	/**
-	 * Gets all Bf_PaymentMethod[] from an account, and associates to this Bf_Subscription
-	 * as Bf_PaymentMethodSubscriptionLink models.
-	 * @param Bf_Account the Bf_Account from which to take the payment methods.
-	 * @return Bf_Subscription ($this)
-	 */
-	public function usePaymentMethodsFromAccount(Bf_Account $account) {
-		// list of all Payment methods on account that will be linked to this Subscription
-		$paymentMethodSubscriptionLinks = $this->paymentMethodSubscriptionLinks;
-		if (is_null($paymentMethodSubscriptionLinks)) {
-			$paymentMethodSubscriptionLinks = array();
-		}
-
-		// set existing subscription links as deleted
-		foreach($paymentMethodSubscriptionLinks as $paymentMethodSubscriptionLink) {
-			$paymentMethodSubscriptionLink->deleted = true;
-		}
-
-		foreach($account->getPaymentMethods() as $paymentMethod) {
-			// create link to Payment Method
-			$paymentMethodSubscriptionLink = new Bf_PaymentMethodSubscriptionLink(array(
-			  'paymentMethodID' => $paymentMethod->id
-			  ));
-
-			// add to list of links
-			array_push($paymentMethodSubscriptionLinks, $paymentMethodSubscriptionLink);
-		}
-
-		$this->paymentMethodSubscriptionLinks = $paymentMethodSubscriptionLinks;
 		return $this;
 	}
 
