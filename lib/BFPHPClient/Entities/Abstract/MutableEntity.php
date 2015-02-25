@@ -20,10 +20,20 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 	 * @return Bf_MutableEntity the retired Entity.
 	 */
 	public function retire() {
-		$serial = $this->getSerialized();
+		$id = $this->id;
+		// empty IDs are no good!
+		if (!$id) {
+    		trigger_error("Cannot retire entity with empty ID!", E_USER_ERROR);
+		}
+
+		// $serial = $this->getSerialized();
 		$client = $this->getClient();
 
-		$retiredEntity = static::retireAndGrabFirst('', $serial, $client);
+		$encoded = rawurlencode($id);
+
+		$endpoint = "/$encoded";
+
+		$retiredEntity = static::retireAndGrabFirst($encoded, NULL, $client);
 		return $retiredEntity;
 	}
 }
