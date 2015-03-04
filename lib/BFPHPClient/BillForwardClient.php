@@ -12,12 +12,16 @@ class Bf_RawAPIOutput {
         $this->response = $response;
     }
 
+    private function asUTF8($str) {
+        return utf8_encode($str);
+    }
+
     public function json() {
-        return json_decode($this->response, true);
+        return json_decode($this->rawResponse(), true);
     }
 
     public function rawResponse() {
-        return $this->response;
+        return $this->asUTF8($this->response);
     }
 
     public function getInfo() {

@@ -7,3 +7,5 @@ composer.phar
 *.zip
 
 test/BFPHPClientTest/new/config/config.php
+
+test/scratch.php
