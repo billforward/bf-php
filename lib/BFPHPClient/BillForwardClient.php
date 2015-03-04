@@ -12,12 +12,16 @@ class Bf_RawAPIOutput {
         $this->response = $response;
     }
 
+    private function asUTF8($str) {
+        return utf8_encode($str);
+    }
+
     public function json() {
-        return json_decode($this->response, true);
+        return json_decode($this->rawResponse(), true);
     }
 
     public function rawResponse() {
-        return $this->response;
+        return $this->asUTF8($this->response);
     }
 
     public function getInfo() {
@@ -47,20 +51,24 @@ class Bf_NoMatchingEntityException extends \Exception
 }
 
 class BillForwardClient {
-	private $access_token = NULL;
-	private $urlRoot = NULL;
+    private $access_token = NULL;
+    private $urlRoot = NULL;
 
     private static $singletonClient = NULL;
 
-	public function __construct($access_token, $urlRoot) {
-		$this->access_token = $access_token;
-		$this->urlRoot = $urlRoot;
-	}
+    public function __construct($access_token, $urlRoot) {
+        $this->access_token = $access_token;
+        $this->urlRoot = $urlRoot;
+    }
 
     public static function getDefaultClient() {
         $client = static::$singletonClient;
         if (is_null($client)) {
-            throw new Exception('No default BillForwardClient found; cannot make API requests.');
+            // check for existence of static client instead
+            $client = static::$singletonClient;
+            if (is_null($client)) {
+                throw new Exception('No default BillForwardClient found; cannot make API requests.');
+            }
         }
         return $client;
     }
@@ -123,34 +131,34 @@ class BillForwardClient {
         //}
     }
 
-	public function doGet($endpoint, $data = null) {
-		$urlFull = $this->urlRoot.$endpoint;
-		$response = $this->CallAPI_Unvalidated('GET', $urlFull, $data, false);
+    public function doGet($endpoint, $data = null) {
+        $urlFull = $this->urlRoot.$endpoint;
+        $response = $this->CallAPI_Unvalidated('GET', $urlFull, $data, false);
 
         static::handleError($response);
 
-		return $response;
-	}
+        return $response;
+    }
 
-	public function doPost($endpoint, array $params) {
-		$urlFull = $this->urlRoot.$endpoint;
+    public function doPost($endpoint, array $params) {
+        $urlFull = $this->urlRoot.$endpoint;
 
         $response = $this->CallAPI_Unvalidated('POST', $urlFull, json_encode($params), true);
 
         static::handleError($response);
 
-		return $response;
-	}
+        return $response;
+    }
 
-	public function doPut($endpoint, array $params) {
-		$urlFull = $this->urlRoot.$endpoint;
+    public function doPut($endpoint, array $params) {
+        $urlFull = $this->urlRoot.$endpoint;
 
         $response = $this->CallAPI_Unvalidated('PUT', $urlFull, json_encode($params), true);
 
         static::handleError($response);
 
-		return $response;
-	}
+        return $response;
+    }
 
     public function doRetire($endpoint, array $params = null) {
         $urlFull = $this->urlRoot.$endpoint;
@@ -163,7 +171,7 @@ class BillForwardClient {
         return $response;
     }
 
-	    //todo google codeigniter rest
+        //todo google codeigniter rest
     /**
      * @param $method "GET"/"POST"/...
      * @param $request
