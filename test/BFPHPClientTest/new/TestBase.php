@@ -3,6 +3,7 @@ namespace BFPHPClientTest;
 class TestBase {
 	private static $client = NULL;
 	private static $initialized = false;
+    private static $config = NULL;
     private static $situation = NULL;
 
 	public static function initialize()
@@ -16,15 +17,19 @@ class TestBase {
     }
 
     private static function grabConfig() {
-        $configPath = __DIR__ . "/./config/config.php";
-        if (is_file($configPath))
-        {
-            require_once($configPath);
-        } else {
-            $configPath = __DIR__ . "/./config/config.example.php";
-            require_once($configPath);
+        if (is_null(self::$config)) {
+            $configPath = __DIR__ . "/./config/config.php";
+            if (is_file($configPath))
+            {
+                require_once($configPath);
+            } else {
+                $configPath = __DIR__ . "/./config/config.example.php";
+                require_once($configPath);
+            }
+            self::$config = $config;
         }
-        return $config;
+        
+        return self::$config;
     }
 
     private static function grabSituationalConfig()
@@ -39,11 +44,11 @@ class TestBase {
     	return $config['credentials'];
     }
 
-    public static function getSituation() {
+    public static function getSituation($key = NULL) {
         if (is_null(self::$situation)) {
             self::$situation = self::grabSituationalConfig();
         }
-        return self::$situation;
+        return is_null($key) ? self::$situation : self::$situation[$key];
     }
 
     private static function setupClient()

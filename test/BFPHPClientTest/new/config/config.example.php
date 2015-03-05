@@ -15,5 +15,10 @@ $config = array(
 		// required for Authorize.Net gateway tests:
 		'AuthorizeNetLoginID' => '',
 		'AuthorizeNetTransactionKey' => ''
+		
+		// required for Authorize.Net token tests:
+		'customerProfileID' => 28476855,
+		'customerPaymentProfileID' => 25879733,
+		'cardLast4Digits' => 4444
 		)
 );

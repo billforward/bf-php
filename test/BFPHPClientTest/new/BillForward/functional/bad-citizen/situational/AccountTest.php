@@ -7,22 +7,6 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 		TestBase::initialize();
 	}
 
-	protected static $createdAccount = NULL;
-
-	public function testCreateWithProfile()
-    {	
-    	$createdAccount = Bf_Account::create(Models::Account());
-
-    	$actual = $createdAccount->profile;
-
-    	$this->assertNotNull(
-			$actual,
-			"Nested entity introduced correctly."
-			);
-
-    	self::$createdAccount = $createdAccount;
-    }
-
     public function testEnsureGatewayExists() {
     	//-- Get the organization we log in with (assume first found)
 		$orgs = Bf_Organisation::getMine();
@@ -69,8 +53,13 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 		->save();
     }
 
-    public function testAddDefaultPaymentMethod()
-    {
+	protected static $createdAccount = NULL;
+
+	/**
+     * @depends testEnsureGatewayExists
+     */
+    public function testCreateWithProfile()
+    {	
     	$createdAccount = Bf_Account::create(Models::Account());
 
     	$actual = $createdAccount->profile;
@@ -86,25 +75,96 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends testCreateWithProfile
      */
+    public function testAddDefaultPaymentMethod()
+    {
+    	$account = self::$createdAccount;
+
+    	$customerProfileID = TestBase::getSituation('customerProfileID');
+		$customerPaymentProfileID = TestBase::getSituation('customerPaymentProfileID');
+		// err, didn't check what the actual card last 4 digits are. but this only matters at refund-time.
+		$cardLast4Digits = TestBase::getSituation('cardLast4Digits');
+    	
+		$authorizeNetToken = new Bf_AuthorizeNetToken(array(
+			'accountID' => $account->id,
+			'customerProfileID' => $customerProfileID,
+			'customerPaymentProfileID' => $customerPaymentProfileID,
+			'lastFourDigits' => $cardLast4Digits
+			));
+
+		$createdAuthorizeNetToken = Bf_AuthorizeNetToken::create($authorizeNetToken);
+		$createdAuthorizeNetTokenID = $createdAuthorizeNetToken->id;
+
+		$isDefault = true;
+
+		$paymentMethodModel = new Bf_PaymentMethod(array(
+			'linkID' => $createdAuthorizeNetToken->id,
+			'accountID' => $account->id,
+			'name' => 'Authorize.Net',
+			'description' => $cardLast4Digits,
+			'gateway' => 'authorizeNet',
+			'userEditable' => 0,
+			'priority' => 100,
+			'reusable' => 1,
+			'defaultPaymentMethod' => $isDefault
+			));
+
+		$createdPaymentMethod = Bf_PaymentMethod::create($paymentMethodModel);
+
+		$expected = $isDefault;
+    	$actual = $createdPaymentMethod->defaultPaymentMethod;
+
+    	$this->assertEquals(
+    		$expected,
+			$actual,
+			"Payment method begins as default."
+			);
+    }
+
+    /**
+     * @depends testAddDefaultPaymentMethod
+     */
 	public function testUpdateCascade()
     {	
     	//--Add a Profile to an existing Account
-		$account = self::$createdAccount;
+		$accountID = self::$createdAccount->id;
+		$fetchedAccount = Bf_Account::getByID($accountID);
 
-		$originalName = $account->profile->firstName;
-		$newName = 'Sanae';
+		$firstPaymentMethod = $fetchedAccount->paymentMethods[0];
 
-		$account->profile->firstName = $newName;
-
-		$updatedAccount = $account->save();
-
-    	$expected = $newName;
-		$actual = $updatedAccount->profile->firstName;
+		$expected1 = true;
+		$actual1 = $firstPaymentMethod->defaultPaymentMethod;
 
 		$this->assertEquals(
-			$expected,
-			$actual,
-			"Nested entity introduced correctly."
+    		$expected1,
+			$actual1,
+			"Payment method begins as default before update of account."
+			);
+
+		$originalName = $fetchedAccount->profile->firstName;
+		$newName = 'Sanae';
+
+		$fetchedAccount->profile->firstName = $newName;
+
+		$updatedAccount = $fetchedAccount->save();
+
+    	$expected2 = $newName;
+		$actual2 = $updatedAccount->profile->firstName;
+
+		$this->assertEquals(
+			$expected2,
+			$actual2,
+			"Nested entity change introduced correctly by cascade update."
+			);
+
+		$firstPaymentMethodAfterUpdate = $updatedAccount->paymentMethods[0];
+
+		$expected3 = true;
+		$actual3 = $firstPaymentMethodAfterUpdate->defaultPaymentMethod;
+
+		$this->assertEquals(
+    		$expected3,
+			$actual3,
+			"Payment method remains as default after update of account."
 			);
     }
 }
