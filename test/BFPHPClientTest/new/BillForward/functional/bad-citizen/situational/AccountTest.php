@@ -2,7 +2,7 @@
 use BFPHPClientTest\TestBase;
 use BFPHPClientTest\Models;
 
-class Bf_AccountTest extends PHPUnit_Framework_TestCase {
+class Bf_Account_SituationalTest extends PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		TestBase::initialize();
 	}
@@ -124,10 +124,15 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
      * @depends testAddDefaultPaymentMethod
      */
 	public function testUpdateCascade()
-    {	
+    {
+    	// print_r("\nCreated account:\n\n");
+    	// var_export(self::$createdAccount);
     	//--Add a Profile to an existing Account
 		$accountID = self::$createdAccount->id;
 		$fetchedAccount = Bf_Account::getByID($accountID);
+
+		// print_r("\nFetched account:\n\n");
+		// var_export($fetchedAccount);
 
 		$firstPaymentMethod = $fetchedAccount->paymentMethods[0];
 
@@ -146,6 +151,9 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 		$fetchedAccount->profile->firstName = $newName;
 
 		$updatedAccount = $fetchedAccount->save();
+
+		// print_r("\nUpdated account:\n\n");
+		// var_export($updatedAccount);
 
     	$expected2 = $newName;
 		$actual2 = $updatedAccount->profile->firstName;
