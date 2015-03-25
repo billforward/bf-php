@@ -209,7 +209,14 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 		$endpoint = "/$encoded";
 
-		return static::getFirst($endpoint, $options, $customClient);
+		try {
+			return static::getFirst($endpoint, $options, $customClient);
+		} catch(Bf_NoMatchingEntityException $e) {
+			// rethrow with better message
+			$callingClass = static::getClassName();
+			$responseClass = $callingClass;
+			throw new Bf_NoMatchingEntityException("No results returned by API for '$callingClass::getByID('$id')' (GET to '$endpoint'). Expected at least 1 '$responseClass' entity.");
+		}
 	}
 
 	protected static function prefixPathWithController($path) {
@@ -293,7 +300,13 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function responseToFirstEntity(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
 		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 
-		$firstMatch = $response->getFirstResult();
+		try {
+			$firstMatch = $response->getFirstResult();	
+		} catch(Bf_NoMatchingEntityException $e) {
+			// rethrow with better message
+			$responseClass = $entityClass::getClassName();
+			throw new Bf_NoMatchingEntityException("No results returned in API response. Expected at least 1 '$responseClass' entity.");
+		}
 
 		$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $firstMatch, $client);
 		return $constructedEntity;
