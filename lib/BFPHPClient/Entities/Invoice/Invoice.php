@@ -2,10 +2,9 @@
 
 class Bf_Invoice extends Bf_MutableEntity {
 	public static function create(Bf_InsertableEntity $entity) {
-		trigger_error('Create support is denied for this entity; '
+		throw new Bf_UnsupportedMethodException('Create support is denied for this entity; '
 		 .'at the time of writing, no API endpoint exists to support it.'
-		 .'The entity can be created by the BillForward engines, in response to certain events. ',
-		 E_USER_ERROR);
+		 .'The entity can be created by the BillForward engines, in response to certain events. ');
 	}
 
 	protected static $_resourcePath;
@@ -126,7 +125,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$subscriptionID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/subscription/$subscriptionID";
@@ -142,7 +141,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public static function getByState($state, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$state) {
-    		trigger_error("Cannot lookup unspecified state!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup unspecified state!");
 		}
 
 		$endpoint = "/state/$state";
@@ -158,7 +157,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public static function getByVersionID($invoiceVersionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$invoiceVersionID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/version/$invoiceVersionID";
@@ -174,7 +173,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public static function getAllVersionsForID($id, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$id) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		if (is_null($options) || !is_array($options)) {
@@ -195,7 +194,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public static function getForSubscriptionVersion($subscriptionVersionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$subscriptionVersionID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/subscription/version/$subscriptionVersionID";
@@ -211,7 +210,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$accountID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/account/$accountID";

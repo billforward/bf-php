@@ -23,7 +23,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 		$id = $this->id;
 		// empty IDs are no good!
 		if (!$id) {
-    		trigger_error("Cannot retire entity with empty ID!", E_USER_ERROR);
+			throw new Bf_EmptyArgumentException("Cannot retire entity with empty ID!");
 		}
 
 		// $serial = $this->getSerialized();

@@ -245,7 +245,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	public static function getUnusedUniqueCodesFromBaseCode($baseCode, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$baseCode) {
-    		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon base code!");
 		}
 
 		$encoded = rawurlencode($baseCode);
@@ -265,7 +265,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	public static function getUsedUniqueCodesFromBaseCode($baseCode, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$baseCode) {
-    		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon base code!");
 		}
 
 		$encoded = rawurlencode($baseCode);
@@ -285,7 +285,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	public static function createUniqueCodesFromBaseCode($baseCode, $quantity) {
 		// empty IDs are no good!
 		if (!$baseCode) {
-    		trigger_error("Cannot lookup empty coupon code!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon code!");
 		}
 
 		$coupon = new Bf_Coupon();
@@ -318,7 +318,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	public static function removeCouponCode($couponCode) {
 		// empty IDs are no good!
 		if (!$couponCode) {
-    		trigger_error("Cannot lookup empty coupon code!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon code!");
 		}
 
 		$endpoint = rawurlencode($couponCode);
@@ -338,7 +338,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	public static function getSubscriptionApplicationsForBaseCode($baseCode, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$baseCode) {
-    		trigger_error("Cannot lookup empty coupon base code!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon base code!");
 		}
 
 		$encoded = rawurlencode($baseCode);

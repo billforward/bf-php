@@ -70,7 +70,7 @@ class Bf_PricingCalculator {
 		$subscription;
 		if (is_null($subscriptionModel)) {
 			if (is_null($subscriptionID)) {
-				throw new \Exception('Received null subscription, and null subscription ID.');
+				throw new Bf_EmptyArgumentException('Received null subscription, and null subscription ID.');
 			}
 
 			// fetch from API
@@ -97,7 +97,7 @@ class Bf_PricingCalculator {
 				$asOfDate = $subscription->currentPeriodEnd;
 				$asOfTime = Bf_BillingEntity::makeUTCTimeFromBillForwardDate($subscription->currentPeriodEnd);
 			} else {
-				throw new \Exception('Cannot set As Of Time to period end, because the subscription does not declare a period end.');
+				throw new Bf_PreconditionFailedException('Cannot set As Of Time to period end, because the subscription does not declare a period end.');
 			}
 		} else {
 			$asOfTime = time();

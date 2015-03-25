@@ -160,12 +160,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 				} else {
 					$thisClass = $this->getClassName();
 					$errorString = "Construction of entity <$class> inside entity <$thisClass> failed; expected array or <$class> entity. Instead received object (with class <$itsClass>).";
-					throw new \Exception($errorString);
+					throw new Bf_UnserializationException($errorString);
 				}
 			} else {
 				$thisClass = $this->getClassName();
 				$errorString = "Construction of entity <$class> inside entity <$thisClass> failed; expected array or <$class> entity. Instead received: <$constructArgs>";
-				throw new \Exception($errorString);
+				throw new Bf_UnserializationException($errorString);
 			}
 		} else {
 			$newEntity = Bf_BillingEntity::constructEntityFromArgs($class, $constructArgs, $client);
@@ -202,7 +202,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	public static function getByID($id, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$id) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$encoded = rawurlencode($id);
@@ -405,7 +405,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	if (is_subclass_of($entityReference, get_called_class())) {
     		return $entityReference;
     	}
-    	throw new \Exception('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
+    	throw new Bf_MalformedEntityReferenceException('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
     /**
@@ -415,10 +415,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
      */
     public static function getIdentifier($entityReference) {
     	if (is_null($entityReference)) {
-    		throw new \Exception('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <NULL>.');
+    		throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <NULL>.');
     	}
     	if (is_array($entityReference)) {
-    		throw new \Exception('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <array>.');
+    		throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <array>.');
     	}
     	if (is_string($entityReference)) {
     		// already an identifier; return verbatim
@@ -428,9 +428,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		// pluck identifier out of entity object
     		if ($entityReference->id)
     		return $entityReference->id;
-    		throw new \Exception('Cannot distill identifier from referenced entity; referenced entity does not declare an ID. Perhaps this entity is not a persisted entity retrieved from the API?');
+    		throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; referenced entity does not declare an ID. Perhaps this entity is not a persisted entity retrieved from the API?');
     	}
-    	throw new \Exception('Cannot distill identifier from referenced entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
+    	throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
     public function getJson() {

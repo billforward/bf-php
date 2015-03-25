@@ -24,7 +24,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getAllVersionsForID($id, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$id) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		if (is_null($options) || !is_array($options)) {
@@ -45,7 +45,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getByVersionID($versionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$versionID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/version/$versionID";
@@ -61,7 +61,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getByProductID($productID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$productID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/product/$productID";
@@ -77,7 +77,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getByRatePlanID($productRatePlanID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$productRatePlanID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/product-rate-plan/$productRatePlanID";
@@ -93,7 +93,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getByState($state, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$state) {
-    		trigger_error("Cannot lookup unspecified state!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup unspecified state!");
 		}
 
 		$endpoint = "/state/$state";
@@ -109,7 +109,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$accountID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/account/$accountID";
@@ -127,7 +127,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		// empty IDs are no good!
 		if (!$subscriptionIdentifier) {
-    		trigger_error("Cannot lookup empty subscription ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
 		}
 
 		$encoded = rawurlencode($subscriptionIdentifier);
@@ -151,11 +151,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		// empty IDs are no good!
 		if (!$subscriptionIdentifier)
-    		trigger_error("Cannot lookup empty subscription ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
 
 		// empty IDs are no good!
 		if (!$paymentMethodIdentifier)
-    		trigger_error("Cannot lookup empty subscription ID!", E_USER_ERROR);
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
 
 		$subEncoded = rawurlencode($subscriptionIdentifier);
 		$paymentMethodEncoded = rawurlencode($paymentMethodIdentifier);
@@ -378,11 +378,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function setValuesOfPricingComponentsByProperties(array $propertiesList, array $valuesList) {
 		if (!is_array($propertiesList)) {
-			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
 
 		if (!is_array($valuesList)) {
-			throw new \Exception('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
 		}
 
 		$productRatePlan = $this->getProductRatePlan();
@@ -397,7 +397,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		foreach ($propertiesList as $key => $value) {
 			if (!is_array($value)) {
-				throw new \Exception('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$value);
+				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$value);
 			}
 			$pricingComponent = $productRatePlan->getPricingComponentWithProperties($value);
 
@@ -442,18 +442,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
 		if (!is_array($propertiesList)) {
-			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
 
 		if (!is_array($valuesList)) {
-			throw new \Exception('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
 		}
 
 		$componentChanges = array();
 
 		foreach ($propertiesList as $key => $propertyMap) {
 			if (!is_array($propertyMap)) {
-				throw new \Exception('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
+				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
 			}
 
 			$newValue = $valuesList[$key];
@@ -488,7 +488,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			if (!is_null($this->currentPeriodEnd)) {
 				$date = $this->currentPeriodEnd;
 			} else {
-				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end.');
+				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
 			}
 		}
 
@@ -594,18 +594,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated') {
 		if (!is_array($propertiesList)) {
-			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
 
 		if (!is_array($valuesList)) {
-			throw new \Exception('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
 		}
 
 		$mappings = array();
 
 		foreach ($propertiesList as $key => $propertyMap) {
 			if (!is_array($propertyMap)) {
-				throw new \Exception('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
+				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
 			}
 
 			$newValue = $valuesList[$key];
@@ -634,7 +634,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			if (!is_null($this->currentPeriodEnd)) {
 				$date = $this->currentPeriodEnd;
 			} else {
-				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end.');
+				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
 			}
 		}
 
@@ -760,7 +760,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			if (!is_null($this->currentPeriodEnd)) {
 				$date = $this->currentPeriodEnd;
 			} else {
-				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end.');
+				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
 			}
 		}
 

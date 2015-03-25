@@ -46,10 +46,6 @@ class Bf_RawAPIOutput {
     }
 }
 
-class Bf_NoMatchingEntityException extends \Exception
-{
-}
-
 class BillForwardClient {
 	private $access_token = NULL;
 	private $urlRoot = NULL;
@@ -64,7 +60,7 @@ class BillForwardClient {
     public static function getDefaultClient() {
         $client = static::$singletonClient;
         if (is_null($client)) {
-            throw new Exception('No default BillForwardClient found; cannot make API requests.');
+            throw new Bf_SetupException('No default BillForwardClient found; cannot make API requests.');
         }
         return $client;
     }
@@ -108,11 +104,11 @@ class BillForwardClient {
                 if (is_null($responseRaw)) {
                     // I think this means you cannot connect to API.
                     $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\n====", $httpCode);
-                    throw new \Exception($errorString);
+                    throw new Bf_NoAPIResponseException($errorString);
                 } else {
                     // I think this means you can connect to API, but it is in a bad state.
                     $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n====", $httpCode, $responseRaw);
-                    throw new \Exception($errorString);
+                    throw new Bf_NoAPIResponseException($errorString);
                 }
             } else {
                 if (array_key_exists('errorType', $payload)) {
@@ -121,7 +117,7 @@ class BillForwardClient {
                     $errorMessage = $payload['errorMessage'];
 
                     $errorString = sprintf("\n====\nReceived error from API.\nError code: \t<%d>\nError type: \t<%s>\nError message:\t<%s>.\n====", $httpCode, $errorType, $errorMessage);
-                    throw new \Exception($errorString);
+                    throw new Bf_APIErrorResponseException($errorString);
                 }
             }
         //}

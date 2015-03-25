@@ -2,31 +2,27 @@
 
 class Bf_AmendmentPriceRequest extends Bf_MutableEntity {
 	public static function create(Bf_InsertableEntity $entity) {
-		trigger_error('Create support is denied for this entity; '
+		throw new Bf_UnsupportedMethodException('Create support is denied for this entity; '
 		 .'at the time of writing, no API endpoint exists to support it. '
-		 .'The entity can be created through cascade only (i.e. instantiated within another entity).',
-		 E_USER_ERROR);
+		 .'The entity can be created through cascade only (i.e. instantiated within another entity).');
 	}
 	
 	public static function getbyID($id, $options = NULL, $customClient = NULL) {
-		trigger_error('Get by ID support is denied for this entity; '
+		throw new Bf_UnsupportedMethodException('Get by ID support is denied for this entity; '
 		 .'at the time of writing, no API endpoint exists to support it.'
-		 .'The entity can be GETted through cascade only (i.e. GET a related entity).',
-		 E_USER_ERROR);
+		 .'The entity can be GETted through cascade only (i.e. GET a related entity).');
 	}
 
 	public static function getAll($options = NULL, $customClient = NULL) {
-		trigger_error('Get All support is denied for this entity; '
+		throw new Bf_UnsupportedMethodException('Get All support is denied for this entity; '
 		 .'at the time of writing, no API endpoint exists to support it.'
-		 .'The entity can be GETted through cascade only (i.e. GET a related entity).',
-		 E_USER_ERROR);
+		 .'The entity can be GETted through cascade only (i.e. GET a related entity).');
 	}
 
 	public function save() {
-		trigger_error('Save support is denied for this entity; '
+		throw new Bf_UnsupportedMethodException('Save support is denied for this entity; '
 		 .'at the time of writing, the provided API endpoint is not functioning.'
-		 .'The entity can be saved through cascade only (i.e. save a related entity).',
-		 E_USER_ERROR);
+		 .'The entity can be saved through cascade only (i.e. save a related entity).');
 	}
 
 	protected function doUnserialize(array $json) {
@@ -95,17 +91,17 @@ class Bf_AmendmentPriceRequest extends Bf_MutableEntity {
 	 */
 	public static function forPricingComponentsByProperties(array $propertiesList, array $valuesList, $subscriptionID=null, Bf_Subscription $subscriptionModel=null) {
 		if (!is_array($propertiesList)) {
-			throw new \Exception('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
 		}
 
 		if (!is_array($valuesList)) {
-			throw new \Exception('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
+			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
 		}
 
 		$subscription;
 		if (is_null($subscriptionModel)) {
 			if (is_null($subscriptionID)) {
-				throw new \Exception('Received null subscription, and null subscription ID.');
+				throw new Bf_EmptyArgumentException('Received null subscription, and null subscription ID.');
 			}
 
 			// fetch from API
@@ -120,7 +116,7 @@ class Bf_AmendmentPriceRequest extends Bf_MutableEntity {
 
 		foreach ($propertiesList as $key => $value) {
 			if (!is_array($value)) {
-				throw new \Exception('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$value);
+				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$value);
 			}
 			$pricingComponent = $productRatePlan->getPricingComponentWithProperties($value);
 

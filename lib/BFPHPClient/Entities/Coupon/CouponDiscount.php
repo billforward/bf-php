@@ -40,7 +40,7 @@ class Bf_CouponDiscount extends Bf_MutableEntity {
 		} else if ($discountNature === 'unitsFree') {
 			$model->unitsFree = $amount;
 		} else {
-			trigger_error("Unsupported/unrecognised 'discountNature': '$discountNature'.", E_USER_ERROR);
+			throw new Bf_UnsupportedParameterException("Unsupported/unrecognised 'discountNature': '$discountNature'.");
 		}
 
 		return $model;

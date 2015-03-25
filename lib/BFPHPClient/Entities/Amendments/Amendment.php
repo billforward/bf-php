@@ -15,7 +15,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$subscriptionID) {
-    		trigger_error("Cannot lookup empty ID!", E_USER_ERROR);
+			throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
 		$endpoint = "/subscription/$subscriptionID";
@@ -47,13 +47,13 @@ class Bf_Amendment extends Bf_MutableEntity {
 		} else if ($actioningTime === 'AtPeriodEnd') {
 			// we need to consult subscription
 			if (is_null($subscription)) {
-				throw new \Exception('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
+				throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
 			}
 			$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
 			if (!is_null($subscriptionFetched->currentPeriodEnd)) {
 				$date = $subscriptionFetched->currentPeriodEnd;
 			} else {
-				throw new \Exception('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
+				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
 			}
 		}
 		return $date;
