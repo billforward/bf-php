@@ -55,6 +55,7 @@ spl_autoload_register(function($className) {
             'Bf_MutableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/MutableEntity.php',
             'Bf_NoAPIResponseException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_NoMatchingEntityException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
+            'Bf_Notification' => $baseDir . '/BFPHPClient/Entities/Notification/Notification.php',
             'Bf_Organisation' => $baseDir . '/BFPHPClient/Entities/Organisation/Organisation.php',
             'Bf_PaymentMethod' => $baseDir . '/BFPHPClient/Entities/Account/PaymentMethod.php',
             'Bf_PaymentMethodSubscriptionLink' => $baseDir . '/BFPHPClient/Entities/Subscription/PaymentMethodSubscriptionLink.php',
