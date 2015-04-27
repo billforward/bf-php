@@ -38,6 +38,19 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_ProductRatePlans for a given Bf_Product
+	 * @param union[string ($id | $name) | Bf_Product $entity] The Product whose rate plans you wish to GET. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product.
+	 * @return Bf_ProductRatePlan[]
+	 */
+	public static function getForProduct($product, $options = NULL, $customClient = NULL) {
+		$productIdentifier = Bf_Product::getIdentifier($product);
+
+		$endpoint = sprintf("/product/%s", rawurlencode($productIdentifier));
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
 	 * Fetches Bf_Subscriptions for this Bf_ProductRatePlan.
 	 * @return Bf_Subscription[]
 	 */
