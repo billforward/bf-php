@@ -166,9 +166,9 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param string The base Coupon code for which to find available Unique codes.
 	 * @return Bf_CouponUniqueCodesResponse[] The fetched applicable coupons.
 	 */
-	public function getUniqueCodes($options = NULL, $customClient = NULL) {
+	public function getUnusedUniqueCodes($options = NULL, $customClient = NULL) {
 		$baseCode = $this->getBaseCode();
-		return static::getUniqueCodesFromBaseCode($baseCode, $options, $customClient);
+		return static::getUnusedUniqueCodesFromBaseCode($baseCode, $options, $customClient);
 	}
 
 	/**
