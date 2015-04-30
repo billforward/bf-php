@@ -34,6 +34,14 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	 * @return Bf_Product
 	 */
 	public function getProduct() {
+		// if this is just a model made on our end, we might not the serialized product yet
+		// alternatively: newer BillForward may omit serialized product and necessitate a fetch
+		if (!$this->product) {
+			if (!$this->productID) {
+				throw new Bf_PreconditionFailedException("This Bf_ProductRatePlan has neither a 'product' specified, nor a 'productID' by which to obtain said product.");
+			}
+			$this->product = Bf_Product::getByID($this->productID);
+		}
 		return $this->product;
 	}
 
