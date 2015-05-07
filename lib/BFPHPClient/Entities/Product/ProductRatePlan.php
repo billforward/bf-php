@@ -46,6 +46,22 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_ProductRatePlans by name or ID
+	 * @note This is merely a getByID that returns a collection (supports the case where globally, multiple rate plans exist with the same name)
+	 * @param union[string ($id | $name) | Bf_ProductRatePlan $entity] The ProductRatePlan that you wish to GET. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
+	 * @return Bf_ProductRatePlan[]
+	 */
+	public static function getByName($ratePlan, $options = NULL, $customClient = NULL) {
+		$ratePlanIdentifier = Bf_ProductRatePlan::getIdentifier($ratePlan);
+
+		$endpoint = sprintf("/%s",
+			rawurlencode($ratePlanIdentifier)
+			);
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
 	 * Gets Bf_ProductRatePlans for a given Bf_Product
 	 * @param union[string ($id | $name) | Bf_Product $entity] The Product whose rate plans you wish to GET. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product.
 	 * @return Bf_ProductRatePlan[]
@@ -56,6 +72,24 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 		$endpoint = sprintf("/product/%s", rawurlencode($productIdentifier));
 
 		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Gets (by name or ID) Bf_ProductRatePlans belonging to a Bf_Product by name or ID
+	 * @param union[string ($id | $name) | Bf_Product $entity] The Product whose rate plans you wish to GET. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product.
+	 * @param union[string ($id | $name) | Bf_ProductRatePlan $entity] The ProductRatePlan that you wish to GET from that Product. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
+	 * @return Bf_ProductRatePlan
+	 */
+	public static function getByProductAndRatePlanID($product, $options = NULL, $customClient = NULL) {
+		$productIdentifier = Bf_Product::getIdentifier($product);
+		$ratePlanIdentifier = Bf_ProductRatePlan::getIdentifier($product);
+
+		$endpoint = sprintf("/product/%s/rate-plan/%s",
+			rawurlencode($productIdentifier),
+			rawurlencode($ratePlanIdentifier)
+			);
+
+		return static::getFirst($endpoint, $options, $customClient);
 	}
 
 	/**
