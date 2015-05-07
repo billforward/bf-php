@@ -80,9 +80,9 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	 * @param union[string ($id | $name) | Bf_ProductRatePlan $entity] The ProductRatePlan that you wish to GET from that Product. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @return Bf_ProductRatePlan
 	 */
-	public static function getByProductAndRatePlanID($product, $options = NULL, $customClient = NULL) {
+	public static function getByProductAndRatePlanID($product, $ratePlan, $options = NULL, $customClient = NULL) {
 		$productIdentifier = Bf_Product::getIdentifier($product);
-		$ratePlanIdentifier = Bf_ProductRatePlan::getIdentifier($product);
+		$ratePlanIdentifier = Bf_ProductRatePlan::getIdentifier($ratePlan);
 
 		$endpoint = sprintf("/product/%s/rate-plan/%s",
 			rawurlencode($productIdentifier),
