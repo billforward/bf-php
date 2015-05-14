@@ -432,103 +432,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $this;
 	}
 
-	//// UPGRADE/DOWNGRADE VIA AMENDMENT
-
-	/**
-	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to Bf_PricingComponents whose properties match.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
-	 * @param array List of values to assign to respective pricing components; array(103, 2)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
-	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
-	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
-	 */
-	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
-		if (!is_array($propertiesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
-		}
-
-		if (!is_array($valuesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
-		}
-
-		$componentChanges = array();
-
-		foreach ($propertiesList as $key => $propertyMap) {
-			if (!is_array($propertyMap)) {
-				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
-			}
-
-			$newValue = $valuesList[$key];
-
-			$pricingComponentValue = $this->getValueOfPricingComponentWithProperties($propertyMap);
-			$componentChange = new Bf_ComponentChange(array(
-				'pricingComponentID' => $pricingComponentValue->pricingComponentID,
-				'newValue' => $newValue
-			));
-
-			if (!is_null($changeModeOverride)) {
-				if ($changeModeOverride === 'Immediate') {
-					$componentChange->changeMode = 'immediate';
-				} else if ($changeModeOverride === 'Delayed') {
-					$componentChange->changeMode = 'delayed';
-				}
-			}
-
-			array_push($componentChanges, $componentChange);
-		}
-		
-		$amendment = new Bf_PricingComponentValueAmendment(array(
-			'subscriptionID' => $this->id,
-			'componentChanges' => $componentChanges,
-			'invoicingType' => $invoicingType
-			));
-
-		$date = NULL; // defaults to Immediate
-		if (is_int($actioningTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'AtPeriodEnd') {
-			if (!is_null($this->currentPeriodEnd)) {
-				$date = $this->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
-			}
-		}
-
-		if (!is_null($date)) {
-			$amendment->actioningTime = $date;
-		}
-
-		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
-		return $createdAmendment;
-	}
-
-	/**
-	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
-	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
-	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
-	 */
-	public function changeValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
-		$propertiesList = array();
-		$valuesList = array();
-
-		foreach($namesToValues as $key => $value) {
-			// from pricing component name, create a dictionary of identifying properties
-			$pricingComponentPropertyMap = array(
-				'name' => $key
-				);
-			array_push($propertiesList, $pricingComponentPropertyMap);
-			array_push($valuesList, $value);
-		}
-
-		return $this->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $actioningTime, $changeModeOverride);
-	}
-
 	/**
 	 * Applies Bf_Coupon to this Bf_Subscription
 	 * @param Bf_Coupon The coupon to apply to this subscription
@@ -547,6 +450,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return Bf_Coupon::applyCouponCodeToSubscription($couponCode, $this);
 	}
 
+	//// UPGRADE/DOWNGRADE VIA AMENDMENT
+
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
@@ -557,7 +462,25 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
 	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
-		return $this->changeValueOfPricingComponentsByName($namesToValues, $invoicingType, $actioningTime, $changeModeOverride);
+		$componentChanges = array_map(function($key, $value) {
+			$change = new Bf_ComponentChange(array(
+				'pricingComponentName' => $key,
+				'newValue' => $value
+			));
+			if (!is_null($changeModeOverride))
+				$componentChange->changeMode = strtolower($changeModeOverride);
+			return $change;
+		}, array_keys($namesToValues), $namesToValues);
+
+		$amendment = new Bf_PricingComponentValueAmendment(array(
+			'subscriptionID' => $this->id,
+			'componentChanges' => $componentChanges,
+			'invoicingType' => $invoicingType
+			));
+		$amendment->applyActioningTime($actioningTime, $this);
+
+		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
+		return $createdAmendment;
 	}
 
 	//// MIGRATE PLAN VIA AMENDMENT
@@ -630,21 +553,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'invoicingType' => $invoicingType,
 			'pricingBehaviour' => $pricingBehaviour
 			));
-
-		$date = NULL; // defaults to Immediate
-		if (is_int($actioningTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'AtPeriodEnd') {
-			if (!is_null($this->currentPeriodEnd)) {
-				$date = $this->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
-			}
-		}
-
-		if (!is_null($date)) {
-			$amendment->actioningTime = $date;
-		}
+		$amendment->applyActioningTime($actioningTime, $this);
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
 		return $createdAmendment;
@@ -756,21 +665,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		  'subscriptionID' => $this->id,
 		  'serviceEnd' => $serviceEnd
 		  ));
-
-		$date = NULL; // defaults to Immediate
-		if (is_int($actioningTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'AtPeriodEnd') {
-			if (!is_null($this->currentPeriodEnd)) {
-				$date = $this->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
-			}
-		}
-
-		if (!is_null($date)) {
-			$amendment->actioningTime = $date;
-		}
+		$amendment->applyActioningTime($actioningTime, $this);
 
 		// create amendment using API
 		$createdAmendment = Bf_CancellationAmendment::create($amendment);
