@@ -486,69 +486,51 @@ class Bf_Subscription extends Bf_MutableEntity {
 	//// MIGRATE PLAN VIA AMENDMENT
 
 	/**
-	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to Bf_PricingComponents whose properties match.
+	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
-	 * @param array List of values to assign to respective pricing components; array(103, 2)
-	 * @param Bf_ProductRatePlan The plan to migrate to.
+	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
+	 * @param union[string $id | Bf_ProductRatePlan $entity] The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
 	 ***
-	 *  <None>
 	 *  No migration charge will be issued at all.
+	 *  <None>
 	 *
-	 *  <Full>
 	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
+	 *  <Full>
 	 *  
-	 *  <Difference>
 	 *  The migration cost will be the difference between the in advance components  
 	 *  of the current Product Rate Plan and the new Product Rate plan.
+	 *  <Difference>
 	 *  
-	 *  <DifferenceProRated>
 	 *  The migration cost will be the difference between the in advance components  
 	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
+	 *  <DifferenceProRated>
 	 *  
-	 *  <ProRated>
 	 *  This value has two definitions.
 	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
 	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
 	 *  
-	 *   2. We are migration to a plan of a different period duration. 
+	 *   2. We are migrating to a plan of a different period duration. 
 	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
+	 *  <ProRated>
 	 ***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated') {
-		if (!is_array($propertiesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
-		}
+	public function migratePlan(array $namesToValues, $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated') {
+		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 
-		if (!is_array($valuesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
-		}
-
-		$mappings = array();
-
-		foreach ($propertiesList as $key => $propertyMap) {
-			if (!is_array($propertyMap)) {
-				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
-			}
-
-			$newValue = $valuesList[$key];
-
-			$pricingComponent = $newPlan->getPricingComponentWithProperties($propertyMap);
-			$mapping = new Bf_PricingComponentValueMigrationAmendmentMapping(array(
-				'pricingComponentID' => $pricingComponent->id,
-				'value' => $newValue
+		$mappings = array_map(function($name, $value) {
+			return new Bf_PricingComponentValueMigrationAmendmentMapping(array(
+				'pricingComponentName' => $name,
+				'value' => $value
 			));
-
-			array_push($mappings, $mapping);
-		}
+		}, array_keys($namesToValues), $namesToValues);
 		
 		$amendment = new Bf_ProductRatePlanMigrationAmendment(array(
 			'subscriptionID' => $this->id,
-			'productRatePlanID' => $newPlan->id,
+			'productRatePlanID' => $planID,
 			'mappings' => $mappings,
 			'invoicingType' => $invoicingType,
 			'pricingBehaviour' => $pricingBehaviour
@@ -557,98 +539,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
 		return $createdAmendment;
-	}
-
-	/**
-	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param Bf_ProductRatePlan The plan to migrate to.
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
-	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
-	 ***
-	 *  No migration charge will be issued at all.
-	 *  <None>
-	 *
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
-	 *  <Full>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  <Difference>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  <DifferenceProRated>
-	 *  
-	 *  This value has two definitions.
-	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
-	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
-	 *  
-	 *   2. We are migration to a plan of a different period duration. 
-	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 *  <ProRated>
-	 ***
-	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
-	 */
-	public function migrateWithValueOfPricingComponentsByName(array $namesToValues, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated') {
-		$propertiesList = array();
-		$valuesList = array();
-
-		foreach($namesToValues as $key => $value) {
-			// from pricing component name, create a dictionary of identifying properties
-			$pricingComponentPropertyMap = array(
-				'name' => $key
-				);
-			array_push($propertiesList, $pricingComponentPropertyMap);
-			array_push($valuesList, $value);
-		}
-
-		return $this->migrateWithValueOfPricingComponentByProperties($propertiesList, $valuesList, $newPlan, $invoicingType, $actioningTime, $pricingBehaviour);
-	}
-
-	/**
-	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ID of the plan to migrate to.
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
-	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
-	 ***
-	 *  No migration charge will be issued at all.
-	 *  <None>
-	 *
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
-	 *  <Full>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  <Difference>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  <DifferenceProRated>
-	 *  
-	 *  This value has two definitions.
-	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
-	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
-	 *  
-	 *   2. We are migration to a plan of a different period duration. 
-	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 *  <ProRated>
-	 ***
-	 * @param Bf_ProductRatePlan (Alternative parameter to avoid extra API request) The plan to migrate to.
-	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
-	 */
-	public function migratePlan(array $namesToValues, $newPlanID = NULL, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated', Bf_ProductRatePlan $newPlan = NULL) {
-		if (is_null($newPlan)) {
-			// fetch plan for you
-			$newPlan = Bf_ProductRatePlan::getByID($newPlanID);
-		}
-
-		return $this->migrateWithValueOfPricingComponentsByName($namesToValues, $newPlan, $invoicingType, $actioningTime, $pricingBehaviour);
 	}
 
 	//// CANCEL VIA AMENDMENT
