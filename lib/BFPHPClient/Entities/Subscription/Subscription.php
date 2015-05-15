@@ -87,7 +87,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Subscriptions for a given state
-	 * @param string ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] State upon which to search
+	 * @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] State upon which to search
 	 * @return Bf_Subscription[]
 	 */
 	public static function getByState($state, $options = NULL, $customClient = NULL) {
@@ -461,7 +461,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'Bandwidth' => 102,
 	 * 	'CPU' => 10
 	 * )
-	 * @param array[string => string ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) The map of pricing component names to change mode overrides.
+	 * @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) The map of pricing component names to change mode overrides.
 	 ***
 	 *	Each key in the this array maps to a value of the following ENUM:
 	 *  *	<NULL> (Behaviour for omitted keys)
@@ -478,8 +478,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'RAM' => 'Delayed'
 	 * )
 	 ***
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type. <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the upgrade amendment
+	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type. <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the upgrade amendment
 	 ***
 	 *  int
 	 *  Schedule the upgrade to occur at the specified UNIX timestamp.
@@ -537,7 +537,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array[string => number] The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param union[string $id | Bf_ProductRatePlan $entity] The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @param union[NULL | string] (Default: NULL) Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
-	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
+	 * @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
 	 ***
 	 *  <None>
 	 *  No migration charge will be issued at all.
@@ -561,8 +561,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *   2. We are migrating to a plan of a different period duration. 
 	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
 	 ***
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the migration amendment
+	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the migration amendment
 	 ***
 	 *  int
 	 *  Schedule the migration to occur at the specified UNIX timestamp.
@@ -617,7 +617,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Cancels subscription at a specified time.
-	 * @param string ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') Specifies when the service ends after the subscription is cancelled.
+	 * @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') Specifies when the service ends after the subscription is cancelled.
 	 ***
 	 * 	<Immediate>
 	 * 	Subscription ends service as soon as it is cancelled.
@@ -625,7 +625,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	<AtPeriodEnd> (Default)
 	 * 	After cancellation, the subscription continues to provide service until its billing period ends.
 	 ***
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the cancellation amendment
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the cancellation amendment
 	 ***
 	 *  int
 	 *  Schedule the cancellation to occur at the specified UNIX timestamp.

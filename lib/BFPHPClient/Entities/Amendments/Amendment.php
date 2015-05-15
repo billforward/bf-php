@@ -36,7 +36,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Parses into a BillForward timestamp the actioning time for some amendment
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
 	 ***
 	 *  int
 	 *  Schedule the amendment to occur at the specified UNIX timestamp.
@@ -85,7 +85,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Assigns to this amendment the specified actioning time.
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd'] | string] (Default: 'Immediate') When to action the amendment.
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd'] | string] (Default: 'Immediate') When to action the amendment.
 	 ***
 	 *  int
 	 *  Schedule the amendment to occur at the specified UNIX timestamp.

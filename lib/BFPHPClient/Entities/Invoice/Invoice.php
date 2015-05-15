@@ -60,7 +60,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Issues the invoice (now, or at a scheduled time).
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the issuance amendment
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the issuance amendment
 	 ***
 	 *  int
 	 *  Schedule the issuance to occur at the specified UNIX timestamp.
@@ -99,9 +99,9 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Recalculates the invoice (now, or at a scheduled time).
-	 * @param string ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') State to which the invoice will be moved following the recalculation.
-	 * @param string ENUM['RecalculateAsLatestSubscriptionVersion', 'RecalculateAsCurrentSubscriptionVersion'] (Default: 'RecalculateAsLatestSubscriptionVersion') How to recalculate the invoice.
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the recalculation amendment
+	 * @param string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') State to which the invoice will be moved following the recalculation.
+	 * @param string_ENUM['RecalculateAsLatestSubscriptionVersion', 'RecalculateAsCurrentSubscriptionVersion'] (Default: 'RecalculateAsLatestSubscriptionVersion') How to recalculate the invoice.
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the recalculation amendment
 	 ***
 	 *  int
 	 *  Schedule the recalculation to occur at the specified UNIX timestamp.
@@ -146,7 +146,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Retries execution of the invoice (now, or at a scheduled time).
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the 'next execution attempt' amendment
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the 'next execution attempt' amendment
 	 ***
 	 *  int
 	 *  Schedule the 'next execution attempt' to occur at the specified UNIX timestamp.
@@ -201,7 +201,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Invoices for a given state
-	 * @param string ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] State upon which to search
+	 * @param string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] State upon which to search
 	 * @return Bf_Invoice[]
 	 */
 	public static function getByState($state, $options = NULL, $customClient = NULL) {

@@ -9,7 +9,7 @@ class Bf_CouponDiscount extends Bf_MutableEntity {
 
 	/**
 	 * Constructs a Bf_CouponDiscount model.
-	 * @param string ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
+	 * @param string_ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
 	 ***
 	 *  <percentageDiscount>
 	 *  Discounts from the price of the specified pricing component: a percentage.
