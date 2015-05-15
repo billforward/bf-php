@@ -455,20 +455,34 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
+	 * @param array[string => number] The map of pricing component names to quantities ('Bandwidth usage' => 102)
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type. <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the upgrade amendment
-	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
+	 * @param string ENUM[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
+	 * @param array[string => string ENUM[NULL, 'Immediate', 'Delayed']] (Default: empty array()) The map of pricing component names to change mode overrides.
+	 ***
+	 *  <NULL> (omitted components are interpreted with NULL override)
+	 *  Don't override the change mode that is already specified on the pricing component.
+	 *
+	 *  <Immediate>
+	 *  Upon actioning the upgrade, this pricing component will immediately change to the new value.
+	 *  
+	 *  <Delayed>
+	 *  Wait until end of billing period to change pricing component to new value.
+	 ***
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
-		$componentChanges = array_map(function($key, $value) {
+	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', array $namesToChangeModeOverrides = array()) {
+		$componentChanges = array_map(function($key, $value) use($namesToChangeModeOverrides) {
 			$change = new Bf_ComponentChange(array(
 				'pricingComponentName' => $key,
 				'newValue' => $value
 			));
-			if (!is_null($changeModeOverride))
-				$componentChange->changeMode = strtolower($changeModeOverride);
+			if (array_key_exists($key, $namesToChangeModeOverrides)) {
+				if (!is_null($namesToChangeModeOverrides[$key])) {
+					$componentChange->changeMode = strtolower($namesToChangeModeOverrides[$key]);
+				}	
+			}
 			return $change;
 		}, array_keys($namesToValues), $namesToValues);
 
@@ -488,33 +502,33 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
+	 * @param array[string => number] The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param union[string $id | Bf_ProductRatePlan $entity] The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
 	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
 	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
 	 ***
-	 *  No migration charge will be issued at all.
 	 *  <None>
+	 *  No migration charge will be issued at all.
 	 *
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
 	 *  <Full>
+	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
 	 *  
+	 *  <Difference>
 	 *  The migration cost will be the difference between the in advance components  
 	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  <Difference>
 	 *  
+	 *  <DifferenceProRated>
 	 *  The migration cost will be the difference between the in advance components  
 	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  <DifferenceProRated>
 	 *  
+	 *  <ProRated>
 	 *  This value has two definitions.
 	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
 	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
 	 *  
 	 *   2. We are migrating to a plan of a different period duration. 
 	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 *  <ProRated>
 	 ***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
