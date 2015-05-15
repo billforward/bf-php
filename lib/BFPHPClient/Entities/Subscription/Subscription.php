@@ -536,6 +536,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * This works only for 'arrears' or 'in advance' pricing components.
 	 * @param array[string => number] The map of pricing component names to numerical values ('Bandwidth usage' => 102)
 	 * @param union[string $id | Bf_ProductRatePlan $entity] The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
+	 * @param union[NULL | string] (Default: NULL) Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
 	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
 	 ***
 	 *  <None>
@@ -586,7 +587,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 ***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migratePlan(array $namesToValues, $newPlan, $pricingBehaviour = 'DifferenceProRated', $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
+	public function migratePlan(array $namesToValues, $newPlan, $renameSubscription = NULL, $pricingBehaviour = 'DifferenceProRated', $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 
 		$mappings = array_map(function($name, $value) {
@@ -604,6 +605,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'pricingBehaviour' => $pricingBehaviour
 			));
 		$amendment->applyActioningTime($actioningTime, $this);
+		if (!is_null($nextSubscriptionName)) {
+			$amendment->nextSubscriptionName = $renameSubscription;
+		}
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
 		return $createdAmendment;
@@ -613,7 +617,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Cancels subscription at a specified time.
-	 * @param string ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') Specifies whether the service will end immediately on cancellation or if it will continue until the end of the current period.
+	 * @param string ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') Specifies when the service ends after the subscription is cancelled.
+	 ***
+	 * 	<Immediate>
+	 * 	Subscription ends service as soon as it is cancelled.
+	 *
+	 * 	<AtPeriodEnd> (Default)
+	 * 	After cancellation, the subscription continues to provide service until its billing period ends.
+	 ***
 	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the cancellation amendment
 	 ***
 	 *  int
