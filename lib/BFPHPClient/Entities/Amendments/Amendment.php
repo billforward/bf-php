@@ -39,13 +39,25 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
 	 ***
 	 *  int
-	 *  Schedule the amendment to occur at the specified UNIX timestamp. (For example given by PHP time())
+	 *  Schedule the amendment to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *
+	 *	string (within ENUM)
 	 *  <Immediate> (Default)
 	 *  Perform the amendment now (synchronously where possible).
 	 *  
 	 *  <AtPeriodEnd>
 	 *  Schedule the amendment to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the amendment to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
 	 ***
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return string The BillForward-formatted time.
@@ -65,13 +77,37 @@ class Bf_Amendment extends Bf_MutableEntity {
 			} else {
 				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
 			}
+		} else if (is_string($actioningTime)) {
+			$date = $actioningTime;
 		}
 		return $date;
 	}
 
 	/**
 	 * Assigns to this amendment the specified actioning time.
-	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment.
+	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd'] | string] (Default: 'Immediate') When to action the amendment.
+	 ***
+	 *  int
+	 *  Schedule the amendment to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *
+	 *	string (within ENUM)
+	 *  <Immediate> (Default)
+	 *  Perform the amendment now (synchronously where possible).
+	 *  
+	 *  <AtPeriodEnd>
+	 *  Schedule the amendment to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the amendment to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 ***
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified Bf_Amendment model.
 	 */

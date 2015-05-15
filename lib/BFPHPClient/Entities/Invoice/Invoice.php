@@ -60,7 +60,29 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Issues the invoice (now, or at a scheduled time).
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the issuance amendment.
+	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the issuance amendment
+	 ***
+	 *  int
+	 *  Schedule the issuance to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *
+	 *	string (within ENUM)
+	 *  <Immediate> (Default)
+	 *  Perform the issuance now (synchronously where possible).
+	 *  
+	 *  <AtPeriodEnd>
+	 *  Schedule the issuance to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the issuance to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 ***
 	 * @return Bf_IssueInvoiceAmendment The created amendment.
 	 */
 	public function issue($actioningTime = 'Immediate') {
@@ -79,7 +101,29 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * Recalculates the invoice (now, or at a scheduled time).
 	 * @param string ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') State to which the invoice will be moved following the recalculation.
 	 * @param string ENUM['RecalculateAsLatestSubscriptionVersion', 'RecalculateAsCurrentSubscriptionVersion'] (Default: 'RecalculateAsLatestSubscriptionVersion') How to recalculate the invoice.
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the recalculation amendment.
+	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the recalculation amendment
+	 ***
+	 *  int
+	 *  Schedule the recalculation to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *
+	 *	string (within ENUM)
+	 *  <Immediate> (Default)
+	 *  Perform the recalculation now (synchronously where possible).
+	 *  
+	 *  <AtPeriodEnd>
+	 *  Schedule the recalculation to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the recalculation to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 ***
 	 * @return Bf_InvoiceRecalculationAmendment The created amendment.
 	 */
 	public function recalculate($newInvoiceState = 'Pending', $recalculationBehaviour = 'RecalculateAsLatestSubscriptionVersion', $actioningTime = 'Immediate') {
@@ -102,7 +146,29 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Retries execution of the invoice (now, or at a scheduled time).
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the 'next execution attempt' amendment.
+	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the 'next execution attempt' amendment
+	 ***
+	 *  int
+	 *  Schedule the 'next execution attempt' to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *
+	 *	string (within ENUM)
+	 *  <Immediate> (Default)
+	 *  Perform the 'next execution attempt' now (synchronously where possible).
+	 *  
+	 *  <AtPeriodEnd>
+	 *  Schedule the 'next execution attempt' to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the 'next execution attempt' to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 ***
 	 * @return Bf_InvoiceNextExecutionAttemptAmendment The created amendment.
 	 */
 	public function attemptRetry($actioningTime = 'Immediate') {

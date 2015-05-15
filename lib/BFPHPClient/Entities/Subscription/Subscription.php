@@ -482,13 +482,25 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the upgrade amendment
 	 ***
 	 *  int
-	 *  Schedule the upgrade to occur at the specified UNIX timestamp. (For example given by PHP time())
+	 *  Schedule the upgrade to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *
+	 *	string (within ENUM)
 	 *  <Immediate> (Default)
-	 *  Perform the upgrade now (synchronously).
+	 *  Perform the upgrade now (synchronously where possible).
 	 *  
 	 *  <AtPeriodEnd>
 	 *  Schedule the upgrade to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the upgrade to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
 	 ***
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
@@ -552,13 +564,25 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the migration amendment
 	 ***
 	 *  int
-	 *  Schedule the migration to occur at the specified UNIX timestamp. (For example given by PHP time())
+	 *  Schedule the migration to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *
+	 *	string (within ENUM)
 	 *  <Immediate> (Default)
-	 *  Perform the migration now (synchronously).
+	 *  Perform the migration now (synchronously where possible).
 	 *  
 	 *  <AtPeriodEnd>
 	 *  Schedule the migration to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the migration to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
 	 ***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
@@ -593,13 +617,25 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the cancellation amendment
 	 ***
 	 *  int
-	 *  Schedule the cancellation to occur at the specified UNIX timestamp. (For example given by PHP time())
+	 *  Schedule the cancellation to occur at the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *
+	 *	string (within ENUM)
 	 *  <Immediate> (Default)
-	 *  Perform the cancellation now (synchronously).
+	 *  Perform the cancellation now (synchronously where possible).
 	 *  
 	 *  <AtPeriodEnd>
 	 *  Schedule the cancellation to occur at the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the cancellation to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
 	 ***
 	 * @return Bf_CancellationAmendment The created cancellation amendment.
 	 */
