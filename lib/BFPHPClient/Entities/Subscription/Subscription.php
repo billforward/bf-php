@@ -455,13 +455,13 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array[string => number] The map of pricing component names to quantities
+	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
 	 * Example:
 	 * array(
 	 * 	'Bandwidth' => 102,
 	 * 	'CPU' => 10
 	 * )
-	 * @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) The map of pricing component names to change mode overrides.
+	 * @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) $namesToChangeModeOverrides The map of pricing component names to change mode overrides.
 	 ***
 	 *	Each key in the this array maps to a value of the following ENUM:
 	 *  *	<NULL> (Behaviour for omitted keys)
@@ -478,8 +478,15 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'RAM' => 'Delayed'
 	 * )
 	 ***
-	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type. <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the upgrade amendment
+	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $invoicingType Subscription-charge invoicing type
+	 ***
+	 *	<Immediate>
+	 *	Generate invoice straight away with this charge applied.
+	 *
+	 *	<Aggregated> (Default)
+	 *	Add this charge to next invoice.
+	 ***
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $actioningTime When to action the upgrade amendment
 	 ***
 	 *  int
 	 *  Schedule the upgrade to occur at the specified UNIX timestamp.
@@ -504,7 +511,12 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 ***
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function upgrade(array $namesToValues, array $namesToChangeModeOverrides = array(), $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
+	public function upgrade(
+		array $namesToValues,
+		array $namesToChangeModeOverrides = array(),
+		$invoicingType = 'Aggregated',
+		$actioningTime = 'Immediate'
+		) {
 		$componentChanges = array_map(function($key, $value) use($namesToChangeModeOverrides) {
 			$change = new Bf_ComponentChange(array(
 				'pricingComponentName' => $key,
@@ -534,10 +546,15 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array[string => number] The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param union[string $id | Bf_ProductRatePlan $entity] The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
-	 * @param union[NULL | string] (Default: NULL) Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
-	 * @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
+	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @param union[string $id | Bf_ProductRatePlan $entity] $newPlan The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
+	 * @param union[NULL | string] (Default: NULL) $renameSubscription Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
+	 * @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') $pricingBehaviour Strategy for calculating migration charges.
 	 ***
 	 *  <None>
 	 *  No migration charge will be issued at all.
@@ -561,8 +578,15 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *   2. We are migrating to a plan of a different period duration. 
 	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
 	 ***
-	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the migration amendment
+	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $invoicingType Subscription-charge invoicing type
+	 ***
+	 *	<Immediate>
+	 *	Generate invoice straight away with this charge applied.
+	 *
+	 *	<Aggregated> (Default)
+	 *	Add this charge to next invoice.
+	 ***
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $actioningTime When to action the migration amendment
 	 ***
 	 *  int
 	 *  Schedule the migration to occur at the specified UNIX timestamp.
@@ -587,7 +611,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 ***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migratePlan(array $namesToValues, $newPlan, $renameSubscription = NULL, $pricingBehaviour = 'DifferenceProRated', $invoicingType = 'Aggregated', $actioningTime = 'Immediate') {
+	public function migratePlan(
+		array $namesToValues,
+		$newPlan,
+		$renameSubscription = NULL,
+		$pricingBehaviour = 'DifferenceProRated',
+		$invoicingType = 'Aggregated',
+		$actioningTime = 'Immediate'
+		) {
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 
 		$mappings = array_map(function($name, $value) {
@@ -617,7 +648,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Cancels subscription at a specified time.
-	 * @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') Specifies when the service ends after the subscription is cancelled.
+	 * @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') $serviceEnd Specifies when the service ends after the subscription is cancelled.
 	 ***
 	 * 	<Immediate>
 	 * 	Subscription ends service as soon as it is cancelled.
@@ -625,7 +656,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	<AtPeriodEnd> (Default)
 	 * 	After cancellation, the subscription continues to provide service until its billing period ends.
 	 ***
-	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the cancellation amendment
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $actioningTime When to action the cancellation amendment
 	 ***
 	 *  int
 	 *  Schedule the cancellation to occur at the specified UNIX timestamp.
@@ -650,7 +681,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 ***
 	 * @return Bf_CancellationAmendment The created cancellation amendment.
 	 */
-	public function cancel($serviceEnd = 'AtPeriodEnd', $actioningTime = 'Immediate') {
+	public function cancel(
+		$serviceEnd = 'AtPeriodEnd',
+		$actioningTime = 'Immediate'
+		) {
 		// create model of amendment
 		$amendment = new Bf_CancellationAmendment(array(
 		  'subscriptionID' => $this->id,
