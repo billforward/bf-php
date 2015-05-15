@@ -36,8 +36,18 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Parses into a BillForward timestamp the actioning time for some amendment
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the issuance amendment.
-	 * @param mixed[NULL, string $subscriptionID, Bf_Subscription $subscription] (Default: NULL) Reference to subscription (required only for 'AtPeriodEnd' time).
+	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
+	 ***
+	 *  int
+	 *  Schedule the amendment to occur at the specified UNIX timestamp. (For example given by PHP time())
+	 *
+	 *  <Immediate> (Default)
+	 *  Perform the amendment now (synchronously where possible).
+	 *  
+	 *  <AtPeriodEnd>
+	 *  Schedule the amendment to occur at the end of the subscription's current billing period.
+	 ***
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return string The BillForward-formatted time.
 	 */
 	public static function parseActioningTime($actioningTime, $subscription = NULL) {
@@ -61,8 +71,8 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Assigns to this amendment the specified actioning time.
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the issuance amendment.
-	 * @param mixed[NULL, string $subscriptionID, Bf_Subscription $subscription] (Default: NULL) Reference to subscription (required only for 'AtPeriodEnd' time).
+	 * @param union[int $timestamp | string ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment.
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified Bf_Amendment model.
 	 */
 	public function applyActioningTime($actioningTime, $subscription = NULL) {
