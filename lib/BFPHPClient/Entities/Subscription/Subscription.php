@@ -461,62 +461,70 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'Bandwidth' => 102,
 	 * 	'CPU' => 10
 	 * )
-	 * @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) $namesToChangeModeOverrides The map of pricing component names to change mode overrides.
-	 ***
-	 *	Each key in the this array maps to a value of the following ENUM:
-	 *  *	<NULL> (Behaviour for omitted keys)
-	 *  *	Don't override the change mode that is already specified on the pricing component.
-	 *  *	
-	 *  *	<Immediate>
-	 *  *	Upon actioning the upgrade, this pricing component will immediately change to the new value.
-	 *  *	
-	 *  *	<Delayed>
-	 *  *	Wait until end of billing period to change pricing component to new value.
-	 * Example:
-	 * array(
-	 * 	'CPU' => 'Immediate',
-	 * 	'RAM' => 'Delayed'
-	 * )
-	 ***
-	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $invoicingType Subscription-charge invoicing type
-	 ***
-	 *	<Immediate>
-	 *	Generate invoice straight away with this charge applied.
-	 *
-	 *	<Aggregated> (Default)
-	 *	Add this charge to next invoice.
-	 ***
-	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $actioningTime When to action the upgrade amendment
-	 ***
-	 *  int
-	 *  Schedule the upgrade to occur at the specified UNIX timestamp.
-	 *  Examples:
-	 *  	* time()
-	 *  	* 1431704624
-	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
-	 *
-	 *	string (within ENUM)
-	 *  <Immediate> (Default)
-	 *  Perform the upgrade now (synchronously where possible).
-	 *  
-	 *  <AtPeriodEnd>
-	 *  Schedule the upgrade to occur at the end of the subscription's current billing period.
-	 *
-	 *  string (outside ENUM)
-	 *  Schedule the upgrade to occur at the specified BillForward-formatted timestamp.
-	 *  Examples:
-	 *  	* '2015-04-23T17:13:37Z'
-	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
-	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 ***
+	 * @param array $upgradeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) $upgradeOptions['namesToChangeModeOverrides'] The map of pricing component names to change mode overrides.
+	 *	***
+	 *	*	Each key in the this array maps to a value of the following ENUM:
+	 *	*  *	<NULL> (Behaviour for omitted keys)
+	 *	*  *	Don't override the change mode that is already specified on the pricing component.
+	 *	*  *	
+	 *	*  *	<Immediate>
+	 *	*  *	Upon actioning the upgrade, this pricing component will immediately change to the new value.
+	 *	*  *	
+	 *	*  *	<Delayed>
+	 *	*  *	Wait until end of billing period to change pricing component to new value.
+	 *	* Example:
+	 *	* array(
+	 *	* 	'CPU' => 'Immediate',
+	 *	* 	'RAM' => 'Delayed'
+	 *	* )
+	 *	***
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $upgradeOptions['invoicingType'] Subscription-charge invoicing type
+	 *	***
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	***
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $upgradeOptions['actioningTime'] When to action the upgrade amendment
+	 *	***
+	 *	*  int
+	 *	*  Schedule the upgrade to occur at the specified UNIX timestamp.
+	 *	*  Examples:
+	 *	*  	* time()
+	 *	*  	* 1431704624
+	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *	*
+	 *	*	string (within ENUM)
+	 *	*  <Immediate> (Default)
+	 *	*  Perform the upgrade now (synchronously where possible).
+	 *	*  
+	 *	*  <AtPeriodEnd>
+	 *	*  Schedule the upgrade to occur at the end of the subscription's current billing period.
+	 *	*
+	 *	*  string (outside ENUM)
+	 *	*  Schedule the upgrade to occur at the specified BillForward-formatted timestamp.
+	 *	*  Examples:
+	 *	*  	* '2015-04-23T17:13:37Z'
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 *	***
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
 	public function upgrade(
 		array $namesToValues,
-		array $namesToChangeModeOverrides = array(),
-		$invoicingType = 'Aggregated',
-		$actioningTime = 'Immediate'
+		array $upgradeOptions = array(
+			'namesToChangeModeOverrides' => array(),
+			'invoicingType' => 'Aggregated',
+			'actioningTime' => 'Immediate'
+			)
 		) {
+		
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$cancellationOptions));
+
 		$componentChanges = array_map(function($key, $value) use($namesToChangeModeOverrides) {
 			$change = new Bf_ComponentChange(array(
 				'pricingComponentName' => $key,
@@ -553,72 +561,80 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'CPU' => 10
 	 * )
 	 * @param union[string $id | Bf_ProductRatePlan $entity] $newPlan The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
-	 * @param union[NULL | string] (Default: NULL) $renameSubscription Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
-	 * @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') $pricingBehaviour Strategy for calculating migration charges.
-	 ***
-	 *  <None>
-	 *  No migration charge will be issued at all.
-	 *
-	 *  <Full>
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
-	 *  
-	 *  <Difference>
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  
-	 *  <DifferenceProRated> (Default)
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  
-	 *  <ProRated>
-	 *  This value has two definitions.
-	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
-	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
-	 *  
-	 *   2. We are migrating to a plan of a different period duration. 
-	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 ***
-	 * @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $invoicingType Subscription-charge invoicing type
-	 ***
-	 *	<Immediate>
-	 *	Generate invoice straight away with this charge applied.
-	 *
-	 *	<Aggregated> (Default)
-	 *	Add this charge to next invoice.
-	 ***
-	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $actioningTime When to action the migration amendment
-	 ***
-	 *  int
-	 *  Schedule the migration to occur at the specified UNIX timestamp.
-	 *  Examples:
-	 *  	* time()
-	 *  	* 1431704624
-	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
-	 *
-	 *	string (within ENUM)
-	 *  <Immediate> (Default)
-	 *  Perform the migration now (synchronously where possible).
-	 *  
-	 *  <AtPeriodEnd>
-	 *  Schedule the migration to occur at the end of the subscription's current billing period.
-	 *
-	 *  string (outside ENUM)
-	 *  Schedule the migration to occur at the specified BillForward-formatted timestamp.
-	 *  Examples:
-	 *  	* '2015-04-23T17:13:37Z'
-	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
-	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 ***
+	 * @param array $migrationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param union[NULL | string] (Default: NULL) $migrationOptions['renameSubscription'] Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
+	 *	* @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') $migrationOptions['pricingBehaviour'] Strategy for calculating migration charges.
+	 *	***
+	 *	*  <None>
+	 *	*  No migration charge will be issued at all.
+	 *	*
+	 *	*  <Full>
+	 *	*  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
+	 *	*  
+	 *	*  <Difference>
+	 *	*  The migration cost will be the difference between the in advance components  
+	 *	*  of the current Product Rate Plan and the new Product Rate plan.
+	 *	*  
+	 *	*  <DifferenceProRated> (Default)
+	 *	*  The migration cost will be the difference between the in advance components  
+	 *	*  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
+	 *	*  
+	 *	*  <ProRated>
+	 *	*  This value has two definitions.
+	 *	*   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
+	 *	*   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
+	 *	*  
+	 *	*   2. We are migrating to a plan of a different period duration. 
+	 *	*   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
+	 *	***
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $migrationOptions['invoicingType'] Subscription-charge invoicing type
+	 *	***
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	***
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $migrationOptions['actioningTime'] When to action the migration amendment
+	 *	***
+	 *	*  int
+	 *	*  Schedule the migration to occur at the specified UNIX timestamp.
+	 *	*  Examples:
+	 *	*  	* time()
+	 *	*  	* 1431704624
+	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *	*
+	 *	*	string (within ENUM)
+	 *	*  <Immediate> (Default)
+	 *	*  Perform the migration now (synchronously where possible).
+	 *	*  
+	 *	*  <AtPeriodEnd>
+	 *	*  Schedule the migration to occur at the end of the subscription's current billing period.
+	 *	*
+	 *	*  string (outside ENUM)
+	 *	*  Schedule the migration to occur at the specified BillForward-formatted timestamp.
+	 *	*  Examples:
+	 *	*  	* '2015-04-23T17:13:37Z'
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 *	***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
 	public function migratePlan(
 		array $namesToValues,
 		$newPlan,
-		$renameSubscription = NULL,
-		$pricingBehaviour = 'DifferenceProRated',
-		$invoicingType = 'Aggregated',
-		$actioningTime = 'Immediate'
+		array $migrationOptions = array(
+			'renameSubscription' => NULL,
+			'pricingBehaviour' => 'DifferenceProRated',
+			'invoicingType' => 'Aggregated',
+			'actioningTime' => 'Immediate'
+			)
 		) {
+
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$migrationOptions));
+
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 
 		$mappings = array_map(function($name, $value) {
@@ -648,43 +664,51 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Cancels subscription at a specified time.
-	 * @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') $serviceEnd Specifies when the service ends after the subscription is cancelled.
-	 ***
-	 * 	<Immediate>
-	 * 	Subscription ends service as soon as it is cancelled.
-	 *
-	 * 	<AtPeriodEnd> (Default)
-	 * 	After cancellation, the subscription continues to provide service until its billing period ends.
-	 ***
-	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $actioningTime When to action the cancellation amendment
-	 ***
-	 *  int
-	 *  Schedule the cancellation to occur at the specified UNIX timestamp.
-	 *  Examples:
-	 *  	* time()
-	 *  	* 1431704624
-	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
-	 *
-	 *	string (within ENUM)
-	 *  <Immediate> (Default)
-	 *  Perform the cancellation now (synchronously where possible).
-	 *  
-	 *  <AtPeriodEnd>
-	 *  Schedule the cancellation to occur at the end of the subscription's current billing period.
-	 *
-	 *  string (outside ENUM)
-	 *  Schedule the cancellation to occur at the specified BillForward-formatted timestamp.
-	 *  Examples:
-	 *  	* '2015-04-23T17:13:37Z'
-	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
-	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 ***
+	 * @param array $cancellationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') $cancellationOptions['serviceEnd'] Specifies when the service ends after the subscription is cancelled.
+	 *	***
+	 *	* 	<Immediate>
+	 *	* 	Subscription ends service as soon as it is cancelled.
+	 *	*
+	 *	* 	<AtPeriodEnd> (Default)
+	 *	* 	After cancellation, the subscription continues to provide service until its billing period ends.
+	 *	***
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $cancellationOptions['actioningTime'] When to action the cancellation amendment
+	 *	***
+	 *	*  int
+	 *	*  Schedule the cancellation to occur at the specified UNIX timestamp.
+	 *	*  Examples:
+	 *	*  	* time()
+	 *	*  	* 1431704624
+	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *	*
+	 *	*	string (within ENUM)
+	 *	*  <Immediate> (Default)
+	 *	*  Perform the cancellation now (synchronously where possible).
+	 *	*  
+	 *	*  <AtPeriodEnd>
+	 *	*  Schedule the cancellation to occur at the end of the subscription's current billing period.
+	 *	*
+	 *	*  string (outside ENUM)
+	 *	*  Schedule the cancellation to occur at the specified BillForward-formatted timestamp.
+	 *	*  Examples:
+	 *	*  	* '2015-04-23T17:13:37Z'
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 *	***
 	 * @return Bf_CancellationAmendment The created cancellation amendment.
 	 */
 	public function cancel(
-		$serviceEnd = 'AtPeriodEnd',
-		$actioningTime = 'Immediate'
+		array $cancellationOptions = array(
+			'serviceEnd' => 'AtPeriodEnd',
+			'actioningTime' => 'Immediate'
+			)
 		) {
+
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$cancellationOptions));
+
 		// create model of amendment
 		$amendment = new Bf_CancellationAmendment(array(
 		  'subscriptionID' => $this->id,

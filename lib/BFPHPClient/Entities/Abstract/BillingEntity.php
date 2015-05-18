@@ -404,6 +404,16 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	return $dateTime->getTimestamp();
     }
 
+    public static function getFinalArgDefault($method) {
+    	$reflectionMethod = new ReflectionMethod($method);
+    	$methodParams = $reflectionMethod->getParameters();
+    	$methodParamsCount = $reflectionMethod->getNumberOfParameters();
+    	$finalParamIndex = $methodParamsCount - 1;
+    	$finalParam = $methodParams[$finalParamIndex];
+    	$finalParamDefaultValue = $finalParam->getDefaultValue();
+    	return $finalParamDefaultValue;
+    }
+
     /**
      * Fetches (if necessary) entity by ID from API.
      * Otherwise returns entity as-is.
