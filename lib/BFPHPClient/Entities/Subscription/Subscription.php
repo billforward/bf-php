@@ -450,7 +450,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return Bf_Coupon::applyCouponCodeToSubscription($couponCode, $this);
 	}
 
-	//// UPGRADE/DOWNGRADE VIA AMENDMENT
+	//// UPGRADE/DOWNGRADE
 
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
@@ -549,7 +549,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $createdAmendment;
 	}
 
-	//// MIGRATE PLAN VIA AMENDMENT
+	//// MIGRATE PLAN
 
 	/**
 	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
@@ -660,7 +660,47 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $createdAmendment;
 	}
 
-	//// CANCEL VIA AMENDMENT
+	public function migratePlanSync(
+		array $namesToValues,
+		$newPlan,
+		array $migrationOptions = array(
+			'renameSubscription' => NULL,
+			'pricingBehaviour' => 'DifferenceProRated',
+			'invoicingType' => 'Aggregated'
+			'dryRun' => false
+			)
+		) {
+
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$migrationOptions));
+
+		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
+
+		$mappings = array_map(function($name, $value) {
+			return new Bf_PricingComponentMigrationValue(array(
+				'pricingComponentName' => $name,
+				'value' => $value
+			));
+		}, array_keys($namesToValues), $namesToValues);
+
+		$request = new Bf_MigrationRequest(array(
+			'subscriptionID' => $this->id,
+			'productRatePlanID' => $planID,
+			'mappings' => $mappings,
+			'invoicingType' => $invoicingType,
+			'pricingBehaviour' => $pricingBehaviour,
+			'dryRun' => $dryRun
+			));
+		if (!is_null($renameSubscription)) {
+			$request->nextSubscriptionName = $renameSubscription;
+		}
+
+		// $createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
+		// return $createdAmendment;
+	}
+
+	//// CANCEL
 
 	/**
 	 * Cancels subscription at a specified time.
