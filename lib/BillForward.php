@@ -53,7 +53,7 @@ spl_autoload_register(function($className) {
             'Bf_MalformedEntityReferenceException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_MalformedInputException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_MigrationRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/MigrationRequest.php',
-            'Bf_MigrationResponse' => $baseDir . '/BFPHPClient/Entities/SyncResponses/Bf_MigrationResponse.php',
+            'Bf_MigrationResponse' => $baseDir . '/BFPHPClient/Entities/SyncResponses/MigrationResponse.php',
             'Bf_MutableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/MutableEntity.php',
             'Bf_NoAPIResponseException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_NoMatchingEntityException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',

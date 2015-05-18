@@ -636,6 +636,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$migrationOptions));
 
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
 		$mappings = array_map(function($name, $value) {
 			return new Bf_PricingComponentValueMigrationAmendmentMapping(array(
@@ -645,7 +646,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}, array_keys($namesToValues), $namesToValues);
 		
 		$amendment = new Bf_ProductRatePlanMigrationAmendment(array(
-			'subscriptionID' => $this->id,
+			'subscriptionID' => $subscriptionID,
 			'productRatePlanID' => $planID,
 			'mappings' => $mappings,
 			'invoicingType' => $invoicingType,
@@ -666,7 +667,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		array $migrationOptions = array(
 			'renameSubscription' => NULL,
 			'pricingBehaviour' => 'DifferenceProRated',
-			'invoicingType' => 'Aggregated'
+			'invoicingType' => 'Aggregated',
 			'dryRun' => false
 			)
 		) {
@@ -676,6 +677,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$migrationOptions));
 
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
 		$mappings = array_map(function($name, $value) {
 			return new Bf_PricingComponentMigrationValue(array(
@@ -684,20 +686,25 @@ class Bf_Subscription extends Bf_MutableEntity {
 			));
 		}, array_keys($namesToValues), $namesToValues);
 
-		$request = new Bf_MigrationRequest(array(
-			'subscriptionID' => $this->id,
-			'productRatePlanID' => $planID,
+		$requestEntity = new Bf_MigrationRequest(array(
 			'mappings' => $mappings,
 			'invoicingType' => $invoicingType,
 			'pricingBehaviour' => $pricingBehaviour,
 			'dryRun' => $dryRun
 			));
 		if (!is_null($renameSubscription)) {
-			$request->nextSubscriptionName = $renameSubscription;
+			$requestEntity->nextSubscriptionName = $renameSubscription;
 		}
 
-		// $createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
-		// return $createdAmendment;
+		$endpoint = sprintf("%s/migrate/%s",
+			rawurlencode($subscriptionID),
+			rawurlencode($planID)
+			);
+
+		$responseEntity = Bf_MigrationResponse::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
 	}
 
 	//// CANCEL
