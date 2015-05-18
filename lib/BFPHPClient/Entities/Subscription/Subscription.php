@@ -636,7 +636,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'pricingBehaviour' => $pricingBehaviour
 			));
 		$amendment->applyActioningTime($actioningTime, $this);
-		if (!is_null($nextSubscriptionName)) {
+		if (!is_null($renameSubscription)) {
 			$amendment->nextSubscriptionName = $renameSubscription;
 		}
 
