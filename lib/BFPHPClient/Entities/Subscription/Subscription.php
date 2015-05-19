@@ -720,6 +720,12 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	* 	<AtPeriodEnd> (Default)
 	 *	* 	After cancellation, the subscription continues to provide service until its billing period ends.
 	 *	***
+	 *	* @param string_ENUM['Credit', 'None'] (Default: 'Credit') $cancellationOptions['cancellationCredit'] 
+	 *	***
+	 *	* 	<Credit> (Default)
+	 *	*
+	 *	* 	<None>
+	 *	***
 	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $cancellationOptions['actioningTime'] When to action the cancellation amendment
 	 *	***
 	 *	*  int
@@ -748,6 +754,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public function cancel(
 		array $cancellationOptions = array(
 			'serviceEnd' => 'AtPeriodEnd',
+			'cancellationCredit' => 'Credit',
 			'actioningTime' => 'Immediate'
 			)
 		) {
@@ -759,13 +766,42 @@ class Bf_Subscription extends Bf_MutableEntity {
 		// create model of amendment
 		$amendment = new Bf_CancellationAmendment(array(
 		  'subscriptionID' => $this->id,
-		  'serviceEnd' => $serviceEnd
+		  'serviceEnd' => $serviceEnd,
+		  'cancellationCredit' => $cancellationCredit
 		  ));
 		$amendment->applyActioningTime($actioningTime, $this);
 
 		// create amendment using API
 		$createdAmendment = Bf_CancellationAmendment::create($amendment);
 		return $createdAmendment;
+	}
+
+	public function cancelSync(
+		array $cancellationOptions = array(
+			'serviceEnd' => 'AtPeriodEnd', //ENUM['Immediate', 'AtPeriodEnd']
+			'cancellationCredit' => 'Credit' //ENUM['Credit', 'None']
+			)
+		) {
+
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$cancellationOptions));
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$requestEntity = new Bf_SubscriptionCancellation(array(
+		  'serviceEnd' => $serviceEnd,
+		  'cancellationCredit' => $cancellationCredit
+		  ));
+
+		$endpoint = sprintf("%s/cancel",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCancellation::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
 	}
 
 	public static function initStatics() {

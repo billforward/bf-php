@@ -85,6 +85,7 @@ spl_autoload_register(function($className) {
             'Bf_StripeACHToken' => $baseDir . '/BFPHPClient/Entities/Tokens/StripeACHToken.php',
             'Bf_StripeToken' => $baseDir . '/BFPHPClient/Entities/Tokens/StripeToken.php',
             'Bf_Subscription' => $baseDir . '/BFPHPClient/Entities/Subscription/Subscription.php',
+            'Bf_SubscriptionCancellation' => $baseDir . '/BFPHPClient/Entities/SyncRequests/SubscriptionCancellation.php',
             'Bf_TaxLine' => $baseDir . '/BFPHPClient/Entities/Invoice/TaxLine.php',
             'Bf_TaxationLink' => $baseDir . '/BFPHPClient/Entities/Invoice/TaxationLink.php',
             'Bf_UnitOfMeasure' => $baseDir . '/BFPHPClient/Entities/PricingComponent/UnitOfMeasure.php',
