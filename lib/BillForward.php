@@ -45,6 +45,7 @@ spl_autoload_register(function($className) {
             'Bf_InsertableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/InsertableEntity.php',
             'Bf_InvocationException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_Invoice' => $baseDir . '/BFPHPClient/Entities/Invoice/Invoice.php',
+            'Bf_InvoiceExecutionRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/InvoiceExecutionRequest.php',
             'Bf_InvoiceLine' => $baseDir . '/BFPHPClient/Entities/Invoice/InvoiceLine.php',
             'Bf_InvoiceNextExecutionAttemptAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/InvoiceNextExecutionAttemptAmendment.php',
             'Bf_InvoicePayment' => $baseDir . '/BFPHPClient/Entities/Invoice/InvoicePayment.php',

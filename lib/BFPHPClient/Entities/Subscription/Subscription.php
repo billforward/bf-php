@@ -661,7 +661,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $createdAmendment;
 	}
 
-	public function migratePlanSync(
+	public function migratePlanNow(
 		array $namesToValues,
 		$newPlan,
 		array $migrationOptions = array(
@@ -776,10 +776,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $createdAmendment;
 	}
 
-	public function cancelSync(
+	public function cancelNow(
 		array $cancellationOptions = array(
-			'serviceEnd' => 'AtPeriodEnd', //ENUM['Immediate', 'AtPeriodEnd']
-			'cancellationCredit' => 'Credit' //ENUM['Credit', 'None']
+			'serviceEnd' => 'AtPeriodEnd',
+			'cancellationCredit' => 'Credit'
 			)
 		) {
 
