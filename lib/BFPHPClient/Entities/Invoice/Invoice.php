@@ -106,6 +106,41 @@ class Bf_Invoice extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Synchronously issues the invoice.
+	 * @see issue()
+	 * @return Bf_Invoice The invoice, after issuance.
+	 */
+	public function issueNow(
+		array $issuanceOptions = array(
+			)
+		) {
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$issuanceOptions));
+
+		$this->state = 'Unpaid';
+		$updatedInvoice = $this->save();
+		return $updatedInvoice;
+	}
+
+	/**
+	 * Synchronously unissues an 'Unpaid' invoice.
+	 * @return Bf_Invoice The invoice, after unissuance.
+	 */
+	public function unissueNow(
+		array $unissuanceOptions = array(
+			)
+		) {
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$unissuanceOptions));
+
+		$this->state = 'Pending';
+		$updatedInvoice = $this->save();
+		return $updatedInvoice;
+	}
+
+	/**
 	 * Recalculates the invoice (now, or at a scheduled time).
 	 * @param array $recalculationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') $recalculationOptions['newInvoiceState'] State to which the invoice will be moved following the recalculation.
