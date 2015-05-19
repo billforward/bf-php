@@ -661,6 +661,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $createdAmendment;
 	}
 
+	/**
+	 * Synchronously migrates the subscription to the specified plan.
+	 * @see migratePlan()
+	 * @return Bf_MigrationResponse The migration result.
+	 */
 	public function migratePlanNow(
 		array $namesToValues,
 		$newPlan,
@@ -776,6 +781,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $createdAmendment;
 	}
 
+	/**
+	 * Synchronously cancels the subscription.
+	 * @see cancel()
+	 * @return Bf_SubscriptionCancellation The cancellation result.
+	 */
 	public function cancelNow(
 		array $cancellationOptions = array(
 			'serviceEnd' => 'AtPeriodEnd',
