@@ -60,37 +60,45 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Issues the invoice (now, or at a scheduled time).
-	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the issuance amendment
-	 ***
-	 *  int
-	 *  Schedule the issuance to occur at the specified UNIX timestamp.
-	 *  Examples:
-	 *  	* time()
-	 *  	* 1431704624
-	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
-	 *
-	 *	string (within ENUM)
-	 *  <Immediate> (Default)
-	 *  Perform the issuance now (synchronously where possible).
-	 *  
-	 *  <AtPeriodEnd>
-	 *  Schedule the issuance to occur at the end of the subscription's current billing period.
-	 *
-	 *  string (outside ENUM)
-	 *  Schedule the issuance to occur at the specified BillForward-formatted timestamp.
-	 *  Examples:
-	 *  	* '2015-04-23T17:13:37Z'
-	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
-	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 ***
+	 * @param array $issuanceOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $issuanceOptions['actioningTime'] When to action the 'next execution attempt' amendment
+	 *	***
+	 *	*  int
+	 *	*  Schedule the issuance to occur at the specified UNIX timestamp.
+	 *	*  Examples:
+	 *	*  	* time()
+	 *	*  	* 1431704624
+	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *	*
+	 *	*	string (within ENUM)
+	 *	*  <Immediate> (Default)
+	 *	*  Perform the issuance now (synchronously where possible).
+	 *	*  
+	 *	*  <AtPeriodEnd>
+	 *	*  Schedule the issuance to occur at the end of the subscription's current billing period.
+	 *	*
+	 *	*  string (outside ENUM)
+	 *	*  Schedule the issuance to occur at the specified BillForward-formatted timestamp.
+	 *	*  Examples:
+	 *	*  	* '2015-04-23T17:13:37Z'
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 *	***
 	 * @return Bf_IssueInvoiceAmendment The created amendment.
 	 */
-	public function issue($actioningTime = 'Immediate') {
+	public function issue(
+		array $issuanceOptions = array(
+			'actioningTime' => 'Immediate'
+			)
+		) {
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$issuanceOptions));
+
 		$amendment = new Bf_IssueInvoiceAmendment(array(
 			'subscriptionID' => $this->subscriptionID,
 			'invoiceID' => $this->id
 			));
-
 		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
 
 		$createdAmendment = Bf_IssueInvoiceAmendment::create($amendment);
@@ -140,14 +148,44 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$amendment = new Bf_InvoiceRecalculationAmendment(array(
 			'subscriptionID' => $this->subscriptionID,
-			'invoiceID' => $this->id
-			'recalculationBehaviour' => $recalculationBehaviour,
-			'newInvoiceState' => $newInvoiceState
+			'invoiceID' => $this->id,
+			'newInvoiceState' => $newInvoiceState,
+			'recalculationBehaviour' => $recalculationBehaviour
 			));
 		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
 
 		$createdAmendment = Bf_InvoiceRecalculationAmendment::create($amendment);
 		return $createdAmendment;
+	}
+
+	/**
+	 * Synchronously recalculates the invoice.
+	 * @see recalculate()
+	 * @return Bf_Invoice The invoice, after recalculation.
+	 */
+	public function recalculateNow(
+		array $recalculationOptions = array(
+			'newInvoiceState' => 'Pending',
+			'recalculationBehaviour' => 'RecalculateAsLatestSubscriptionVersion'
+			)
+		) {
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$recalculationOptions));
+
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+
+		$requestEntity = new Bf_InvoiceRecalculationRequest(array(
+			'newInvoiceState' => $newInvoiceState,
+			'recalculationBehaviour' => $recalculationBehaviour
+		  ));
+
+		$endpoint = sprintf("%s/execute",
+			rawurlencode($invoiceID)
+			);
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity);
+		return $constructedEntity;
 	}
 
 	/**

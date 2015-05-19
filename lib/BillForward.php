@@ -50,6 +50,7 @@ spl_autoload_register(function($className) {
             'Bf_InvoiceNextExecutionAttemptAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/InvoiceNextExecutionAttemptAmendment.php',
             'Bf_InvoicePayment' => $baseDir . '/BFPHPClient/Entities/Invoice/InvoicePayment.php',
             'Bf_InvoiceRecalculationAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/InvoiceRecalculationAmendment.php',
+            'Bf_InvoiceRecalculationRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/InvoiceRecalculationRequest.php',
             'Bf_IssueInvoiceAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/IssueInvoiceAmendment.php',
             'Bf_MalformedEntityReferenceException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_MalformedInputException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
