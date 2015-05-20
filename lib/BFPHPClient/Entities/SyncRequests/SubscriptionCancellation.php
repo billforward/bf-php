@@ -8,7 +8,7 @@ class Bf_SubscriptionCancellation extends Bf_MutableEntity {
 		 .'The entity can be created by cascade only (i.e. created within another entity). ');
 	}
 
-	public static function getbyID($id, $options = NULL, $customClient = NULL) {
+	public static function getByID($id, $options = NULL, $customClient = NULL) {
 		throw new Bf_UnsupportedMethodException('Get by ID support is denied for this entity; '
 		 .'at the time of writing, no API endpoint exists to support it.'
 		 .'The entity can be GETted through cascade only (i.e. GET a related entity).');
