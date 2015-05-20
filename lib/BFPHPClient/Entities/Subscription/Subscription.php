@@ -847,6 +847,76 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $constructedEntity;
 	}
 
+	//// FREEZE
+
+	/**
+	 * Synchronously freezes the subscription.
+	 * @param Bf_PauseRequest $pauseRequest (Default: NULL) A specification for the pause. <NULL> Use the default pause specification (which is empty, and is interpreted as: "freeze this subscription now").
+	 * @return Bf_Subscription The revived subscription.
+	 */
+	public function freeze(
+		Bf_PauseRequest $pauseRequest = NULL,
+		array $revivalOptions = array(
+			)
+		) {
+
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$revivalOptions));
+
+		if (is_null($pauseRequest)) {
+			$pauseRequest = new Bf_PauseRequest(array());
+		}
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$requestEntity = $pauseRequest;
+
+		$endpoint = sprintf("%s/freeze",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	//// RESUME FROZEN SUBSCRIPTION
+
+	/**
+	 * Synchronously freezes the subscription.
+	 * @param Bf_PauseRequest $resumeRequest (Default: NULL) A specification for the resumption. <NULL> Use the default resumption specification (which is empty, and is interpreted as: "resume this frozen subscription now").
+	 * @return Bf_Subscription The revived subscription.
+	 */
+	public function resumeNow(
+		Bf_PauseRequest $resumeRequest = NULL,
+		array $revivalOptions = array(
+			)
+		) {
+
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$revivalOptions));
+
+		if (is_null($resumeRequest)) {
+			$resumeRequest = new Bf_PauseRequest(array());
+		}
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$requestEntity = $resumeRequest;
+
+		$endpoint = sprintf("%s/resume",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'subscription');
 	}
