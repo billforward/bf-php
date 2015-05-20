@@ -816,7 +816,36 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	//// REVIVE
 
-	
+	/**
+	 * Synchronously revives the subscription.
+	 * @param Bf_SubscriptionReviveRequest $revivalRequest (Default: NULL) A specification for the revival. <NULL> Use the default revival specification (which is empty, and is interpreted as: "revive this subscription now").
+	 * @return Bf_Subscription The revived subscription.
+	 */
+	public function revive(
+		Bf_SubscriptionReviveRequest $revivalRequest = NULL,
+		array $revivalOptions = array(
+			)
+		) {
+
+		extract(array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$revivalOptions));
+
+		if (is_null($revivalRequest)) {
+			$revivalRequest = new Bf_SubscriptionReviveRequest(array());
+		}
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$requestEntity = $revivalRequest;
+
+		$endpoint = sprintf("%s/revive",
+			rawurlencode($subscriptionID)
+			);
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity);
+		return $constructedEntity;
+	}
 
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'subscription');
