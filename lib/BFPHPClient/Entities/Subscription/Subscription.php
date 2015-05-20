@@ -814,6 +814,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $constructedEntity;
 	}
 
+	//// REVIVE
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'subscription');
 	}
