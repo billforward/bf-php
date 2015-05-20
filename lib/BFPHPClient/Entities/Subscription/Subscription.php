@@ -664,6 +664,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Synchronously migrates the subscription to the specified plan.
 	 * @see migratePlan()
+	 * @param array $migrationOptions (Default: All keys set to their respective default values) Encapsulates (in addition to some keys supported on the schedulable counterpart method) the following optional parameters:
+	 *	* @param boolean (Default: false) $migrationOptions['dryRun'] Whether to forego persisting the effected changes.
 	 * @return Bf_MigrationResponse The migration result.
 	 */
 	public function migratePlanNow(
@@ -818,13 +820,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Synchronously revives the subscription.
-	 * @param Bf_SubscriptionReviveRequest $revivalRequest (Default: NULL) A specification for the revival. <NULL> Use the default revival specification (which is empty, and is interpreted as: "revive this subscription now").
+	 * @param Bf_SubscriptionReviveRequest $revivalRequest (Default: NULL) A specification for the revival. <NULL> Use the default revival specification.
 	 * @return Bf_Subscription The revived subscription.
 	 */
 	public function revive(
-		Bf_SubscriptionReviveRequest $revivalRequest = NULL,
-		array $revivalOptions = array(
-			)
+		Bf_SubscriptionReviveRequest $revivalRequest = NULL
 		) {
 
 		extract(array_merge(
@@ -832,7 +832,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$revivalOptions));
 
 		if (is_null($revivalRequest)) {
-			$revivalRequest = new Bf_SubscriptionReviveRequest(array());
+			$revivalRequest = Bf_SubscriptionReviveRequest::construct();
 		}
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
@@ -851,21 +851,19 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Synchronously freezes the subscription.
-	 * @param Bf_PauseRequest $pauseRequest (Default: NULL) A specification for the pause. <NULL> Use the default pause specification (which is empty, and is interpreted as: "freeze this subscription now").
+	 * @param Bf_PauseRequest $pauseRequest (Default: NULL) A specification for the pause. <NULL> Use the default pause specification.
 	 * @return Bf_Subscription The revived subscription.
 	 */
 	public function freeze(
-		Bf_PauseRequest $pauseRequest = NULL,
-		array $revivalOptions = array(
-			)
+		Bf_PauseRequest $pauseRequest = NULL
 		) {
 
 		extract(array_merge(
 			static::getFinalArgDefault(__METHOD__),
-			$revivalOptions));
+			$freezeOptions));
 
 		if (is_null($pauseRequest)) {
-			$pauseRequest = new Bf_PauseRequest(array());
+			$pauseRequest = Bf_PauseRequest::constructForPausing();
 		}
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
@@ -886,26 +884,24 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Synchronously freezes the subscription.
-	 * @param Bf_PauseRequest $resumeRequest (Default: NULL) A specification for the resumption. <NULL> Use the default resumption specification (which is empty, and is interpreted as: "resume this frozen subscription now").
+	 * @param Bf_PauseRequest $resumptionRequest (Default: NULL) A specification for the resumption. <NULL> Use the default resumption specification.
 	 * @return Bf_Subscription The revived subscription.
 	 */
 	public function resumeNow(
-		Bf_PauseRequest $resumeRequest = NULL,
-		array $revivalOptions = array(
-			)
+		Bf_PauseRequest $resumptionRequest = NULL
 		) {
 
 		extract(array_merge(
 			static::getFinalArgDefault(__METHOD__),
-			$revivalOptions));
+			$resumptionOptions));
 
-		if (is_null($resumeRequest)) {
-			$resumeRequest = new Bf_PauseRequest(array());
+		if (is_null($resumptionRequest)) {
+			$resumptionRequest = Bf_PauseRequest::constructForResumption();
 		}
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$requestEntity = $resumeRequest;
+		$requestEntity = $resumptionRequest;
 
 		$endpoint = sprintf("%s/resume",
 			rawurlencode($subscriptionID)
