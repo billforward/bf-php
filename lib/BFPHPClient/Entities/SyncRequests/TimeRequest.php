@@ -1,6 +1,6 @@
 <?php
 
-class Bf_InvoiceRecalculationRequest extends Bf_BillingEntity {
+class Bf_TimeRequest extends Bf_BillingEntity {
 
 	public static function getbyID($id, $options = NULL, $customClient = NULL) {
 		throw new Bf_UnsupportedMethodException('Get by ID support is denied for this entity; '

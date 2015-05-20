@@ -13,11 +13,4 @@ class Bf_InvoiceExecutionRequest extends Bf_BillingEntity {
 		 .'at the time of writing, no API endpoint exists to support it.'
 		 .'The entity can be GETted through cascade only (i.e. GET a related entity).');
 	}
-	
-	protected static $_resourcePath;
-
-	public static function initStatics() {
-		self::$_resourcePath = new Bf_ResourcePath('', '');
-	}
 }
-Bf_InvoiceExecutionRequest::initStatics();

@@ -93,6 +93,8 @@ spl_autoload_register(function($className) {
             'Bf_SubscriptionReviveRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/SubscriptionReviveRequest.php',
             'Bf_TaxLine' => $baseDir . '/BFPHPClient/Entities/Invoice/TaxLine.php',
             'Bf_TaxationLink' => $baseDir . '/BFPHPClient/Entities/Invoice/TaxationLink.php',
+            'Bf_TimeRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/TimeRequest.php',
+            'Bf_TimeResponse' => $baseDir . '/BFPHPClient/Entities/SyncRequests/TimeResponse.php',
             'Bf_UnitOfMeasure' => $baseDir . '/BFPHPClient/Entities/PricingComponent/UnitOfMeasure.php',
             'Bf_UnserializationException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_UnsupportedMethodException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',

@@ -25,11 +25,4 @@ class Bf_SubscriptionCancellation extends Bf_MutableEntity {
 		 .'at the time of writing, the provided API endpoint is not functioning.'
 		 .'The entity can be saved through cascade only (i.e. save a related entity).');
 	}
-	
-	protected static $_resourcePath;
-
-	public static function initStatics() {
-		self::$_resourcePath = new Bf_ResourcePath('', 'subscriptionCancellation');
-	}
 }
-Bf_SubscriptionCancellation::initStatics();
