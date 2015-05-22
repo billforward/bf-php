@@ -110,24 +110,38 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 * @return string The BillForward-formatted time.
 	 */
 	public static function parseActioningTime($actioningTime, $subscription = NULL) {
-		$date = NULL; // defaults to Immediate
-		if (is_int($actioningTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'AtPeriodEnd') {
-			// we need to consult subscription
-			if (is_null($subscription)) {
-				throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
-			}
-			$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
-			if (!is_null($subscriptionFetched->currentPeriodEnd)) {
-				$date = $subscriptionFetched->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
-			}
-		} else if (is_string($actioningTime)) {
-			$date = $actioningTime;
+		$intSpecified = NULL;
+
+		switch ($actioningTime) {
+			case 'ServerNow':
+				return NULL;
+			case 'AtPeriodEnd':
+				// we need to consult subscription
+				if (is_null($subscription)) {
+					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
+				}
+				$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
+				if (!is_null($subscriptionFetched->currentPeriodEnd)) {
+					return $subscriptionFetched->currentPeriodEnd;
+				} else {
+					throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
+				}
+				break;
+			case 'ClientNow':
+				$intSpecified = time();
+			default:
+				if (is_int($actioningTime)) {
+					$intSpecified = $actioningTime;
+				}
+				if (!is_null($intSpecified)) {
+					return Bf_BillingEntity::makeBillForwardDate($intSpecified);
+				}
+				if (is_string($actioningTime)) {
+					return $actioningTime;
+				}
 		}
-		return $date;
+
+		return NULL;
 	}
 
 	/**
