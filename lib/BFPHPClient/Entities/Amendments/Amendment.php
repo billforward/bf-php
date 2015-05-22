@@ -26,7 +26,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	/**
 	 * Discard the amendment (now, or at a scheduled time).
 	 * @param array $discardOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') $discardOptions['actioningTime'] When to action the 'next execution attempt' amendment
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $discardOptions['actioningTime'] When to action the 'next execution attempt' amendment
 	 *	*
 	 *	*  int
 	 *	*  Schedule the 'amendment discarding' to occur at the specified UNIX timestamp.
@@ -36,7 +36,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *	*
 	 *	*	string (within ENUM)
-	 *	*  <Immediate> (Default) | <ServerNow>
+	 *	*  <Immediate> (Default)
 	 *	*  Perform the 'amendment discarding' now (synchronously where possible).
 	 *	*  
 	 *	*  <AtPeriodEnd>
@@ -83,7 +83,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Parses into a BillForward timestamp the actioning time for some amendment
-	 * @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
+	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
 	 *
 	 *  int
 	 *  Schedule the amendment to occur at the specified UNIX timestamp.
@@ -93,7 +93,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *
 	 *	string (within ENUM)
-	 *  <Immediate> (Default) | <ServerNow>
+	 *  <Immediate> (Default)
 	 *  Perform the amendment now (synchronously where possible).
 	 *  
 	 *  <AtPeriodEnd>
@@ -157,7 +157,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *
 	 *	string (within ENUM)
-	 *  <Immediate> (Default) | <ServerNow> | <ServerNow>
+	 *  <Immediate> (Default)
 	 *  Perform the amendment now (synchronously where possible).
 	 *  
 	 *  <AtPeriodEnd>

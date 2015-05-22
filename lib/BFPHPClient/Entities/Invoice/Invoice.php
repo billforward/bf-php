@@ -61,7 +61,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	/**
 	 * Issues the invoice (now, or at a scheduled time).
 	 * @param array $issuanceOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') $issuanceOptions['actioningTime'] When to action the 'next execution attempt' amendment
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $issuanceOptions['actioningTime'] When to action the 'next execution attempt' amendment
 	 *	*
 	 *	*  int
 	 *	*  Schedule the issuance to occur at the specified UNIX timestamp.
@@ -71,7 +71,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *	*
 	 *	*	string (within ENUM)
-	 *	*  <Immediate> (Default) | <ServerNow>
+	 *	*  <Immediate> (Default)
 	 *	*  Perform the issuance now (synchronously where possible).
 	 *	*  
 	 *	*  <AtPeriodEnd>
@@ -169,7 +169,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @param array $recalculationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') $recalculationOptions['newInvoiceState'] State to which the invoice will be moved following the recalculation.
 	 *	* @param string_ENUM['RecalculateAsLatestSubscriptionVersion', 'RecalculateAsCurrentSubscriptionVersion'] (Default: 'RecalculateAsLatestSubscriptionVersion') $recalculationOptions['recalculationBehaviour'] How to recalculate the invoice.
-	 *	* @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') $recalculationOptions['actioningTime'] When to action the 'next execution attempt' amendment
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $recalculationOptions['actioningTime'] When to action the 'next execution attempt' amendment
 	 *	*
 	 *	*  int
 	 *	*  Schedule the 'next execution attempt' to occur at the specified UNIX timestamp.
@@ -179,7 +179,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *	*
 	 *	*	string (within ENUM)
-	 *	*  <Immediate> (Default) | <ServerNow>
+	 *	*  <Immediate> (Default)
 	 *	*  Perform the 'next execution attempt' now (synchronously where possible).
 	 *	*  
 	 *	*  <AtPeriodEnd>
@@ -261,7 +261,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * Retries execution of the invoice (now, or at a scheduled time).
 	 * @param array $executionOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param bool $executionOptions['forcePaid'] (Default: false) Whether to force the invoice into the paid state using an 'offline payment'.
-	 *	* @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') $executionOptions['actioningTime'] When to action the 'next execution attempt' amendment
+	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $executionOptions['actioningTime'] When to action the 'next execution attempt' amendment
 	 *	*
 	 *	*  int
 	 *	*  Schedule the 'next execution attempt' to occur at the specified UNIX timestamp.
@@ -271,7 +271,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *	*
 	 *	*	string (within ENUM)
-	 *	*  <Immediate> (Default) | <ServerNow>
+	 *	*  <Immediate> (Default)
 	 *	*  Perform the 'next execution attempt' now (synchronously where possible).
 	 *	*  
 	 *	*  <AtPeriodEnd>
