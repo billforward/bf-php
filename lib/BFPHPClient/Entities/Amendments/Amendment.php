@@ -49,7 +49,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
 	 *	*
-	 * @return Bf_InvoiceNextExecutionAttemptAmendment The created 'next execution attempt' amendment.
+	 * @return Bf_AmendmentDiscardAmendment The created 'amendment discarding' amendment.
 	 */
 	public function scheduleDiscard(
 		array $discardOptions = array(
