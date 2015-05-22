@@ -470,7 +470,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'CPU' => 10
 	 * )
 	 * @param array $upgradeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) $upgradeOptions['namesToChangeModeOverrides'] The map of pricing component names to change mode overrides.
+	 *	* @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) $..['namesToChangeModeOverrides'] The map of pricing component names to change mode overrides.
 	 *	*
 	 *	*	Each key in the this array maps to a value of the following ENUM:
 	 *	*  *	<NULL> (Behaviour for omitted keys)
@@ -487,7 +487,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	* 	'RAM' => 'Delayed'
 	 *	* )
 	 *	*
-	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $upgradeOptions['invoicingType'] Subscription-charge invoicing type
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
 	 *	*
 	 *	*	<Immediate>
 	 *	*	Generate invoice straight away with this charge applied.
@@ -495,7 +495,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*	<Aggregated> (Default)
 	 *	*	Add this charge to next invoice.
 	 *	*
-	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)}  $upgradeOptions['actioningTime'] When to action the upgrade amendment
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)}  $..['actioningTime'] When to action the upgrade amendment
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
 	public function scheduleUpgrade(
@@ -555,8 +555,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * )
 	 * @param union[string $id | Bf_ProductRatePlan $entity] $newPlan The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @param array $migrationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param union[NULL | string] (Default: NULL) $migrationOptions['renameSubscription'] Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
-	 *	* @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') $migrationOptions['pricingBehaviour'] Strategy for calculating migration charges.
+	 *	* @param union[NULL | string] (Default: NULL) $..['renameSubscription'] Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
+	 *	* @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') $..['pricingBehaviour'] Strategy for calculating migration charges.
 	 *	*
 	 *	*  <None>
 	 *	*  No migration charge will be issued at all.
@@ -580,7 +580,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*   2. We are migrating to a plan of a different period duration. 
 	 *	*   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
 	 *	*
-	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $migrationOptions['invoicingType'] Subscription-charge invoicing type
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
 	 *	*
 	 *	*	<Immediate>
 	 *	*	Generate invoice straight away with this charge applied.
@@ -588,7 +588,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*	<Aggregated> (Default)
 	 *	*	Add this charge to next invoice.
 	 *	*
-	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $migrationOptions['actioningTime'] When to action the migration amendment.
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $..['actioningTime'] When to action the migration amendment.
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
 	public function scheduleMigratePlan(
@@ -693,20 +693,20 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Cancels subscription at a specified time.
 	 * @param array $cancellationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') $cancellationOptions['serviceEnd'] Specifies when the service ends after the subscription is cancelled.
+	 *	* @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') $..['serviceEnd'] Specifies when the service ends after the subscription is cancelled.
 	 *	* 	<Immediate>
 	 *	* 	Subscription ends service as soon as it is cancelled.
 	 *	*
 	 *	* 	<AtPeriodEnd> (Default)
 	 *	* 	After cancellation, the subscription continues to provide service until its billing period ends.
 	 *	*
-	 *	* @param string_ENUM['Credit', 'None'] (Default: 'Credit') $cancellationOptions['cancellationCredit'] 
+	 *	* @param string_ENUM['Credit', 'None'] (Default: 'Credit') $..['cancellationCredit'] 
 	 *	*
 	 *	* 	<Credit> (Default)
 	 *	*
 	 *	* 	<None>
 	 *	*
-	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $cancellationOptions['actioningTime'] When to action the cancellation amendment
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $..['actioningTime'] When to action the cancellation amendment
 	 * @return Bf_CancellationAmendment The created cancellation amendment.
 	 */
 	public function scheduleCancellation(
@@ -812,7 +812,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Synchronously freezes the subscription.
 	 * @param array $freezeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param boolean (Default: false) $freezeOptions['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function freeze(
@@ -886,18 +886,20 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Synchronously resumes the subscription.
 	 * @param array $advancementOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param boolean (Default: false) $advancementOptions['dryRun'] Whether to forego persisting the effected changes.
-	 *	* @param boolean (Default: false) $advancementOptions['skipIntermediatePeriods']
-	 *	* @param boolean (Default: true) $advancementOptions['handleAmendments']
-	 *	* @param string_ENUM['SingleAttempt', 'FollowDunning', 'None'] (Default: 'SingleAttempt') $advancementOptions['executionStrategy']
+	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param boolean (Default: false) $..['skipIntermediatePeriods']
+	 *	* @param boolean (Default: true) $..['handleAmendments']
+	 *	* @param string_ENUM['SingleAttempt', 'FollowDunning', 'None'] (Default: 'SingleAttempt') $..['executionStrategy']
 	 *	*
 	 *	* 	<SingleAttempt> (Default)
 	 *	*
-	 *	*	<FollowDunning> (Default)
+	 *	*	<FollowDunning>
 	 *	*
 	 *	* 	<None>
 	 *	*
-	 *	* @param boolean (Default: false) $advancementOptions['freezeOnCompletion']
+	 *	* @param boolean (Default: false) $..['freezeOnCompletion']
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
+	 *	* @param {@see self::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function advance(
@@ -916,9 +918,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
+		$from = Bf_Amendment::parseTimeRequestFromTime(static::popKey($inputOptions, 'from'), $this);
+		$to = Bf_Amendment::parseTimeRequestToTime(static::popKey($inputOptions, 'to'), $this);
+
 		$stateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
 			array(
+				'from' => $from,
+				'to' => $to
 				),
 			$inputOptions
 			);
@@ -927,7 +934,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$endpoint = sprintf("%s/resume",
+		$endpoint = sprintf("%s/advance",
 			rawurlencode($subscriptionID)
 			);
 

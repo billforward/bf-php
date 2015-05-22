@@ -26,7 +26,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	/**
 	 * Discard the amendment (now, or at a scheduled time).
 	 * @param array $discardOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param {@see self::parseActioningTime(mixed)} $discardOptions['actioningTime'] When to action the 'next execution attempt' amendment
+	 *	* @param {@see self::parseActioningTime(mixed)} $..['actioningTime'] When to action the 'next execution attempt' amendment
 	 * @return Bf_AmendmentDiscardAmendment The created 'amendment discarding' amendment.
 	 */
 	public function scheduleDiscard(

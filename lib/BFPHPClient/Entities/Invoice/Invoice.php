@@ -125,9 +125,9 @@ class Bf_Invoice extends Bf_MutableEntity {
 	/**
 	 * Recalculates the invoice (now, or at a scheduled time).
 	 * @param array $recalculationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') $recalculationOptions['newInvoiceState'] State to which the invoice will be moved following the recalculation.
-	 *	* @param string_ENUM['RecalculateAsLatestSubscriptionVersion', 'RecalculateAsCurrentSubscriptionVersion'] (Default: 'RecalculateAsLatestSubscriptionVersion') $recalculationOptions['recalculationBehaviour'] How to recalculate the invoice.
-	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $recalculationOptions['actioningTime'] When to action the recalculation amendment
+	 *	* @param string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: 'Pending') $..['newInvoiceState'] State to which the invoice will be moved following the recalculation.
+	 *	* @param string_ENUM['RecalculateAsLatestSubscriptionVersion', 'RecalculateAsCurrentSubscriptionVersion'] (Default: 'RecalculateAsLatestSubscriptionVersion') $..['recalculationBehaviour'] How to recalculate the invoice.
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $..['actioningTime'] When to action the recalculation amendment
 	 * @return Bf_InvoiceRecalculationAmendment The created amendment.
 	 */
 	public function scheduleRecalculation(
@@ -196,8 +196,8 @@ class Bf_Invoice extends Bf_MutableEntity {
 	/**
 	 * Retries execution of the invoice (now, or at a scheduled time).
 	 * @param array $executionOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param bool $executionOptions['forcePaid'] (Default: false) Whether to force the invoice into the paid state using an 'offline payment'.
-	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $executionOptions['actioningTime'] When to action the 'next execution attempt' amendment
+	 *	* @param bool $..['forcePaid'] (Default: false) Whether to force the invoice into the paid state using an 'offline payment'.
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $..['actioningTime'] When to action the 'next execution attempt' amendment
 	 * @return Bf_InvoiceNextExecutionAttemptAmendment The created 'next execution attempt' amendment.
 	 */
 	public function scheduleRetryExecution(
