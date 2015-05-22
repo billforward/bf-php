@@ -512,7 +512,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	***
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function upgrade(
+	public function scheduleUpgrade(
 		array $namesToValues,
 		array $upgradeOptions = array(
 			'namesToChangeModeOverrides' => array(),
@@ -620,7 +620,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	***
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migratePlan(
+	public function scheduleMigratePlan(
 		array $namesToValues,
 		$newPlan,
 		array $migrationOptions = array(
@@ -666,7 +666,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @see migratePlan()
 	 * @return Bf_MigrationResponse The migration result.
 	 */
-	public function migratePlanNow(
+	public function migratePlan(
 		array $namesToValues,
 		$newPlan,
 		array $migrationOptions = array(
@@ -756,7 +756,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	***
 	 * @return Bf_CancellationAmendment The created cancellation amendment.
 	 */
-	public function cancel(
+	public function scheduleCancellation(
 		array $cancellationOptions = array(
 			'serviceEnd' => 'AtPeriodEnd',
 			'cancellationCredit' => 'Credit',
@@ -786,7 +786,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @see cancel()
 	 * @return Bf_SubscriptionCancellation The cancellation result.
 	 */
-	public function cancelNow(
+	public function cancel(
 		array $cancellationOptions = array(
 			'serviceEnd' => 'AtPeriodEnd',
 			'cancellationCredit' => 'Credit'
@@ -882,7 +882,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	* @param boolean (Default: false) $resumptionOptions['dryRun'] Whether to forego persisting the effected changes.
 	 * @return Bf_Subscription The frozen subscription.
 	 */
-	public function resumeNow(
+	public function resume(
 		array $resumptionOptions = array(
 			'dryRun' => false
 			)

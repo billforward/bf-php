@@ -86,7 +86,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 *	***
 	 * @return Bf_IssueInvoiceAmendment The created amendment.
 	 */
-	public function issue(
+	public function scheduleIssuance(
 		array $issuanceOptions = array(
 			'actioningTime' => 'Immediate'
 			)
@@ -110,7 +110,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @see issue()
 	 * @return Bf_Invoice The invoice, after issuance.
 	 */
-	public function issueNow(
+	public function issue(
 		array $issuanceOptions = array(
 			)
 		) {
@@ -127,7 +127,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * Synchronously unissues an 'Unpaid' invoice.
 	 * @return Bf_Invoice The invoice, after unissuance.
 	 */
-	public function unissueNow(
+	public function unissue(
 		array $unissuanceOptions = array(
 			)
 		) {
@@ -170,7 +170,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 *	***
 	 * @return Bf_InvoiceRecalculationAmendment The created amendment.
 	 */
-	public function recalculate(
+	public function scheduleRecalculation(
 		array $recalculationOptions = array(
 			'newInvoiceState' => 'Pending',
 			'recalculationBehaviour' => 'RecalculateAsLatestSubscriptionVersion',
@@ -198,7 +198,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @see recalculate()
 	 * @return Bf_Invoice The invoice, after recalculation.
 	 */
-	public function recalculateNow(
+	public function recalculate(
 		array $recalculationOptions = array(
 			'newInvoiceState' => 'Pending',
 			'recalculationBehaviour' => 'RecalculateAsLatestSubscriptionVersion'
@@ -252,7 +252,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 *	***
 	 * @return Bf_InvoiceNextExecutionAttemptAmendment The created 'next execution attempt' amendment.
 	 */
-	public function retryExecution(
+	public function scheduleRetryExecution(
 		array $executionOptions = array(
 			'forcePaid' => false,
 			'actioningTime' => 'Immediate'
@@ -278,7 +278,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @see retryExecution()
 	 * @return Bf_Invoice The invoice, after attempting execution.
 	 */
-	public function retryExecutionNow(
+	public function retryExecution(
 		array $executionOptions = array(
 			'forcePaid' => false
 			)
