@@ -541,12 +541,13 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$amendmentStateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
-			$upgradeOptions,
 			array(
 				'subscriptionID' => $subscriptionID,
 				'componentChanges' => $componentChanges,
 				'actioningTime' => $actioningTime
-				));
+				),
+			$upgradeOptions
+			);
 
 		$amendment = new Bf_PricingComponentValueAmendment($amendmentStateParams);
 
@@ -654,13 +655,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$amendmentStateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
-			$migrationOptions,
 			array(
 				'mappings' => $mappings,
 				'subscriptionID' => $subscriptionID,
 				'productRatePlanID' => $planID,
 				'actioningTime' => $actioningTime
-				));
+				),
+			$migrationOptions
+			);
 		static::renameKey($amendmentStateParams, 'renameSubscription', 'nextSubscriptionName');
 		$amendment = new Bf_ProductRatePlanMigrationAmendment($amendmentStateParams);
 
