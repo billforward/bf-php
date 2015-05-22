@@ -456,6 +456,17 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
+    public static function renameKey(array &$associative, $nominalKey, $newName) {
+    	$associative[$newName] = $associative[$nominalKey];
+    	return popKey($associative, $nominalKey);
+    }
+
+    public static function popKey(array &$associative, $nominalKey) {
+    	$value = $associative[$nominalKey];
+    	unset($associative[$nominalKey]);
+    	return $value;
+    }
+
     public function getJson() {
     	return json_encode($this, JSON_PRETTY_PRINT);
     }

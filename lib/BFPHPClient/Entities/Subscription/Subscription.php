@@ -631,31 +631,33 @@ class Bf_Subscription extends Bf_MutableEntity {
 			)
 		) {
 
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$migrationOptions));
-
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$mappings = array_map(function($name, $value) {
-			return new Bf_PricingComponentValueMigrationAmendmentMapping(array(
-				'pricingComponentName' => $name,
-				'value' => $value
-			));
-		}, array_keys($namesToValues), $namesToValues);
-		
-		$amendment = new Bf_ProductRatePlanMigrationAmendment(array(
-			'subscriptionID' => $subscriptionID,
-			'productRatePlanID' => $planID,
-			'mappings' => $mappings,
-			'invoicingType' => $invoicingType,
-			'pricingBehaviour' => $pricingBehaviour
-			));
-		$amendment->applyActioningTime($actioningTime, $this);
-		if (!is_null($renameSubscription)) {
-			$amendment->nextSubscriptionName = $renameSubscription;
-		}
+		$mappings = array_map(
+			function($name, $value) {
+				return new Bf_PricingComponentValueMigrationAmendmentMapping(array(
+					'pricingComponentName' => $name,
+					'value' => $value
+				));
+			},
+			array_keys($namesToValues),
+			$namesToValues
+			);
+
+		static::renameKey($migrationOptions, 'renameSubscription', 'nextSubscriptionName');
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($migrationOptions, 'actioningTime'), $this);
+
+		$amendmentStateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$migrationOptions,
+			array(
+				'mappings' => $mappings,
+				'subscriptionID' => $subscriptionID,
+				'productRatePlanID' => $planID,
+				'actioningTime' => $actioningTime
+				));
+		$amendment = new Bf_ProductRatePlanMigrationAmendment($amendmentStateParams);
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
 		return $createdAmendment;
@@ -677,29 +679,29 @@ class Bf_Subscription extends Bf_MutableEntity {
 			)
 		) {
 
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$migrationOptions));
-
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$mappings = array_map(function($name, $value) {
-			return new Bf_PricingComponentMigrationValue(array(
-				'pricingComponentName' => $name,
-				'value' => $value
-			));
-		}, array_keys($namesToValues), $namesToValues);
+		$mappings = array_map(
+			function($name, $value) {
+				return new Bf_PricingComponentMigrationValue(array(
+					'pricingComponentName' => $name,
+					'value' => $value
+				));
+			},
+			array_keys($namesToValues),
+			$namesToValues
+			);
 
-		$requestEntity = new Bf_MigrationRequest(array(
-			'mappings' => $mappings,
-			'invoicingType' => $invoicingType,
-			'pricingBehaviour' => $pricingBehaviour,
-			'dryRun' => $dryRun
-			));
-		if (!is_null($renameSubscription)) {
-			$requestEntity->nextSubscriptionName = $renameSubscription;
-		}
+		$requestStateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$migrationOptions,
+			array(
+				'mappings' => $mappings,
+				'nextSubscriptionName' => $renameSubscription
+				));
+
+		$requestEntity = new Bf_MigrationRequest($requestStateParams);
 
 		$endpoint = sprintf("%s/migrate/%s",
 			rawurlencode($subscriptionID),
@@ -814,7 +816,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $constructedEntity;
 	}
 
-	//// REVIVE
+	//// REVIVE CANCELLED SUBSCRIPTION
 
 	/**
 	 * Synchronously revives the subscription.
@@ -892,6 +894,45 @@ class Bf_Subscription extends Bf_MutableEntity {
 			array_merge(
 				static::getFinalArgDefault(__METHOD__),
 				$resumptionOptions
+				)
+			);
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$endpoint = sprintf("%s/resume",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	//// ADVANCE SUBSCRIPTION THROUGH TIME
+
+	/**
+	 * Synchronously resumes the subscription.
+	 * @param array $advancementOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param boolean (Default: false) $advancementOptions['dryRun'] Whether to forego persisting the effected changes.
+	 * @return Bf_Subscription The frozen subscription.
+	 */
+	public function advance(
+		array $advancementOptions = array(
+			'dryRun' => false,
+			'skipIntermediatePeriods' => false,
+			'handleAmendments' => true,
+			'executionStrategy' => 'SingleAttempt',
+			'freezeOnCompletion' => false,
+			'from' => null,
+			'to' => 'PeriodEnd'
+			)
+		) {
+
+		$requestEntity = new Bf_TimeRequest(
+			array_merge(
+				static::getFinalArgDefault(__METHOD__),
+				$advancementOptions
 				)
 			);
 
