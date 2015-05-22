@@ -939,7 +939,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Parses into a BillForward timestamp the Bf_TimeRequest 'From' time
-	 * @param union[int $timestamp | string_ENUM['Now', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
+	 * @param union[int $timestamp | string_ENUM['Now', 'CurrentPeriodEnd']] (Default: 'Immediate') When to action the amendment
 	 *
 	 *  int
 	 *  'From' the specified UNIX timestamp.
@@ -955,7 +955,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *  <ClientNow>
 	 *  'From' the current time by this client's clock.
 	 *  
-	 *  <AtPeriodEnd>
+	 *  <CurrentPeriodEnd>
 	 *  'From' the end of the subscription's current billing period.
 	 *
 	 *  string (outside ENUM)
@@ -965,7 +965,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
 	 *
-	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'CurrentPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return string The BillForward-formatted time.
 	 */
 	public static function parseTimeRequestFromTime($fromTime, $subscription = NULL) {
@@ -975,10 +975,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 			case 'ServerNow':
 			case 'Immediate':
 				return NULL;
-			case 'AtPeriodEnd':
+			case 'CurrentPeriodEnd':
 				// we need to consult subscription
 				if (is_null($subscription)) {
-					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
+					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain CurrentPeriodEnd time, because a null reference was provided to the subscription.');
 				}
 				$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
 				return $subscriptionFetched->getCurrentPeriodEnd();
@@ -1001,7 +1001,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Parses into a BillForward timestamp the Bf_TimeRequest 'From' time
-	 * @param union[int $timestamp | string_ENUM['Now', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
+	 * @param union[int $timestamp | string_ENUM['Now', 'CurrentPeriodEnd']] (Default: 'Immediate') When to action the amendment
 	 *
 	 *  int
 	 *  'From' the specified UNIX timestamp.
@@ -1017,7 +1017,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *  <ClientNow>
 	 *  'To' the current time by this client's clock.
 	 *  
-	 *  <AtPeriodEnd>
+	 *  <CurrentPeriodEnd>
 	 *  'To' the end of the subscription's current billing period.
 	 *
 	 *  string (outside ENUM)
@@ -1027,7 +1027,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
 	 *
-	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'CurrentPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return string The BillForward-formatted time.
 	 */
 	public static function parseTimeRequestToTime($fromTime, $subscription = NULL) {
@@ -1037,10 +1037,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 			case 'ServerNow':
 			case 'Immediate':
 				return NULL;
-			case 'AtPeriodEnd':
+			case 'CurrentPeriodEnd':
 				// we need to consult subscription
 				if (is_null($subscription)) {
-					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
+					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain CurrentPeriodEnd time, because a null reference was provided to the subscription.');
 				}
 				$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
 				return $subscriptionFetched->getCurrentPeriodEnd();
