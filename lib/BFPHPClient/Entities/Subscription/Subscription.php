@@ -520,10 +520,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
-		
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$cancellationOptions));
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
 		$componentChanges = array_map(function($key, $value) use($namesToChangeModeOverrides) {
 			$change = new Bf_ComponentChange(array(
@@ -538,12 +536,19 @@ class Bf_Subscription extends Bf_MutableEntity {
 			return $change;
 		}, array_keys($namesToValues), $namesToValues);
 
-		$amendment = new Bf_PricingComponentValueAmendment(array(
-			'subscriptionID' => $this->id,
-			'componentChanges' => $componentChanges,
-			'invoicingType' => $invoicingType
-			));
-		$amendment->applyActioningTime($actioningTime, $this);
+		static::popKey($upgradeOptions, 'namesToChangeModeOverrides');
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($upgradeOptions, 'actioningTime'), $this);
+
+		$amendmentStateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			$upgradeOptions,
+			array(
+				'subscriptionID' => $subscriptionID,
+				'componentChanges' => $componentChanges,
+				'actioningTime' => $actioningTime
+				));
+
+		$amendment = new Bf_PricingComponentValueAmendment($amendmentStateParams);
 
 		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
 		return $createdAmendment;
