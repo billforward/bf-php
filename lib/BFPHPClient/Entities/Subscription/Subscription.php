@@ -487,7 +487,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*	<Aggregated> (Default)
 	 *	*	Add this charge to next invoice.
 	 *	*
-	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $upgradeOptions['actioningTime'] When to action the upgrade amendment
+	 *	* @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') $upgradeOptions['actioningTime'] When to action the upgrade amendment
 	 *	*
 	 *	*  int
 	 *	*  Schedule the upgrade to occur at the specified UNIX timestamp.
@@ -497,7 +497,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *	*
 	 *	*	string (within ENUM)
-	 *	*  <Immediate> (Default)
+	 *	*  <Immediate> (Default) | <ServerNow>
 	 *	*  Perform the upgrade now (synchronously where possible).
 	 *	*  
 	 *	*  <AtPeriodEnd>
@@ -602,7 +602,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*	<Aggregated> (Default)
 	 *	*	Add this charge to next invoice.
 	 *	*
-	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $migrationOptions['actioningTime'] When to action the migration amendment
+	 *	* @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') $migrationOptions['actioningTime'] When to action the migration amendment
 	 *	*
 	 *	*  int
 	 *	*  Schedule the migration to occur at the specified UNIX timestamp.
@@ -612,7 +612,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *	*
 	 *	*	string (within ENUM)
-	 *	*  <Immediate> (Default)
+	 *	*  <Immediate> (Default) | <ServerNow>
 	 *	*  Perform the migration now (synchronously where possible).
 	 *	*  
 	 *	*  <AtPeriodEnd>
@@ -742,7 +742,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*
 	 *	* 	<None>
 	 *	*
-	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $cancellationOptions['actioningTime'] When to action the cancellation amendment
+	 *	* @param union[int $timestamp | string_ENUM['Immediate' | 'ServerNow', 'ClientNow', 'AtPeriodEnd']] (Default: 'Immediate') $cancellationOptions['actioningTime'] When to action the cancellation amendment
 	 *	*
 	 *	*  int
 	 *	*  Schedule the cancellation to occur at the specified UNIX timestamp.
@@ -752,7 +752,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *	*
 	 *	*	string (within ENUM)
-	 *	*  <Immediate> (Default)
+	 *	*  <Immediate> (Default) | <ServerNow>
 	 *	*  Perform the cancellation now (synchronously where possible).
 	 *	*  
 	 *	*  <AtPeriodEnd>
