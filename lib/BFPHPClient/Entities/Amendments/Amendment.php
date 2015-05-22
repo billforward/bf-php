@@ -125,12 +125,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
 				}
 				$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
-				if (!is_null($subscriptionFetched->currentPeriodEnd)) {
-					return $subscriptionFetched->currentPeriodEnd;
-				} else {
-					throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
-				}
-				break;
+				return $subscriptionFetched->getCurrentPeriodEnd();
 			case 'ClientNow':
 				$intSpecified = time();
 			default:

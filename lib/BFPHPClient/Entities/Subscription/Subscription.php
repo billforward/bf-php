@@ -224,6 +224,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return Bf_Subscription::getPaymentMethodsOnSubscription($this, $options, $customClient);
 	}
 
+	public function getCurrentPeriodEnd() {
+		if (!is_null($this->currentPeriodEnd)) {
+			return $this->currentPeriodEnd;
+		} else {
+			throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
+		}
+	}
+
 	/**
 	 * Issues against the Bf_Subscription, credit of the specified value and currency.
 	 * @param int Nominal value of credit note
@@ -1007,7 +1015,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
 	 *
 	 *	string (within ENUM)
-	 *  <ServerNow> (Default)
+	 *  <Immediate> (Default)
 	 *  'From' as soon as the request reaches the server
 	 *
 	 *  <ClientNow>
@@ -1027,24 +1035,34 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return string The BillForward-formatted time.
 	 */
 	public static function parseTimeRequestFromTime($fromTime, $subscription = NULL) {
-		$date = NULL; // defaults to Immediate
-		if (is_int($fromTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($fromTime);
-		} else if ($fromTime === 'AtPeriodEnd') {
-			// we need to consult subscription
-			if (is_null($subscription)) {
-				throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
-			}
-			$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
-			if (!is_null($subscriptionFetched->currentPeriodEnd)) {
-				$date = $subscriptionFetched->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
-			}
-		} else if (is_string($fromTime)) {
-			$date = $fromTime;
+		$intSpecified = NULL;
+
+		switch ($fromTime) {
+			case 'ServerNow':
+			case 'Immediate':
+				return NULL;
+			case 'AtPeriodEnd':
+				// we need to consult subscription
+				if (is_null($subscription)) {
+					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain AtPeriodEnd time, because a null reference was provided to the subscription.');
+				}
+				$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
+				return $subscriptionFetched->getCurrentPeriodEnd();
+			case 'ClientNow':
+				$intSpecified = time();
+			default:
+				if (is_int($fromTime)) {
+					$intSpecified = $fromTime;
+				}
+				if (!is_null($intSpecified)) {
+					return Bf_BillingEntity::makeBillForwardDate($intSpecified);
+				}
+				if (is_string($fromTime)) {
+					return $fromTime;
+				}
 		}
-		return $date;
+
+		return NULL;
 	}
 
 	public static function initStatics() {
