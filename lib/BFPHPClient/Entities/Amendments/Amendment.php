@@ -114,6 +114,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 		switch ($actioningTime) {
 			case 'ServerNow':
+			case 'Immediate':
 				return NULL;
 			case 'AtPeriodEnd':
 				// we need to consult subscription
