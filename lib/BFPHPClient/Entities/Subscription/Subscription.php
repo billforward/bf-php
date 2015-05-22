@@ -520,6 +520,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
+		
 		$inputOptions = $upgradeOptions;
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
@@ -852,7 +853,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		
+
 		$requestEntity = new Bf_SubscriptionReviveRequest($stateParams);
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);

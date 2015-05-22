@@ -91,15 +91,25 @@ class Bf_Invoice extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$issuanceOptions));
 
-		$amendment = new Bf_IssueInvoiceAmendment(array(
-			'subscriptionID' => $this->subscriptionID,
-			'invoiceID' => $this->id
-			));
-		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
+		$inputOptions = $issuanceOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this->subscriptionID);
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $subscriptionID);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				'subscriptionID' => $subscriptionID,
+				'invoiceID' => $invoiceID,
+				'actioningTime' => $actioningTime
+				),
+			$inputOptions
+			);
+
+		$amendment = new Bf_IssueInvoiceAmendment($stateParams);
 
 		$createdAmendment = Bf_IssueInvoiceAmendment::create($amendment);
 		return $createdAmendment;
@@ -114,9 +124,16 @@ class Bf_Invoice extends Bf_MutableEntity {
 		array $issuanceOptions = array(
 			)
 		) {
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$issuanceOptions));
+
+		// no-op, since no request entity is made
+		// $inputOptions = $issuanceOptions;
+
+		// $stateParams = array_merge(
+		// 	static::getFinalArgDefault(__METHOD__),
+		// 	array(
+		// 		),
+		// 	$inputOptions
+		// 	);
 
 		$this->state = 'Unpaid';
 		$updatedInvoice = $this->save();
@@ -131,9 +148,16 @@ class Bf_Invoice extends Bf_MutableEntity {
 		array $unissuanceOptions = array(
 			)
 		) {
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$unissuanceOptions));
+
+		// no-op, since no request entity is made
+		// $inputOptions = $unissuanceOptions;
+
+		// $stateParams = array_merge(
+		// 	static::getFinalArgDefault(__METHOD__),
+		// 	array(
+		// 		),
+		// 	$inputOptions
+		// 	);
 
 		$this->state = 'Pending';
 		$updatedInvoice = $this->save();
@@ -177,17 +201,24 @@ class Bf_Invoice extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$recalculationOptions));
+		$inputOptions = $recalculationOptions;
 
-		$amendment = new Bf_InvoiceRecalculationAmendment(array(
-			'subscriptionID' => $this->subscriptionID,
-			'invoiceID' => $this->id,
-			'newInvoiceState' => $newInvoiceState,
-			'recalculationBehaviour' => $recalculationBehaviour
-			));
-		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
+		$subscriptionID = Bf_Subscription::getIdentifier($this->subscriptionID);
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $subscriptionID);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				'subscriptionID' => $subscriptionID,
+				'invoiceID' => $invoiceID,
+				'actioningTime' => $actioningTime
+				),
+			$inputOptions
+			);
+
+		$amendment = new Bf_InvoiceRecalculationAmendment($stateParams);
 
 		$createdAmendment = Bf_InvoiceRecalculationAmendment::create($amendment);
 		return $createdAmendment;
@@ -204,16 +235,19 @@ class Bf_Invoice extends Bf_MutableEntity {
 			'recalculationBehaviour' => 'RecalculateAsLatestSubscriptionVersion'
 			)
 		) {
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$recalculationOptions));
+
+		$inputOptions = $recalculationOptions;
 
 		$invoiceID = Bf_Invoice::getIdentifier($this);
 
-		$requestEntity = new Bf_InvoiceRecalculationRequest(array(
-			'newInvoiceState' => $newInvoiceState,
-			'recalculationBehaviour' => $recalculationBehaviour
-		  ));
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
+			);
+
+		$requestEntity = new Bf_InvoiceRecalculationRequest($stateParams);
 
 		$endpoint = sprintf("%s/execute",
 			rawurlencode($invoiceID)
@@ -258,16 +292,24 @@ class Bf_Invoice extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$executionOptions));
+		$inputOptions = $executionOptions;
 
-		$amendment = new Bf_InvoiceNextExecutionAttemptAmendment(array(
-			'subscriptionID' => $this->subscriptionID,
-			'invoiceID' => $this->id,
-			'forcePaid' => $forcePaid
-			));
-		$amendment->applyActioningTime($actioningTime, $this->subscriptionID);
+		$subscriptionID = Bf_Subscription::getIdentifier($this->subscriptionID);
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $subscriptionID);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				'subscriptionID' => $subscriptionID,
+				'invoiceID' => $invoiceID,
+				'actioningTime' => $actioningTime
+				),
+			$inputOptions
+			);
+
+		$amendment = new Bf_InvoiceNextExecutionAttemptAmendment($stateParams);
 
 		$createdAmendment = Bf_InvoiceNextExecutionAttemptAmendment::create($amendment);
 		return $createdAmendment;
@@ -283,15 +325,19 @@ class Bf_Invoice extends Bf_MutableEntity {
 			'forcePaid' => false
 			)
 		) {
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$executionOptions));
+
+		$inputOptions = $recalculationOptions;
 
 		$invoiceID = Bf_Invoice::getIdentifier($this);
 
-		$requestEntity = new Bf_InvoiceExecutionRequest(array(
-			'forcePaid' => $forcePaid
-		  ));
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
+			);
+
+		$requestEntity = new Bf_InvoiceExecutionRequest($stateParams);
 
 		$endpoint = sprintf("%s/execute",
 			rawurlencode($invoiceID)
