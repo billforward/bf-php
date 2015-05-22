@@ -807,6 +807,48 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $constructedEntity;
 	}
 
+	//// INVOICE OUTSTANDING CHARGES
+
+	/**
+	 * Synchronously generates invoices for outstanding charges on the subscription.
+	 * @param array $invoicingOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param boolean (Default: false) $..['includeAggregated']
+	 *	* @param boolean (Default: false) $..['includeAggregated']
+	 *	* @param union[NULL | string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: NULL) $..['invoiceState']]
+	 * @return Bf_Invoice[] The generated invoices.
+	 */
+	public function invoiceOutstandingCharges(
+		array $invoicingOptions = array(
+			'includeAggregated' => false,
+			'includeInvoicedChargesOnly' => false,
+			'invoiceState' => NULL
+			)
+		) {
+		$inputOptions = $invoicingOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
+			);
+
+		$requestEntity = new Bf_SubscriptionReviveRequest($stateParams);
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$endpoint = sprintf("%s/invoiceCharges",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_MigrationResponse::getClassName();
+
+		$constructedEntities = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntities;
+	}
+
 	//// FREEZE
 
 	/**
