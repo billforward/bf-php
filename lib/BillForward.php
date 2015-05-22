@@ -32,6 +32,7 @@ spl_autoload_register(function($className) {
             'Bf_BillingEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/BillingEntity.php',
             'Bf_BraintreeToken' => $baseDir . '/BFPHPClient/Entities/Tokens/BraintreeToken.php',
             'Bf_CancellationAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/CancellationAmendment.php',
+            'Bf_ChargeRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/ChargeRequest.php',
             'Bf_ComponentChange' => $baseDir . '/BFPHPClient/Entities/PricingComponent/ComponentChange.php',
             'Bf_ComponentCost' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/ComponentCost.php',
             'Bf_ComponentDiscount' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/ComponentDiscount.php',
