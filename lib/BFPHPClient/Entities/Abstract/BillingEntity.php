@@ -458,7 +458,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
     public static function renameKey(array &$associative, $nominalKey, $newName) {
     	$associative[$newName] = $associative[$nominalKey];
-    	return popKey($associative, $nominalKey);
+    	return static::popKey($associative, $nominalKey);
     }
 
     public static function popKey(array &$associative, $nominalKey) {

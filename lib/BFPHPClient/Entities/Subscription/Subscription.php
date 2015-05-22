@@ -645,7 +645,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$namesToValues
 			);
 
-		static::renameKey($migrationOptions, 'renameSubscription', 'nextSubscriptionName');
 		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($migrationOptions, 'actioningTime'), $this);
 
 		$amendmentStateParams = array_merge(
@@ -657,6 +656,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				'productRatePlanID' => $planID,
 				'actioningTime' => $actioningTime
 				));
+		static::renameKey($amendmentStateParams, 'renameSubscription', 'nextSubscriptionName');
 		$amendment = new Bf_ProductRatePlanMigrationAmendment($amendmentStateParams);
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
