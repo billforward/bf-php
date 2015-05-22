@@ -463,7 +463,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * )
 	 * @param array $upgradeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) $upgradeOptions['namesToChangeModeOverrides'] The map of pricing component names to change mode overrides.
-	 *	***
+	 *	*
 	 *	*	Each key in the this array maps to a value of the following ENUM:
 	 *	*  *	<NULL> (Behaviour for omitted keys)
 	 *	*  *	Don't override the change mode that is already specified on the pricing component.
@@ -478,17 +478,17 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	* 	'CPU' => 'Immediate',
 	 *	* 	'RAM' => 'Delayed'
 	 *	* )
-	 *	***
+	 *	*
 	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $upgradeOptions['invoicingType'] Subscription-charge invoicing type
-	 *	***
+	 *	*
 	 *	*	<Immediate>
 	 *	*	Generate invoice straight away with this charge applied.
 	 *	*
 	 *	*	<Aggregated> (Default)
 	 *	*	Add this charge to next invoice.
-	 *	***
+	 *	*
 	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $upgradeOptions['actioningTime'] When to action the upgrade amendment
-	 *	***
+	 *	*
 	 *	*  int
 	 *	*  Schedule the upgrade to occur at the specified UNIX timestamp.
 	 *	*  Examples:
@@ -509,7 +509,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*  	* '2015-04-23T17:13:37Z'
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 *	***
+	 *	*
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
 	public function scheduleUpgrade(
@@ -520,7 +520,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
-		
+
 		$inputOptions = $upgradeOptions;
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
@@ -571,7 +571,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param array $migrationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param union[NULL | string] (Default: NULL) $migrationOptions['renameSubscription'] Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
 	 *	* @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') $migrationOptions['pricingBehaviour'] Strategy for calculating migration charges.
-	 *	***
+	 *	*
 	 *	*  <None>
 	 *	*  No migration charge will be issued at all.
 	 *	*
@@ -593,17 +593,17 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*  
 	 *	*   2. We are migrating to a plan of a different period duration. 
 	 *	*   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 *	***
+	 *	*
 	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $migrationOptions['invoicingType'] Subscription-charge invoicing type
-	 *	***
+	 *	*
 	 *	*	<Immediate>
 	 *	*	Generate invoice straight away with this charge applied.
 	 *	*
 	 *	*	<Aggregated> (Default)
 	 *	*	Add this charge to next invoice.
-	 *	***
+	 *	*
 	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $migrationOptions['actioningTime'] When to action the migration amendment
-	 *	***
+	 *	*
 	 *	*  int
 	 *	*  Schedule the migration to occur at the specified UNIX timestamp.
 	 *	*  Examples:
@@ -624,7 +624,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*  	* '2015-04-23T17:13:37Z'
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 *	***
+	 *	*
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
 	public function scheduleMigratePlan(
@@ -730,21 +730,20 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Cancels subscription at a specified time.
 	 * @param array $cancellationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') $cancellationOptions['serviceEnd'] Specifies when the service ends after the subscription is cancelled.
-	 *	***
 	 *	* 	<Immediate>
 	 *	* 	Subscription ends service as soon as it is cancelled.
 	 *	*
 	 *	* 	<AtPeriodEnd> (Default)
 	 *	* 	After cancellation, the subscription continues to provide service until its billing period ends.
-	 *	***
+	 *	*
 	 *	* @param string_ENUM['Credit', 'None'] (Default: 'Credit') $cancellationOptions['cancellationCredit'] 
-	 *	***
+	 *	*
 	 *	* 	<Credit> (Default)
 	 *	*
 	 *	* 	<None>
-	 *	***
+	 *	*
 	 *	* @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') $cancellationOptions['actioningTime'] When to action the cancellation amendment
-	 *	***
+	 *	*
 	 *	*  int
 	 *	*  Schedule the cancellation to occur at the specified UNIX timestamp.
 	 *	*  Examples:
@@ -765,7 +764,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*  	* '2015-04-23T17:13:37Z'
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *	*  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 *	***
+	 *	*
 	 * @return Bf_CancellationAmendment The created cancellation amendment.
 	 */
 	public function scheduleCancellation(
@@ -946,6 +945,17 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Synchronously resumes the subscription.
 	 * @param array $advancementOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param boolean (Default: false) $advancementOptions['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param boolean (Default: false) $advancementOptions['skipIntermediatePeriods']
+	 *	* @param boolean (Default: true) $advancementOptions['handleAmendments']
+	 *	* @param string_ENUM['SingleAttempt', 'FollowDunning', 'None'] (Default: 'SingleAttempt') $advancementOptions['executionStrategy']
+	 *	*
+	 *	* 	<SingleAttempt> (Default)
+	 *	*
+	 *	*	<FollowDunning> (Default)
+	 *	*
+	 *	* 	<None>
+	 *	*
+	 *	* @param boolean (Default: false) $advancementOptions['freezeOnCompletion']
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function advance(
@@ -955,7 +965,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'handleAmendments' => true,
 			'executionStrategy' => 'SingleAttempt',
 			'freezeOnCompletion' => false,
-			'from' => null,
+			'from' => NULL,
 			'to' => 'PeriodEnd'
 			)
 		) {

@@ -37,7 +37,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	/**
 	 * Parses into a BillForward timestamp the actioning time for some amendment
 	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd']] (Default: 'Immediate') When to action the amendment
-	 ***
+	 *
 	 *  int
 	 *  Schedule the amendment to occur at the specified UNIX timestamp.
 	 *  Examples:
@@ -58,7 +58,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 *  	* '2015-04-23T17:13:37Z'
 	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 ***
+	 *
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return string The BillForward-formatted time.
 	 */
@@ -86,7 +86,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	/**
 	 * Assigns to this amendment the specified actioning time.
 	 * @param union[int $timestamp | string_ENUM['Immediate', 'AtPeriodEnd'] | string] (Default: 'Immediate') When to action the amendment.
-	 ***
+	 *
 	 *  int
 	 *  Schedule the amendment to occur at the specified UNIX timestamp.
 	 *  Examples:
@@ -107,7 +107,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 	 *  	* '2015-04-23T17:13:37Z'
 	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
 	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
-	 ***
+	 *
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified Bf_Amendment model.
 	 */
