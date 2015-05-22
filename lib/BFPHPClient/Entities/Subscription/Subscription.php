@@ -520,6 +520,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
+		$inputOptions = $upgradeOptions;
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
@@ -536,20 +537,19 @@ class Bf_Subscription extends Bf_MutableEntity {
 			return $change;
 		}, array_keys($namesToValues), $namesToValues);
 
-		static::popKey($upgradeOptions, 'namesToChangeModeOverrides');
-		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($upgradeOptions, 'actioningTime'), $this);
+		static::popKey($inputOptions, 'namesToChangeModeOverrides');
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
 
-		$amendmentStateParams = array_merge(
+		$stateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
 			array(
 				'subscriptionID' => $subscriptionID,
 				'componentChanges' => $componentChanges,
 				'actioningTime' => $actioningTime
 				),
-			$upgradeOptions
+			$inputOptions
 			);
-
-		$amendment = new Bf_PricingComponentValueAmendment($amendmentStateParams);
+		$amendment = new Bf_PricingComponentValueAmendment($stateParams);
 
 		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
 		return $createdAmendment;
@@ -636,6 +636,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
+		$inputOptions = $migrationOptions;
 
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
@@ -651,9 +652,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$namesToValues
 			);
 
-		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($migrationOptions, 'actioningTime'), $this);
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
 
-		$amendmentStateParams = array_merge(
+		$stateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
 			array(
 				'mappings' => $mappings,
@@ -661,10 +662,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 				'productRatePlanID' => $planID,
 				'actioningTime' => $actioningTime
 				),
-			$migrationOptions
+			$inputOptions
 			);
-		static::renameKey($amendmentStateParams, 'renameSubscription', 'nextSubscriptionName');
-		$amendment = new Bf_ProductRatePlanMigrationAmendment($amendmentStateParams);
+		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
+		$amendment = new Bf_ProductRatePlanMigrationAmendment($stateParams);
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
 		return $createdAmendment;
@@ -685,6 +686,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'dryRun' => false
 			)
 		) {
+		$inputOptions = $migrationOptions;
 
 		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
@@ -700,15 +702,15 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$namesToValues
 			);
 
-		$requestStateParams = array_merge(
+		$stateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
-			$migrationOptions,
 			array(
-				'mappings' => $mappings,
-				'nextSubscriptionName' => $renameSubscription
-				));
-
-		$requestEntity = new Bf_MigrationRequest($requestStateParams);
+				'mappings' => $mappings
+				),
+			$inputOptions
+			);
+		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
+		$requestEntity = new Bf_MigrationRequest($stateParams);
 
 		$endpoint = sprintf("%s/migrate/%s",
 			rawurlencode($subscriptionID),
@@ -772,18 +774,23 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'actioningTime' => 'Immediate'
 			)
 		) {
+		$inputOptions = $cancellationOptions;
 
-		extract(array_merge(
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
+
+		$stateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
-			$cancellationOptions));
+			array(
+				'subscriptionID' => $subscriptionID,
+				'actioningTime' => $actioningTime
+				),
+			$inputOptions
+			);
 
 		// create model of amendment
-		$amendment = new Bf_CancellationAmendment(array(
-		  'subscriptionID' => $this->id,
-		  'serviceEnd' => $serviceEnd,
-		  'cancellationCredit' => $cancellationCredit
-		  ));
-		$amendment->applyActioningTime($actioningTime, $this);
+		$amendment = new Bf_CancellationAmendment($stateParams);
 
 		// create amendment using API
 		$createdAmendment = Bf_CancellationAmendment::create($amendment);
@@ -802,16 +809,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 			)
 		) {
 
-		extract(array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			$cancellationOptions));
+		$inputOptions = $cancellationOptions;
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$requestEntity = new Bf_SubscriptionCancellation(array(
-		  'serviceEnd' => $serviceEnd,
-		  'cancellationCredit' => $cancellationCredit
-		  ));
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
+			);
+
+		$requestEntity = new Bf_SubscriptionCancellation($stateParams);
 
 		$endpoint = sprintf("%s/cancel",
 			rawurlencode($subscriptionID)
@@ -833,12 +842,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 		array $revivalOptions = array(
 			)
 		) {
-		$requestEntity = new Bf_SubscriptionReviveRequest(
-			array_merge(
-				static::getFinalArgDefault(__METHOD__),
-				$revivalOptions
-				)
+		$inputOptions = $revivalOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
 			);
+		
+		$requestEntity = new Bf_SubscriptionReviveRequest($stateParams);
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
@@ -864,14 +879,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 			)
 		) {
 
-		$requestEntity = new Bf_PauseRequest(
-			array_merge(
-				static::getFinalArgDefault(__METHOD__),
-				$freezeOptions
-				)
-			);
+		$inputOptions = $freezeOptions;
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
+			);
+		
+		$requestEntity = new Bf_PauseRequest($stateParams);
 
 		$endpoint = sprintf("%s/freeze",
 			rawurlencode($subscriptionID)
@@ -897,14 +916,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 			)
 		) {
 
-		$requestEntity = new Bf_PauseRequest(
-			array_merge(
-				static::getFinalArgDefault(__METHOD__),
-				$resumptionOptions
-				)
-			);
+		$inputOptions = $resumptionOptions;
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
+			);
+		
+		$requestEntity = new Bf_PauseRequest($stateParams);
 
 		$endpoint = sprintf("%s/resume",
 			rawurlencode($subscriptionID)
@@ -936,12 +959,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 			)
 		) {
 
-		$requestEntity = new Bf_TimeRequest(
-			array_merge(
-				static::getFinalArgDefault(__METHOD__),
-				$advancementOptions
-				)
+		$inputOptions = $advancementOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = array_merge(
+			static::getFinalArgDefault(__METHOD__),
+			array(
+				),
+			$inputOptions
 			);
+
+		$requestEntity = new Bf_TimeRequest($stateParams);
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
