@@ -813,11 +813,17 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Synchronously freezes the subscription.
 	 * @param array $freezeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption']
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['newSubscriptionStart']
+	 *	* @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] $..['newSubscriptionState']
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function freeze(
 		array $freezeOptions = array(
-			'dryRun' => false
+			'dryRun' => false,
+			'scheduleResumption' => NULL,
+			'newSubscriptionStart' => NULL,
+			'newSubscriptionState' => NULL
 			)
 		) {
 
@@ -849,12 +855,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Synchronously resumes the subscription.
 	 * @param array $resumptionOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param boolean (Default: false) $resumptionOptions['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption']
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['newSubscriptionStart']
+	 *	* @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] $..['newSubscriptionState']
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function resume(
 		array $resumptionOptions = array(
-			'dryRun' => false
+			'dryRun' => false,
+			'scheduleResumption' => NULL,
+			'newSubscriptionStart' => NULL,
+			'newSubscriptionState' => NULL
 			)
 		) {
 
@@ -868,6 +880,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
+		static::renameKey($stateParams, 'scheduleResumption', 'resume');
 		
 		$requestEntity = new Bf_PauseRequest($stateParams);
 
@@ -900,6 +913,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	* @param boolean (Default: false) $..['freezeOnCompletion']
 	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
 	 *	* @param {@see self::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
+	 *	* @param integer (Default: NULL) (Non-null value of param requires that $..['to'] be NULL instead) $..['periods']
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function advance(
@@ -910,7 +924,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'executionStrategy' => 'SingleAttempt',
 			'freezeOnCompletion' => false,
 			'from' => NULL,
-			'to' => 'PeriodEnd'
+			'to' => 'CurrentPeriodEnd',
+			'periods' => NULL
 			)
 		) {
 
@@ -943,6 +958,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;
 	}
+
+	//// TIME PARSING HELPERS
 
 	/**
 	 * Parses into a BillForward timestamp the Bf_TimeRequest 'From' time
