@@ -471,7 +471,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	if (!array_key_exists($nominalKey, $associative)) {
     		return NULL;
     	}
-    	$associative[$newName] = $associative[$nominalKey];
+    	// only overwrite if no param by that name is presently present.
+    	if (!array_key_exists($newName, $associative)) {
+	    	$associative[$newName] = $associative[$nominalKey];
+	    }
     	return static::popKey($associative, $nominalKey);
     }
 
