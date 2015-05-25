@@ -81,11 +81,11 @@ class Bf_Invoice extends Bf_MutableEntity {
 			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
-				'invoiceID' => $invoiceID,
-				'actioningTime' => $actioningTime
+				'invoiceID' => $invoiceID
 				),
 			$inputOptions
 			);
+		$this->mutateActioningTime($stateParams, $subscriptionID);
 
 		$amendment = new Bf_IssueInvoiceAmendment($stateParams);
 
@@ -148,11 +148,11 @@ class Bf_Invoice extends Bf_MutableEntity {
 			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
-				'invoiceID' => $invoiceID,
-				'actioningTime' => $actioningTime
+				'invoiceID' => $invoiceID
 				),
 			$inputOptions
 			);
+		$this->mutateActioningTime($stateParams, $subscriptionID);
 
 		$amendment = new Bf_InvoiceRecalculationAmendment($stateParams);
 
@@ -216,11 +216,11 @@ class Bf_Invoice extends Bf_MutableEntity {
 			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
-				'invoiceID' => $invoiceID,
-				'actioningTime' => $actioningTime
+				'invoiceID' => $invoiceID
 				),
 			$inputOptions
 			);
+		$this->mutateActioningTime($stateParams, $subscriptionID);
 
 		$amendment = new Bf_InvoiceNextExecutionAttemptAmendment($stateParams);
 
@@ -358,6 +358,16 @@ class Bf_Invoice extends Bf_MutableEntity {
 		$endpoint = "/account/$accountID";
 		
 		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
+	 * Mutates actioningTime in the referenced array
+	 * @param array $stateParams Map possibly containing `actioningTime` key that desires parsing.
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return static The modified array.
+	 */
+	public function mutateActioningTime(array &$stateParams, $subscription) {
+		Bf_Amendment::mutateActioningTime($stateParams, $subscription);
 	}
 
 	public static function initStatics() {

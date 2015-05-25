@@ -1117,7 +1117,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Mutates actioningTime in the referenced array
 	 * @param array $stateParams Map possibly containing `actioningTime` key that desires parsing.
-	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified array.
 	 */
 	public function mutateActioningTime(array &$stateParams) {

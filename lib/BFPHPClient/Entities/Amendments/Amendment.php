@@ -46,11 +46,11 @@ class Bf_Amendment extends Bf_MutableEntity {
 			static::getFinalArgDefault(__METHOD__),
 			array(
 				'subscriptionID' => $subscriptionID,
-				'amendmentToDiscardID' => $amendmentID,
-				'actioningTime' => $actioningTime
+				'amendmentToDiscardID' => $amendmentID
 				),
 			$inputOptions
 			);
+		static::mutateActioningTime($stateParams, $subscriptionID);
 
 		// create model of amendment
 		$amendment = new Bf_AmendmentDiscardAmendment($stateParams);
@@ -119,21 +119,6 @@ class Bf_Amendment extends Bf_MutableEntity {
 		}
 
 		return NULL;
-	}
-
-	/**
-	 * Assigns to this amendment the specified actioning time.
-	 * @param {@see self::parseActioningTime(mixed)} When to action the amendment
-	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
-	 * @return static The modified Bf_Amendment model.
-	 */
-	public function applyActioningTime($actioningTime, $subscription = NULL) {
-		$parsedActioningTime = static::parseActioningTime($actioningTime, $subscription);
-		// if null, defaults to 'Immediate'
-		if (!is_null($parsedActioningTime)) {
-			$this->actioningTime = $parsedActioningTime;
-		}
-		return $this;
 	}
 
 	/**
