@@ -135,5 +135,19 @@ class Bf_Amendment extends Bf_MutableEntity {
 		}
 		return $this;
 	}
+
+	/**
+	 * Mutates actioningTime in the referenced array
+	 * @param array $stateParams Map possibly containing `actioningTime` key that desires parsing.
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return static The modified array.
+	 */
+	public static function mutateActioningTime(array &$stateParams, $subscription = NULL) {
+		$parsedActioningTime = Bf_Amendment::parseActioningTime(static::popKey($stateParams, 'actioningTime'), $subscription);
+		if (!is_null($parsedActioningTime)) {
+			$stateParams['actioningTime'] = $parsedActioningTime;
+		}
+		return $stateParams;
+	}
 }
 Bf_Amendment::initStatics();

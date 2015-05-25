@@ -525,17 +525,17 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}, array_keys($namesToValues), $namesToValues);
 
 		static::popKey($inputOptions, 'namesToChangeModeOverrides');
-		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
 
 		$stateParams = static::mergeUserArgsOverNonNullDefaults(
 			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
-				'componentChanges' => $componentChanges,
-				'actioningTime' => $actioningTime
+				'componentChanges' => $componentChanges
 				),
 			$inputOptions
 			);
+		$this->mutateActioningTime($stateParams);
+
 		$amendment = new Bf_PricingComponentValueAmendment($stateParams);
 
 		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
@@ -617,19 +617,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$namesToValues
 			);
 
-		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
-
 		$stateParams = static::mergeUserArgsOverNonNullDefaults(
 			__METHOD__,
 			array(
 				'mappings' => $mappings,
 				'subscriptionID' => $subscriptionID,
-				'productRatePlanID' => $planID,
-				'actioningTime' => $actioningTime
+				'productRatePlanID' => $planID
 				),
 			$inputOptions
 			);
 		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
+		$this->mutateActioningTime($stateParams);
+
 		$amendment = new Bf_ProductRatePlanMigrationAmendment($stateParams);
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
@@ -720,16 +719,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
-
 		$stateParams = static::mergeUserArgsOverNonNullDefaults(
 			__METHOD__,
 			array(
-				'subscriptionID' => $subscriptionID,
-				'actioningTime' => $actioningTime
+				'subscriptionID' => $subscriptionID
 				),
 			$inputOptions
 			);
+		$this->mutateActioningTime($stateParams);
 
 		// create model of amendment
 		$amendment = new Bf_CancellationAmendment($stateParams);
@@ -1115,6 +1112,16 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}
 
 		return NULL;
+	}
+
+	/**
+	 * Mutates actioningTime in the referenced array
+	 * @param array $stateParams Map possibly containing `actioningTime` key that desires parsing.
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return static The modified array.
+	 */
+	public function mutateActioningTime(array &$stateParams) {
+		Bf_Amendment::mutateActioningTime($stateParams, $this);
 	}
 
 	public static function initStatics() {
