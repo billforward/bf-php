@@ -854,18 +854,12 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Synchronously freezes the subscription.
 	 * @param array $freezeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
 	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption']
-	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['newSubscriptionStart']
-	 *	* @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] $..['newSubscriptionState']
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function freeze(
 		array $freezeOptions = array(
-			'dryRun' => false,
-			'scheduleResumption' => NULL,
-			'newSubscriptionStart' => NULL,
-			'newSubscriptionState' => NULL
+			'scheduleResumption' => NULL
 			)
 		) {
 
@@ -885,6 +879,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$endpoint = sprintf("%s/freeze",
 			rawurlencode($subscriptionID)
 			);
+		static::renameKey($stateParams, 'scheduleResumption', 'resume');
 
 		$responseEntity = Bf_SubscriptionCharge::getClassName();
 
