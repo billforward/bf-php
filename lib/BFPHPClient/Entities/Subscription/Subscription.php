@@ -527,8 +527,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 		static::popKey($inputOptions, 'namesToChangeModeOverrides');
 		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
 				'componentChanges' => $componentChanges,
@@ -619,8 +619,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'mappings' => $mappings,
 				'subscriptionID' => $subscriptionID,
@@ -667,8 +667,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$namesToValues
 			);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'mappings' => $mappings
 				),
@@ -722,8 +722,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
 				'actioningTime' => $actioningTime
@@ -755,10 +755,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			array(
-				),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
 			$inputOptions
 			);
 
@@ -788,10 +787,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			array(
-				),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
 			$inputOptions
 			);
 
@@ -828,10 +826,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			array(
-				),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
 			$inputOptions
 			);
 
@@ -867,19 +864,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			array(
-				),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
 			$inputOptions
 			);
+		static::renameKey($stateParams, 'scheduleResumption', 'resume');
 		
 		$requestEntity = new Bf_PauseRequest($stateParams);
 
 		$endpoint = sprintf("%s/freeze",
 			rawurlencode($subscriptionID)
 			);
-		static::renameKey($stateParams, 'scheduleResumption', 'resume');
 
 		$responseEntity = Bf_SubscriptionCharge::getClassName();
 
@@ -911,10 +907,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			array(
-				),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
 			$inputOptions
 			);
 		static::renameKey($stateParams, 'scheduleResumption', 'resume');
@@ -973,8 +968,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$from = Bf_Amendment::parseTimeRequestFromTime(static::popKey($inputOptions, 'from'), $this);
 		$to = Bf_Amendment::parseTimeRequestToTime(static::popKey($inputOptions, 'to'), $this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'from' => $from,
 				'to' => $to

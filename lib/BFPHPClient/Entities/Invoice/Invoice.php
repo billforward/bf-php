@@ -77,8 +77,8 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $subscriptionID);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
 				'invoiceID' => $invoiceID,
@@ -144,8 +144,8 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $subscriptionID);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
 				'invoiceID' => $invoiceID,
@@ -176,10 +176,9 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$invoiceID = Bf_Invoice::getIdentifier($this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			array(
-				),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
 			$inputOptions
 			);
 
@@ -213,8 +212,8 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $subscriptionID);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
 			array(
 				'subscriptionID' => $subscriptionID,
 				'invoiceID' => $invoiceID,
@@ -244,10 +243,9 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$invoiceID = Bf_Invoice::getIdentifier($this);
 
-		$stateParams = array_merge(
-			static::getFinalArgDefault(__METHOD__),
-			array(
-				),
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
 			$inputOptions
 			);
 

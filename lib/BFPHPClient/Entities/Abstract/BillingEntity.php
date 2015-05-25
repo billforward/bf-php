@@ -431,6 +431,17 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	throw new Bf_MalformedEntityReferenceException('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
+    public static function mergeUserArgsOverNonNullDefaults($defaultMethod, array $composedArgs, array $userInput) {
+    	return array_merge(
+    		array_filter(
+    			array_merge(static::getFinalArgDefault($defaultMethod), $composedArgs),
+    			function($value) {
+					return !is_null($value);
+				}),
+			$userInput
+			);
+    }
+
     /**
      * Unifies type of 'entity' (which owns an identifier) and 'string' identifiers; enables consumer to distill from the reference a string identifier.
      * @param union[string ($id | $name) | static $entity] Reference to the entity. <string>: $id or $name of the entity. <static>: An $entity object from which $entity->id can be ascertained.
