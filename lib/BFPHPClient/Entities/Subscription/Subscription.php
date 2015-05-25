@@ -974,6 +974,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				'to' => 'parseTimeRequestToTime'
 				)
 			);
+		var_export($stateParams);
 
 		$requestEntity = new Bf_TimeRequest($stateParams);
 
@@ -1155,7 +1156,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$mutator = array($this, 'mutateTimeByKeyAndLambda');
 		array_map(function($key, $lambda) use(&$stateParams, $mutator) {
 			call_user_func_array($mutator, array(
-				$stateParams,
+				&$stateParams,
 				$key,
 				$lambda
 				));
