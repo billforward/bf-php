@@ -425,7 +425,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		// fetch entity by ID
     		return static::getByID($entityReference);
     	}
-    	if (is_subclass_of($entityReference, get_called_class())) {
+    	if (is_a($entityReference, get_called_class())) {
     		return $entityReference;
     	}
     	throw new Bf_MalformedEntityReferenceException('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');

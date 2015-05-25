@@ -962,16 +962,17 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$from = Bf_Amendment::parseTimeRequestFromTime(static::popKey($inputOptions, 'from'), $this);
-		$to = Bf_Amendment::parseTimeRequestToTime(static::popKey($inputOptions, 'to'), $this);
-
 		$stateParams = static::mergeUserArgsOverNonNullDefaults(
 			__METHOD__,
-			array(
-				'from' => $from,
-				'to' => $to
-				),
+			array(),
 			$inputOptions
+			);
+		$this->mutateTimesByKeyAndLambda(
+			$stateParams,
+			array(
+				'from' => 'parseTimeRequestFromTime',
+				'to' => 'parseTimeRequestToTime'
+				)
 			);
 
 		$requestEntity = new Bf_TimeRequest($stateParams);
@@ -1121,6 +1122,46 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function mutateActioningTime(array &$stateParams) {
 		Bf_Amendment::mutateActioningTime($stateParams, $this);
+	}
+
+	/**
+	 * Mutates actioningTime in the referenced array
+	 * @param array $stateParams Map possibly containing `actioningTime` key that desires parsing.
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return static The modified array.
+	 */
+	public function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda) {
+		$parsedTime = forward_static_call_array(
+			array(__CLASS__, $lambda),
+			array(
+				static::popKey($stateParams, $key),
+				$this
+				)
+			);
+
+		if (!is_null($parsedTime)) {
+			$stateParams[$key] = $parsedTime;
+		}
+		return $stateParams;
+	}
+
+	/**
+	 * Mutates actioningTime in the referenced array
+	 * @param array $stateParams Map possibly containing `actioningTime` key that desires parsing.
+	 * @param array $keyLambdaMap Map of $stateParams keys to the parseTime lambda which will be used to mutate them
+	 * @return static The modified array.
+	 */
+	public function mutateTimesByKeyAndLambda(array &$stateParams, array $keyLambdaMap) {
+		$mutator = array($this, 'mutateTimeByKeyAndLambda');
+		array_map(function($key, $lambda) use(&$stateParams, $mutator) {
+			call_user_func_array($mutator, array(
+				$stateParams,
+				$key,
+				$lambda
+				));
+		},
+		array_keys($keyLambdaMap),
+		$keyLambdaMap);
 	}
 
 	public static function initStatics() {
