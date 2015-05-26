@@ -8,14 +8,6 @@ class Bf_Quote extends Bf_InsertableEntity {
 	}
 
 	/**
-	 * Fetches Bf_Subscriptions for this Bf_Quote.
-	 * @return Bf_Subscription[]
-	 */
-	public static function getQuote($options = NULL, $customClient = NULL) {
-		return Bf_Subscription::getByProductID($this->id, $options, $customClient);
-	}
-
-	/**
 	 * Retrieves a quote for the price of the specified quantities of pricing components of the product rate plan
 	 * @param union[union[string $id | Bf_ProductRatePlan $entity]] Reference to subscription <string>: $id of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan entity.
 	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
@@ -44,9 +36,10 @@ class Bf_Quote extends Bf_InsertableEntity {
 			'quoteFor' => 'InitialPeriod'
 			)
 		) {
+		$inputOptions = $quoteOptions;
 		// $ratePlanFetched = Bf_ProductRatePlan::fetchIfNecessary($ratePlan);
 
-		$ratePlanID = Bf_Subscription::getIdentifier($ratePlan);
+		$ratePlanID = Bf_ProductRatePlan::getIdentifier($ratePlan);
 
 		$mappings = array_map(
 			function($name, $value) {
