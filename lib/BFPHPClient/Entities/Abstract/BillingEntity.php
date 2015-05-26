@@ -543,7 +543,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 	/**
 	 * Calls the GET method multiple times with increasing paging offsets, until it has gotten all entities
-	 * @param callable $lambda The GET method to invoke
+	 * @param string $lambda The name of the GET method to invoke
 	 *
 	 *  Example:
 	 *   $subscription->callGetMethodAndPageThrough('getCharges');
@@ -569,8 +569,31 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public function callGetMethodAndPageThrough(callable $lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false) {
+	public function callGetMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $pageSize = 10, $pageLimit = 50) {
+		$accumulator = array();
+		// $reflectionMethod = new ReflectionMethod($lambda);
+		$reflectionMethod = new ReflectionMethod($this, $lambda);
+		// $reflectionObject = new ReflectionObject($this);
+		$optionsParams = array_filter($reflectionMethod->getParameters(),
+			function($param) {
+				return $param->name === 'options';
+			});
+		if (count($optionsParams) <= 0) {
+			throw new Bf_InvocationException(sprintf("The method '%s' has no 'options' parameter with which we can page through its results", $lambda));
+		}
 
+		$optionParamPosition = array_keys($optionsParams)[0];
+
+		$options = array('records' => 1);
+		
+		$lambdaParams[$optionParamPosition] = $options;
+
+		return $reflectionMethod->invokeArgs($this, $lambdaParams);
+
+		// var_export();
+		// $methods = ReflectionObject::export($this, true);
+		// var_export($methods);
+		//call_user_func_array($lambda, $lambdaParams)
 	}
 
 	/**
