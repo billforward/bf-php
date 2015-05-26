@@ -171,14 +171,16 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Gets Bf_SubscriptionCharges for this Bf_Subscription
 	 * @return Bf_SubscriptionCharge[]
 	 */
-	public static function getCharges($options = NULL, $customClient = NULL) {
+	public function getCharges($options = NULL, $customClient = NULL) {
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$endpoint = sprintf("%s/charges",
+		$endpoint = sprintf("/%s/charges",
 			rawurlencode($subscriptionID)
 			);
 
-		return static::getCollection($endpoint, $options, $customClient);
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
 	}
 
 	/**
