@@ -143,7 +143,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entityArray;
 	}
 
-	public static function constructEntityFromArgs($entityClass, $constructArgs, $client) {
+	protected static function constructEntityFromArgs($entityClass, $constructArgs, $client) {
 		$newEntity = new $entityClass($constructArgs, $client);
 		return $newEntity;
 	}
@@ -341,12 +341,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $constructedEntity;
 	}
 
-	public static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {
+	protected static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {
 		$entities = self::getAll($options, $customClient);
 		return self::fromCollectionFindAllWhoMatchProperties($entities, $properties);
 	}
 
-	public static function getAllThenGrabFirstWithProperties(array $properties, $options = NULL, $customClient = NULL) {
+	protected static function getAllThenGrabFirstWithProperties(array $properties, $options = NULL, $customClient = NULL) {
 		$entities = self::getAll($options, $customClient);
 		return self::fromCollectionFindFirstWhoMatchesProperties($entities, $properties);
 	}
@@ -404,7 +404,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	return $dateTime->getTimestamp();
     }
 
-    public static function getFinalArgDefault($method) {
+    protected static function getFinalArgDefault($method) {
     	$reflectionMethod = new ReflectionMethod($method);
     	$methodParams = $reflectionMethod->getParameters();
     	$methodParamsCount = $reflectionMethod->getNumberOfParameters();
@@ -420,7 +420,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
      * @param union[string $id | static $entity] Reference to the entity. <string>: ID by which the entity can be gotten. <static>: The gotten entity.
      * @return static The gotten entity.
      */
-    public static function fetchIfNecessary($entityReference) {
+    protected static function fetchIfNecessary($entityReference) {
     	if (is_string($entityReference)) {
     		// fetch entity by ID
     		return static::getByID($entityReference);
@@ -431,7 +431,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	throw new Bf_MalformedEntityReferenceException('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
-    public static function mergeUserArgsOverNonNullDefaults($defaultMethod, array $composedArgs, array $userInput) {
+    protected static function mergeUserArgsOverNonNullDefaults($defaultMethod, array $composedArgs, array $userInput) {
     	return array_merge(
     		array_filter(
     			array_merge(static::getFinalArgDefault($defaultMethod), $composedArgs),
@@ -447,7 +447,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
      * @param union[string ($id | $name) | static $entity] Reference to the entity. <string>: $id or $name of the entity. <static>: An $entity object from which $entity->id can be ascertained.
      * @return string ID by which the referenced entity can be gotten.
      */
-    public static function getIdentifier($entityReference) {
+    protected static function getIdentifier($entityReference) {
     	if (is_null($entityReference)) {
     		throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <NULL>.');
     	}
@@ -467,7 +467,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
 
-    public static function renameKey(array &$associative, $nominalKey, $newName) {
+    protected static function renameKey(array &$associative, $nominalKey, $newName) {
     	if (!array_key_exists($nominalKey, $associative)) {
     		return NULL;
     	}
@@ -478,7 +478,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	return static::popKey($associative, $nominalKey);
     }
 
-    public static function popKey(array &$associative, $nominalKey) {
+    protected static function popKey(array &$associative, $nominalKey) {
     	if (!array_key_exists($nominalKey, $associative)) {
     		return NULL;
     	}
@@ -495,7 +495,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified array.
 	 */
-	public function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda, $subscription = NULL) {
+	protected function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda, $subscription = NULL) {
 		$parsedTime = forward_static_call_array(
 			array(get_class(), $lambda),
 			array(
@@ -517,7 +517,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified array.
 	 */
-	public function mutateTimesByKeyAndLambda(array &$stateParams, array $keyLambdaMap, $subscription = NULL) {
+	protected function mutateTimesByKeyAndLambda(array &$stateParams, array $keyLambdaMap, $subscription = NULL) {
 		$mutator = array($this, 'mutateTimeByKeyAndLambda');
 		array_map(function($key, $lambda) use(&$stateParams, $mutator) {
 			call_user_func_array($mutator, array(
@@ -537,7 +537,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return string The BillForward-formatted time.
 	 */
-	public static function parseActioningTime($actioningTime, $subscription = NULL) {
+	protected static function parseActioningTime($actioningTime, $subscription = NULL) {
 		return Bf_Amendment::parseActioningTime($actioningTime, $subscription);
 	}
 
