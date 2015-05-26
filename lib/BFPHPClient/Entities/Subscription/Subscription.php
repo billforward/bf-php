@@ -1046,6 +1046,37 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $constructedEntity;
 	}
 
+	/**
+	 * Creates multiple pricing component charges on the subscription
+	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @return Bf_SubscriptionCharge[] All charges created in the process.
+	 */
+	public function chargeComponents(
+		array $namesToValues,
+		array $chargeOptions = array(
+			'description' => NULL,
+			'invoicingType' => 'Aggregated',
+			'chargeType' => 'Debit'
+			)
+		) {
+		$_this = $this;
+		return array_reduce(array_map(
+			function($key, $value) use($_this, $chargeOptions) {
+				return $_this->charge(array_merge($chargeOptions,
+					array(
+						'pricingComponentName' => $key,
+						'pricingComponentValue' => $value
+						)));
+			},
+			array_keys($namesToValues), $namesToValues
+			), 'array_merge', array());
+	}
+
 	//// TIME PARSING HELPERS
 
 	/**
