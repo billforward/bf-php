@@ -172,7 +172,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_SubscriptionCharge[]
 	 */
 	public static function getCharges($options = NULL, $customClient = NULL) {
-		$endpoint = "/charges";
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$endpoint = sprintf("%s/charges",
+			rawurlencode($subscriptionID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
@@ -995,6 +999,46 @@ class Bf_Subscription extends Bf_MutableEntity {
 			);
 
 		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	//// CHARGE
+
+	/**
+	 * Creates a charge on the subscription
+	 * @return Bf_SubscriptionCharge[] All charges created in the process.
+	 */
+	public function charge(
+		array $chargeOptions = array(
+			'pricingComponentName' => NULL,
+			'pricingComponentValue' => NULL,
+			'amount' => NULL,
+			'description' => NULL,
+			'invoicingType' => 'Aggregated',
+			'taxAmount' => false,
+			'chargeType' => 'Debit'
+			)
+		) {
+		$inputOptions = $chargeOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'mappings' => $mappings
+				),
+			$inputOptions
+			);
+		$requestEntity = new Bf_ChargeRequest($stateParams);
+
+		$endpoint = sprintf("%s/charge",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_MigrationResponse::getClassName();
 
 		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;
