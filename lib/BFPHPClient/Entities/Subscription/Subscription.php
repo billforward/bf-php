@@ -1042,7 +1042,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$responseEntity = Bf_MigrationResponse::getClassName();
 
-		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		$constructedEntity = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;
 	}
 
