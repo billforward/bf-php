@@ -125,6 +125,20 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 		return Bf_BillingEntity::fromCollectionFindFirstWhoMatchesProperties($pricingComponents, $properties);
 	}
 
+	/**
+	 * Retrieves a quote for the price of the specified quantities of pricing components of the product rate plan
+	 * @see Bf_Quote::getQuote()
+	 * @return Bf_Quote The price quote
+	 */
+	public function getQuote(
+		array $namesToValues,
+		array $quoteOptions = array(
+			'couponCodes' => array(),
+			'quoteFor' => 'InitialPeriod'
+			)) {
+		return Bf_Quote::getQuote($this, $namesToValues, $quoteOptions);
+	}
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('product-rate-plans', 'productRatePlan');
 	}

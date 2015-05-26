@@ -34,7 +34,7 @@ class Bf_Quote extends Bf_InsertableEntity {
 	 *	*
 	 *	* 	<Upgrade>
 	 *	*
-	 * @return Bf_SubscriptionCharge[] All charges created in the process.
+	 * @return Bf_Quote The price quote
 	 */
 	public static function getQuote(
 		$ratePlan,
