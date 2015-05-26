@@ -570,10 +570,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
 	public function callGetMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $pageSize = 10, $pageLimit = 50) {
-		$accumulator = array();
-		// $reflectionMethod = new ReflectionMethod($lambda);
 		$reflectionMethod = new ReflectionMethod($this, $lambda);
-		// $reflectionObject = new ReflectionObject($this);
 		$optionsParams = array_filter($reflectionMethod->getParameters(),
 			function($param) {
 				return $param->name === 'options';
@@ -584,16 +581,49 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 		$optionParamPosition = array_keys($optionsParams)[0];
 
-		$options = array('records' => 1);
-		
-		$lambdaParams[$optionParamPosition] = $options;
+		if (!array_key_exists($optionParamPosition, $lambdaParams)) {
+			$lambdaParams[$optionParamPosition] = array();
+		}
+		if (!is_array($lambdaParams[$optionParamPosition])) {
+			throw new Bf_InvocationException(sprintf("Received in 'options' param slot a non-array value: '%s'", $lambdaParams[$optionParamPosition]));
+		}
 
-		return $reflectionMethod->invokeArgs($this, $lambdaParams);
+		$existingOptionsParams = $lambdaParams[$optionParamPosition];
 
-		// var_export();
-		// $methods = ReflectionObject::export($this, true);
-		// var_export($methods);
-		//call_user_func_array($lambda, $lambdaParams)
+		$options = array(
+			'records' => $pageSize
+			);
+
+		$lambdaParams[$optionParamPosition] = array_replace(
+			$lambdaParams[$optionParamPosition],
+			$options
+			);
+
+		$accumulator = array();
+		for ($i = 0; $i<$pageLimit; $i++) {
+			$lambdaParams[$optionParamPosition] = array_replace(
+				$lambdaParams[$optionParamPosition],
+				array(
+					'offset' => $i*$pageSize
+					)
+				);
+			$newResults = $reflectionMethod->invokeArgs($this, $lambdaParams);
+			if (is_callable($filter)) {
+				$newResults = array_values(array_filter($newResults, $filter));
+			}
+			$accumulator = array_merge($accumulator, $newResults);
+			if (count($newResults) < $pageSize) {
+				// no further results expected
+				break;
+			}
+			if ($breakOnFirst) {
+				if (count($accumulator) > 0) {
+					return array_values($accumulator)[0];
+				}
+			}
+		}
+
+		return $accumulator;
 	}
 
 	/**
