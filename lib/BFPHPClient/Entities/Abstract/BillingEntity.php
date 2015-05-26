@@ -546,24 +546,24 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param string $lambda The name of the GET method to invoke
 	 *
 	 *  Example:
-	 *   $subscription->callGetMethodAndPageThrough('getCharges');
+	 *   $subscription->callMethodAndPageThrough('getCharges');
 	 *
 	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
 	 *
 	 *  Example:
-	 *   $invoice->callGetMethodAndPageThrough('getCharges' array());
+	 *   $invoice->callMethodAndPageThrough('getCharges' array());
 	 *
 	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
 	 *
 	 *  Example:
-	 *   $invoice->callGetMethodAndPageThrough('getCharges' array(), function($invoice) {
+	 *   $invoice->callMethodAndPageThrough('getCharges' array(), function($invoice) {
 	 *    	   return $charge->state === 'Unpaid';
 	 *   });
 	 *
 	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
 	 *
 	 *  Example:
-	 *   $invoice->callGetMethodAndPageThrough('getCharges' array(), function($invoice) {
+	 *   $invoice->callMethodAndPageThrough('getCharges' array(), function($invoice) {
 	 *    	   return $charge->state === 'Unpaid';
 	 *   }, true);
 	 *
@@ -571,7 +571,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public function callGetMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	public function callMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
 		$reflectionMethod = new ReflectionMethod($this, $lambda);
 		return forward_static_call_array(
 			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
@@ -587,41 +587,41 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param callable $lambda The GET method to invoke
 	 *
 	 *  Example:
-	 *   Bf_Subscription::callGetFunctionAndPageThrough('getAll');
+	 *   Bf_Subscription::callFunctionAndPageThrough('getAll');
 	 *
 	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
 	 *
 	 *  Example:
-	 *   Bf_Subscription::callGetFunctionAndPageThrough('getByProductID' array('PRO-65F14D63-D027-4E2F-9DC0-4FFEFBCB'));
+	 *   Bf_Subscription::callFunctionAndPageThrough('getByProductID' array('PRO-65F14D63-D027-4E2F-9DC0-4FFEFBCB'));
 	 *
 	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
 	 *
 	 *  Example:
-	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *   Bf_Amendment::callFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
 	 *    	   return $amendment->amendmentType === 'Cancellation';
 	 *   });
 	 *
 	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
 	 *
 	 *  Example:
-	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *   Bf_Amendment::callFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
 	 *    	   return $amendment->amendmentType === 'ServiceEnd';
 	 *   }, true);
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public static function callGetFunctionAndPageThrough(callable $lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
-		$reflectionFunction = new ReflectionFunction(get_called_class(), $lambda);
+	public static function callFunctionAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+		$reflectionMethod = new ReflectionMethod(get_called_class(), $lambda);
 		return forward_static_call_array(
 			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
 			array_merge(
 				array(NULL),
-				array_replace(func_get_args(), array($reflectionFunction))
+				array_replace(func_get_args(), array($reflectionMethod))
 				)
 			);
 	}
 
-	protected static function callFunctionAbstractAndPageThrough($caller, ReflectionFunctionAbstract $extendsReflectionFunctionAbstract, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	protected static function callFunctionAbstractAndPageThrough($caller, ReflectionMethod $extendsReflectionFunctionAbstract, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
 		$optionsParams = array_filter($extendsReflectionFunctionAbstract->getParameters(),
 			function($param) {
 				return $param->name === 'options';
