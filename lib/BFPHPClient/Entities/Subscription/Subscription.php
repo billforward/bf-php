@@ -1050,7 +1050,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$stateParams = static::mergeUserArgsOverNonNullDefaults(
 			__METHOD__,
 			array(
-				'mappings' => $mappings
 				),
 			$inputOptions
 			);

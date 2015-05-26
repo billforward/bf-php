@@ -1,6 +1,6 @@
 <?php
 
-class Bf_PricingComponentMigrationValue extends Bf_BillingEntity {
+class Bf_QuoteRequestValue extends Bf_BillingEntity {
 
 	public static function getByID($id, $options = NULL, $customClient = NULL) {
 		throw new Bf_UnsupportedMethodException('Get by ID support is denied for this entity; '
