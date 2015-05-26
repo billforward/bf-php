@@ -551,25 +551,27 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
 	 *
 	 *  Example:
-	 *   $invoice->callGetMethodAndPageThrough('getByState' array('Pending'));
+	 *   $invoice->callGetMethodAndPageThrough('getCharges' array());
 	 *
 	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
 	 *
 	 *  Example:
-	 *   $invoice->callGetMethodAndPageThrough('getByState' array('Unpaid'), function($invoice) {
-	 *    	   return $invoice->executionAttempts > 0;
+	 *   $invoice->callGetMethodAndPageThrough('getCharges' array(), function($invoice) {
+	 *    	   return $charge->state === 'Unpaid';
 	 *   });
 	 *
 	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
 	 *
 	 *  Example:
-	 *   $invoice->callGetMethodAndPageThrough('getByState' array('Unpaid'), function($invoice) {
-	 *    	   return $invoice->executionAttempts > 0;
+	 *   $invoice->callGetMethodAndPageThrough('getCharges' array(), function($invoice) {
+	 *    	   return $charge->state === 'Unpaid';
 	 *   }, true);
+	 *
+	 * @param int $initialPageSize (Default: 10) How many records to return in each page. This window scales by 50% with each request.
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public function callGetMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $pageSize = 10, $pageLimit = 50) {
+	public function callGetMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
 		$reflectionMethod = new ReflectionMethod($this, $lambda);
 		$optionsParams = array_filter($reflectionMethod->getParameters(),
 			function($param) {
@@ -590,37 +592,57 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 		$existingOptionsParams = $lambdaParams[$optionParamPosition];
 
-		$options = array(
-			'records' => $pageSize
-			);
+		$pageSize = min($initialPageSize, $recordLimit);
 
-		$lambdaParams[$optionParamPosition] = array_replace(
-			$lambdaParams[$optionParamPosition],
-			$options
-			);
+		$recordsRequestedTotal = 0;
+		$matchingRecordsEncountered = 0;
+
+		$offset = 0;
 
 		$accumulator = array();
-		for ($i = 0; $i<$pageLimit; $i++) {
+		while(true) {
 			$lambdaParams[$optionParamPosition] = array_replace(
 				$lambdaParams[$optionParamPosition],
 				array(
-					'offset' => $i*$pageSize
+					'offset' => $offset,
+					'records' => $pageSize
 					)
 				);
+			$matchingResults = array();
 			$newResults = $reflectionMethod->invokeArgs($this, $lambdaParams);
+			$resultsForAccumulator = $newResults;
+
+			// var_export($recordsRequestedTotal);
+
 			if (is_callable($filter)) {
-				$newResults = array_values(array_filter($newResults, $filter));
+				$matchingResults = array_values(array_filter($newResults, $filter));
+				$resultsForAccumulator = $matchingResults;
 			}
-			$accumulator = array_merge($accumulator, $newResults);
-			if (count($newResults) < $pageSize) {
-				// no further results expected
-				break;
-			}
+			$matchingRecordsEncountered += count($resultsForAccumulator);
+			$recordsRequestedTotal += $pageSize;
+
+			$accumulator = array_merge($accumulator, $resultsForAccumulator);
 			if ($breakOnFirst) {
 				if (count($accumulator) > 0) {
 					return array_values($accumulator)[0];
 				}
 			}
+			if ($recordsRequestedTotal >= $recordLimit) {
+				throw new Bf_SearchLimitReachedException(
+					sprintf(
+						"Failed to exhaust search space within the imposed record limit (%d).\nUltimately fetched '%d' records, and '%d' matched the search criteria.",
+						$recordLimit,
+						$recordsRequestedTotal,
+						$matchingRecordsEncountered
+						)
+					);
+			}
+			if (count($newResults) < $pageSize) {
+				// no further results expected
+				break;
+			}
+			$offset += $pageSize;
+			$pageSize = min(ceil($pageSize*1.5), $recordLimit-$recordsRequestedTotal);
 		}
 
 		return $accumulator;

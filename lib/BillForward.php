@@ -89,6 +89,7 @@ spl_autoload_register(function($className) {
             'Bf_Role' => $baseDir . '/BFPHPClient/Entities/Account/Role.php',
             'Bf_RuleSatisfaction' => $baseDir . '/BFPHPClient/Entities/PricingCalculator/RuleSatisfaction.php',
             'Bf_SDKException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
+            'Bf_SearchLimitReachedException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_SetupException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_StripeACHToken' => $baseDir . '/BFPHPClient/Entities/Tokens/StripeACHToken.php',
             'Bf_StripeToken' => $baseDir . '/BFPHPClient/Entities/Tokens/StripeToken.php',
