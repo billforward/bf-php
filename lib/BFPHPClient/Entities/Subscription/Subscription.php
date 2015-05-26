@@ -1010,6 +1010,26 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Creates a charge on the subscription
+	 * @param array $chargeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param string (Default: NULL) $..['pricingComponentName'] The name of the pricing component (provided the charge pertains to a pricing component)
+	 *	* @param string (Default: NULL) $..['pricingComponentValue'] The value of the pricing component (provided the charge pertains to a pricing component)
+	 *	* @param float (Default: NULL) $..['amount'] The monetary amount of the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
+	 *	* @param string (Default: NULL) $..['description'] The reason for creating the charge
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
+	 *	* @param boolean $..['taxAmount'] Whether to apply tax atop the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
+	 *	* @param string_ENUM['Credit', 'Debit'] (Default: 'Debit') $..['chargeType']
+	 *	*
+	 *	*	<Credit>
+	 *	*
+	 *	*	<Debit> (Default)
+	 *	*
 	 * @return Bf_SubscriptionCharge[] All charges created in the process.
 	 */
 	public function charge(
@@ -1054,6 +1074,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'Bandwidth' => 102,
 	 * 	'CPU' => 10
 	 * )
+	 * @see charge()
 	 * @return Bf_SubscriptionCharge[] All charges created in the process.
 	 */
 	public function chargeComponents(
