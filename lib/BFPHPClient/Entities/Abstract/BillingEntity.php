@@ -573,7 +573,56 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 */
 	public function callGetMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
 		$reflectionMethod = new ReflectionMethod($this, $lambda);
-		$optionsParams = array_filter($reflectionMethod->getParameters(),
+		return forward_static_call_array(
+			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
+			array_merge(
+				array($this),
+				array_replace(func_get_args(), array($reflectionMethod))
+				)
+			);
+	}
+
+	/**
+	 * Calls the GET method multiple times with increasing paging offsets, until it has gotten all entities
+	 * @param callable $lambda The GET method to invoke
+	 *
+	 *  Example:
+	 *   Bf_Subscription::callGetFunctionAndPageThrough('getAll');
+	 *
+	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
+	 *
+	 *  Example:
+	 *   Bf_Subscription::callGetFunctionAndPageThrough('getByProductID' array('PRO-65F14D63-D027-4E2F-9DC0-4FFEFBCB'));
+	 *
+	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
+	 *
+	 *  Example:
+	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *    	   return $amendment->amendmentType === 'Cancellation';
+	 *   });
+	 *
+	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
+	 *
+	 *  Example:
+	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *    	   return $amendment->amendmentType === 'ServiceEnd';
+	 *   }, true);
+	 *
+	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
+	 */
+	public static function callGetFunctionAndPageThrough(callable $lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+		$reflectionFunction = new ReflectionFunction(get_called_class(), $lambda);
+		return forward_static_call_array(
+			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
+			array_merge(
+				array(NULL),
+				array_replace(func_get_args(), array($reflectionFunction))
+				)
+			);
+	}
+
+	protected static function callFunctionAbstractAndPageThrough($caller, ReflectionFunctionAbstract $extendsReflectionFunctionAbstract, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+		$optionsParams = array_filter($extendsReflectionFunctionAbstract->getParameters(),
 			function($param) {
 				return $param->name === 'options';
 			});
@@ -609,7 +658,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 					)
 				);
 			$matchingResults = array();
-			$newResults = $reflectionMethod->invokeArgs($this, $lambdaParams);
+			$newResults = $extendsReflectionFunctionAbstract->invokeArgs($caller, $lambdaParams);
 			$resultsForAccumulator = $newResults;
 
 			// var_export($recordsRequestedTotal);
@@ -646,38 +695,6 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 
 		return $accumulator;
-	}
-
-	/**
-	 * Calls the GET method multiple times with increasing paging offsets, until it has gotten all entities
-	 * @param callable $lambda The GET method to invoke
-	 *
-	 *  Example:
-	 *   Bf_Subscription::callGetFunctionAndPageThrough('getAll');
-	 *
-	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
-	 *
-	 *  Example:
-	 *   Bf_Subscription::callGetFunctionAndPageThrough('getByProductID' array('PRO-65F14D63-D027-4E2F-9DC0-4FFEFBCB'));
-	 *
-	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
-	 *
-	 *  Example:
-	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
-	 *    	   return $amendment->amendmentType === 'Cancellation';
-	 *   });
-	 *
-	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
-	 *
-	 *  Example:
-	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
-	 *    	   return $amendment->amendmentType === 'ServiceEnd';
-	 *   }, true);
-	 *
-	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
-	 */
-	public function callGetFunctionAndPageThrough(callable $lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false) {
-		
 	}
 
     public function getJson() {
