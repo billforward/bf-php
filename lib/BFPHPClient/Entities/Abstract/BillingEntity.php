@@ -487,6 +487,60 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	return $value;
     }
 
+	/**
+	 * Mutates actioningTime in the referenced array
+	 * @param array $stateParams Map possibly containing time key that desires parsing.
+	 * @param string $key Key of the pertinent time field
+	 * @param string $lambda Name of the static function on this class that will return the parsed time
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return static The modified array.
+	 */
+	public function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda, $subscription = NULL) {
+		$parsedTime = forward_static_call_array(
+			array(get_class(), $lambda),
+			array(
+				static::popKey($stateParams, $key),
+				$subscription
+				)
+			);
+
+		if (!is_null($parsedTime)) {
+			$stateParams[$key] = $parsedTime;
+		}
+		return $stateParams;
+	}
+
+	/**
+	 * Mutates actioningTime in the referenced array
+	 * @param array $stateParams Map possibly containing time key that desires parsing.
+	 * @param array $keyLambdaMap Map of $stateParams keys to the parseTime lambda which will be used to mutate them
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return static The modified array.
+	 */
+	public function mutateTimesByKeyAndLambda(array &$stateParams, array $keyLambdaMap, $subscription = NULL) {
+		$mutator = array($this, 'mutateTimeByKeyAndLambda');
+		array_map(function($key, $lambda) use(&$stateParams, $mutator) {
+			call_user_func_array($mutator, array(
+				&$stateParams,
+				$key,
+				$lambda,
+				$subscription
+				));
+		},
+		array_keys($keyLambdaMap),
+		$keyLambdaMap);
+	}
+
+	/**
+	 * Parses into a BillForward timestamp the actioning time for some amendment
+	 * @param {@see Bf_Amendment::parseActioningTime(mixed)} $actioningTime When to action the amendment
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return string The BillForward-formatted time.
+	 */
+	public static function parseActioningTime($actioningTime, $subscription = NULL) {
+		return Bf_Amendment::parseActioningTime($actioningTime, $subscription);
+	}
+
     public function getJson() {
     	return json_encode($this, JSON_PRETTY_PRINT);
     }

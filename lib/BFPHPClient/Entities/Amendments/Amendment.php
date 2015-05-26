@@ -40,8 +40,6 @@ class Bf_Amendment extends Bf_MutableEntity {
 		$amendmentID = Bf_Amendment::getIdentifier($this);
 		$subscriptionID = Bf_Subscription::getIdentifier($this->subscriptionID);
 
-		$actioningTime = Bf_Amendment::parseActioningTime(static::popKey($inputOptions, 'actioningTime'), $subscriptionID);
-
 		$stateParams = array_merge(
 			static::getFinalArgDefault(__METHOD__),
 			array(
@@ -50,7 +48,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		static::mutateActioningTime($stateParams, $subscriptionID);
+		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $subscriptionID);
 
 		// create model of amendment
 		$amendment = new Bf_AmendmentDiscardAmendment($stateParams);

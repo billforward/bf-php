@@ -534,7 +534,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime');
+		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $this);
 
 		$amendment = new Bf_PricingComponentValueAmendment($stateParams);
 
@@ -627,7 +627,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$inputOptions
 			);
 		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime');
+		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $this);
 
 		$amendment = new Bf_ProductRatePlanMigrationAmendment($stateParams);
 
@@ -726,7 +726,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime');
+		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $this);
 
 		// create model of amendment
 		$amendment = new Bf_CancellationAmendment($stateParams);
@@ -972,7 +972,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 			array(
 				'from' => 'parseTimeRequestFromTime',
 				'to' => 'parseTimeRequestToTime'
-				)
+				),
+			$this
 			);
 
 		$requestEntity = new Bf_TimeRequest($stateParams);
@@ -1113,57 +1114,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}
 
 		return NULL;
-	}
-
-	/**
-	 * Parses into a BillForward timestamp the actioning time for some amendment
-	 * @param {@see Bf_Amendment::parseActioningTime(mixed)} $actioningTime When to action the amendment
-	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
-	 * @return string The BillForward-formatted time.
-	 */
-	public static function parseActioningTime($actioningTime, $subscription = NULL) {
-		return Bf_Amendment::parseActioningTime($actioningTime, $subscription);
-	}
-
-	/**
-	 * Mutates actioningTime in the referenced array
-	 * @param array $stateParams Map possibly containing time key that desires parsing.
-	 * @param string $key Key of the pertinent time field
-	 * @param string $lambda Name of the static function on this class that will return the parsed time
-	 * @return static The modified array.
-	 */
-	public function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda) {
-		$parsedTime = forward_static_call_array(
-			array(__CLASS__, $lambda),
-			array(
-				static::popKey($stateParams, $key),
-				$this
-				)
-			);
-
-		if (!is_null($parsedTime)) {
-			$stateParams[$key] = $parsedTime;
-		}
-		return $stateParams;
-	}
-
-	/**
-	 * Mutates actioningTime in the referenced array
-	 * @param array $stateParams Map possibly containing time key that desires parsing.
-	 * @param array $keyLambdaMap Map of $stateParams keys to the parseTime lambda which will be used to mutate them
-	 * @return static The modified array.
-	 */
-	public function mutateTimesByKeyAndLambda(array &$stateParams, array $keyLambdaMap) {
-		$mutator = array($this, 'mutateTimeByKeyAndLambda');
-		array_map(function($key, $lambda) use(&$stateParams, $mutator) {
-			call_user_func_array($mutator, array(
-				&$stateParams,
-				$key,
-				$lambda
-				));
-		},
-		array_keys($keyLambdaMap),
-		$keyLambdaMap);
 	}
 
 	public static function initStatics() {
