@@ -168,6 +168,16 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_SubscriptionCharges for this Bf_Subscription
+	 * @return Bf_SubscriptionCharge[]
+	 */
+	public static function getCharges($options = NULL, $customClient = NULL) {
+		$endpoint = "/charges";
+
+		return static::getCollection($endpoint, $options, $customClient);
+	}
+
+	/**
 	 * Fetches all versions of Bf_Subscription for this Bf_Subscription.
 	 * @return Bf_Subscription[]
 	 */
