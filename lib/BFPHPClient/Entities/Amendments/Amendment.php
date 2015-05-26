@@ -9,16 +9,13 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Amendments for a given Bf_Subscription
-	 * @param string ID of the Bf_Subscription
+	 * @param union[union[string $id | Bf_Subscription $entity]] Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return Bf_Subscriptions[]
 	 */
-	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$subscriptionID) {
-			throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
-
-		$endpoint = "/subscription/$subscriptionID";
+	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
+		$endpoint = sprintf("/subscription/%s",
+			rawurlencode(Bf_Subscription::getIdentifier($subscription))
+			);
 		
 		return static::getCollection($endpoint, $options, $customClient);
 	}

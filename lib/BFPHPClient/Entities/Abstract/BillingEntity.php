@@ -541,6 +541,70 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return Bf_Amendment::parseActioningTime($actioningTime, $subscription);
 	}
 
+	/**
+	 * Calls the GET method multiple times with increasing paging offsets, until it has gotten all entities
+	 * @param callable $lambda The GET method to invoke
+	 *
+	 *  Example:
+	 *   $subscription->callGetMethodAndPageThrough('getCharges');
+	 *
+	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
+	 *
+	 *  Example:
+	 *   $invoice->callGetMethodAndPageThrough('getByState' array('Pending'));
+	 *
+	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
+	 *
+	 *  Example:
+	 *   $invoice->callGetMethodAndPageThrough('getByState' array('Unpaid'), function($invoice) {
+	 *    	   return $invoice->executionAttempts > 0;
+	 *   });
+	 *
+	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
+	 *
+	 *  Example:
+	 *   $invoice->callGetMethodAndPageThrough('getByState' array('Unpaid'), function($invoice) {
+	 *    	   return $invoice->executionAttempts > 0;
+	 *   }, true);
+	 *
+	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
+	 */
+	public function callGetMethodAndPageThrough(callable $lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false) {
+
+	}
+
+	/**
+	 * Calls the GET method multiple times with increasing paging offsets, until it has gotten all entities
+	 * @param callable $lambda The GET method to invoke
+	 *
+	 *  Example:
+	 *   Bf_Subscription::callGetFunctionAndPageThrough('getAll');
+	 *
+	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
+	 *
+	 *  Example:
+	 *   Bf_Subscription::callGetFunctionAndPageThrough('getByProductID' array('PRO-65F14D63-D027-4E2F-9DC0-4FFEFBCB'));
+	 *
+	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
+	 *
+	 *  Example:
+	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *    	   return $amendment->amendmentType === 'Cancellation';
+	 *   });
+	 *
+	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
+	 *
+	 *  Example:
+	 *   Bf_Amendment::callGetFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *    	   return $amendment->amendmentType === 'ServiceEnd';
+	 *   }, true);
+	 *
+	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
+	 */
+	public function callGetFunctionAndPageThrough(callable $lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false) {
+		
+	}
+
     public function getJson() {
     	return json_encode($this, JSON_PRETTY_PRINT);
     }
