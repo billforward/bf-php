@@ -128,7 +128,7 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	/**
 	 * Retrieves a quote for the price of the specified quantities of pricing components of the product rate plan
 	 * @see Bf_Quote::getQuote()
-	 * @return Bf_Quote The price quote
+	 * @return Bf_APIQuote The price quote
 	 */
 	public function getQuote(
 		array $namesToValues,
