@@ -9,12 +9,13 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Amendments for a given Bf_Subscription
-	 * @param union[string $id | Bf_Subscription $entity] Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_Subscriptions[]
 	 */
 	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
-		$endpoint = sprintf("/subscription/%s",
-			rawurlencode(Bf_Subscription::getIdentifier($subscription))
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
+		$endpoint = sprintf("subscription/%s",
+			rawurlencode($subscriptionID)
 			);
 		
 		return static::getCollection($endpoint, $options, $customClient);

@@ -23,7 +23,7 @@ class Bf_Organisation extends Bf_MutableEntity {
 	}
 
 	public static function getMine($options = NULL, $customClient = NULL) {
-		$endpoint = "/mine";
+		$endpoint = "mine";
 		
 		return static::getCollection($endpoint, $options, $customClient);
 	}

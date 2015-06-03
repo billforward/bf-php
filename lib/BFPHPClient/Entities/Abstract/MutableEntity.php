@@ -22,7 +22,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 		// $serial = $this->getSerialized();
 		$client = $this->getClient();
 
-		$endpoint = sprintf("/%s",
+		$endpoint = sprintf("%s",
 			rawurlencode($id)
 			);
 

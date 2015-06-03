@@ -47,7 +47,8 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @return Bf_CreditNote[]
 	 */
 	public function getCreditNotes($options = NULL, $customClient = NULL) {
-		return Bf_CreditNote::getForInvoice($this->id, $options, $customClient);
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+		return Bf_CreditNote::getForInvoice($invoiceID, $options, $customClient);
 	}
 
 	/**
@@ -55,7 +56,24 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 * @return Bf_Invoice[]
 	 */
 	public function getAllVersions($options = NULL, $customClient = NULL) {
-		return static::getAllVersionsForID($this->id, $options, $customClient);
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+		return static::getAllVersionsForID($invoiceID, $options, $customClient);
+	}
+
+	/**
+	 * Gets Bf_SubscriptionCharges for this Bf_Invoice
+	 * @return Bf_SubscriptionCharge[]
+	 */
+	public function getCharges($options = NULL, $customClient = NULL) {
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+
+		$endpoint = sprintf("%s/charges",
+			rawurlencode($invoiceID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
 	}
 
 	/**
@@ -314,12 +332,14 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Invoices for a given Bf_Subscription
-	 * @param union[union[string $id | Bf_Subscription $entity]] Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @param union[string | Bf_Subscription] $subscription Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return Bf_Invoice[]
 	 */
 	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
-		$endpoint = sprintf("/subscription/%s",
-			rawurlencode(Bf_Subscription::getIdentifier($subscription))
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
+
+		$endpoint = sprintf("subscription/%s",
+			rawurlencode($subscriptionID)
 			);
 
 		return static::getCollection($endpoint, $options, $customClient);
@@ -336,7 +356,9 @@ class Bf_Invoice extends Bf_MutableEntity {
     		throw new Bf_EmptyArgumentException("Cannot lookup unspecified state!");
 		}
 
-		$endpoint = "/state/$state";
+		$endpoint = sprintf("state/%s",
+			rawurlencode($state)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
@@ -349,10 +371,12 @@ class Bf_Invoice extends Bf_MutableEntity {
 	public static function getByVersionID($invoiceVersionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$invoiceVersionID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
+    		throw new Bf_EmptyArgumentException("Cannot lookup empty invoiceVersionID!");
 		}
 
-		$endpoint = "/version/$invoiceVersionID";
+		$endpoint = sprintf("version/%s",
+			rawurlencode($invoiceVersionID)
+			);
 
 		return static::getFirst($endpoint, $options, $customClient);
 	}
@@ -373,7 +397,9 @@ class Bf_Invoice extends Bf_MutableEntity {
 		}
 		$options['include_retired'] = true;
 
-		$endpoint = "/$id";
+		$endpoint = sprintf("%s",
+			rawurlencode($id)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
@@ -389,23 +415,24 @@ class Bf_Invoice extends Bf_MutableEntity {
     		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
 		}
 
-		$endpoint = "/subscription/version/$subscriptionVersionID";
+		$endpoint = sprintf("subscription/version/%s",
+			rawurlencode($subscriptionVersionID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Invoices for a given Bf_Account
-	 * @param string ID of the Bf_Account
+	 * @param union[string | Bf_Account] $account Reference to account <string>: $id of the Bf_Account. <Bf_Account>: The Bf_Account entity.
 	 * @return Bf_Invoice[]
 	 */
-	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$accountID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getForAccount($account, $options = NULL, $customClient = NULL) {
+		$accountID = Bf_Account::getIdentifier($account);
 
-		$endpoint = "/account/$accountID";
+		$endpoint = sprintf("account/%s",
+			rawurlencode($accountID)
+			);
 		
 		return static::getCollection($endpoint, $options, $customClient);
 	}

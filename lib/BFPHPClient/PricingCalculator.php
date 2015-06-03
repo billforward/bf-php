@@ -17,10 +17,9 @@ class Bf_PricingCalculator {
 		$client = $entity
 		->getClient();
 
-		$endpointPrefix = static::getResourcePath()
-		->getPath();
-		$endpointPostfix = "/product-rate-plan";
-		$endpoint = $endpointPrefix.$endpointPostfix;
+		$endpoint = sprintf("%s/product-rate-plan"
+			static::getResourcePath()->getPath()
+			);
 
 		$response = $client
 		->doPost($endpoint, $serial);

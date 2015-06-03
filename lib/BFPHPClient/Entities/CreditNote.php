@@ -21,48 +21,45 @@ class Bf_CreditNote extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_CreditNotes for a given Bf_Account
-	 * @param string ID of the Bf_Account
+	 * @param union[string | Bf_Account] $account Reference to account <string>: $id of the Bf_Account. <Bf_Account>: The Bf_Account entity.
 	 * @return Bf_CreditNote[]
 	 */
-	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$accountID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getForAccount($account, $options = NULL, $customClient = NULL) {
+		$accountID = Bf_Account::getIdentifier($account);
 
-		$endpoint = "/account/$accountID";
-
+		$endpoint = sprintf("account/%s",
+			rawurlencode($accountID)
+			);
+		
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_CreditNotes for a given Bf_Subscription
-	 * @param string ID of the Bf_Subscription
+	 * @param union[string | Bf_Subscription] $subscription Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return Bf_CreditNote[]
 	 */
-	public static function getForSubscription($subscriptionID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$subscriptionID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 
-		$endpoint = "/subscription/$subscriptionID";
+		$endpoint = sprintf("subscription/%s",
+			rawurlencode($subscriptionID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_CreditNotes for a given Bf_Invoice
-	 * @param string ID of the Bf_Invoice
+	 * @param union[string | Bf_Invoice] $invoice Reference to invoice <string>: $id of the Bf_Invoice. <Bf_Invoice>: The Bf_Invoice entity.
 	 * @return Bf_CreditNote[]
 	 */
-	public static function getForInvoice($invoiceID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$invoiceID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getForInvoice($invoice, $options = NULL, $customClient = NULL) {
+		$invoiceID = Bf_Invoice::getIdentifier($invoice);
 
-		$endpoint = "/invoice/$invoiceID";
+		$endpoint = sprintf("invoice/%s",
+			rawurlencode($invoiceID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}

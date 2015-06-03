@@ -12,14 +12,16 @@ class Bf_AddCouponCodeRequest extends Bf_BillingEntity {
 	}
 
 	public static function applyCouponToSubscription(Bf_Coupon $coupon, $subscription) {
-		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 
 		// make new Bf_Coupon using only the `couponCode` param
 		$requestEntity = new Bf_Coupon(array(
 			'couponCode' => $coupon->couponCode
 			), $coupon->getClient());
 
-		$endpoint = "$subscriptionIdentifier/coupons";
+		$endpoint = sprintf("%s/coupons",
+			rawurlencode($subscriptionID)
+			);
 
 		$responseEntity = Bf_Coupon::getClassName();
 

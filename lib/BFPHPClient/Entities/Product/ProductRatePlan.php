@@ -52,10 +52,10 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	 * @return Bf_ProductRatePlan[]
 	 */
 	public static function getByName($ratePlan, $options = NULL, $customClient = NULL) {
-		$ratePlanIdentifier = Bf_ProductRatePlan::getIdentifier($ratePlan);
+		$ratePlanID = Bf_ProductRatePlan::getIdentifier($ratePlan);
 
-		$endpoint = sprintf("/%s",
-			rawurlencode($ratePlanIdentifier)
+		$endpoint = sprintf("%s",
+			rawurlencode($ratePlanID)
 			);
 
 		return static::getCollection($endpoint, $options, $customClient);
@@ -67,9 +67,10 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	 * @return Bf_ProductRatePlan[]
 	 */
 	public static function getForProduct($product, $options = NULL, $customClient = NULL) {
-		$productIdentifier = Bf_Product::getIdentifier($product);
+		$productID = Bf_Product::getIdentifier($product);
 
-		$endpoint = sprintf("/product/%s", rawurlencode($productIdentifier));
+		$endpoint = sprintf("product/%s",
+			rawurlencode($productID));
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
@@ -81,12 +82,12 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 	 * @return Bf_ProductRatePlan
 	 */
 	public static function getByProductAndRatePlanID($product, $ratePlan, $options = NULL, $customClient = NULL) {
-		$productIdentifier = Bf_Product::getIdentifier($product);
-		$ratePlanIdentifier = Bf_ProductRatePlan::getIdentifier($ratePlan);
+		$productID = Bf_Product::getIdentifier($product);
+		$ratePlanID = Bf_ProductRatePlan::getIdentifier($ratePlan);
 
-		$endpoint = sprintf("/product/%s/rate-plan/%s",
-			rawurlencode($productIdentifier),
-			rawurlencode($ratePlanIdentifier)
+		$endpoint = sprintf("product/%s/rate-plan/%s",
+			rawurlencode($productID),
+			rawurlencode($ratePlanID)
 			);
 
 		return static::getFirst($endpoint, $options, $customClient);

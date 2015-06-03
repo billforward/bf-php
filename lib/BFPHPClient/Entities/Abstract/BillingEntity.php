@@ -200,14 +200,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	public static function getByID($id, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$id) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+		$identifier = static::getIdentifier($id);
 
-		$encoded = rawurlencode($id);
-
-		$endpoint = "/$encoded";
+		$endpoint = sprintf("%s",
+			rawurlencode($id)
+			);
 
 		try {
 			return static::getFirst($endpoint, $options, $customClient);
@@ -221,7 +218,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 	protected static function prefixPathWithController($path) {
 		$controller = static::getResourcePath()->getPath();
-		$qualified = "$controller/$path";
+		$qualified = sprintf("%s/%s",
+			$controller,
+			$path
+			);
 		return $qualified;
 	}
 
@@ -319,21 +319,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $constructedEntity;
 	}
 
-	protected static function getResponseRaw($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
-		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
-
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$fullRoute = $apiRoute.$endpoint;
-		
-		$response = $client->doGet($fullRoute, $options);
-		return $response;
-	}
-
 	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 
-		$response = static::getResponseRaw($endpoint, $options, $client);
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doGet($url, $payload);
 
 		$entities = static::responseToEntityCollection($response, $client, $responseEntity);
 		return $entities;
@@ -342,7 +332,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 		
-		$response = static::getResponseRaw($endpoint, $options, $client);
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doGet($url, $payload);
 
 		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $constructedEntity;
@@ -471,7 +462,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <array>.');
     	}
     	if (is_string($entityReference)) {
-    		// already an identifier; return verbatim
+    		// already an identifier
+
+    		if ($entityReference === '') {
+    			throw new Bf_EmptyArgumentException("Cannot distill identifier from empty string. Expected: <non-empty ID string, or object extending desired entity class> Received: <''>");
+    		}
+    		// return verbatim
     		return $entityReference;
     	}
     	if ($entityReference->getClassName() === static::getClassName()) {

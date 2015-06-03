@@ -32,7 +32,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}
 		$options['include_retired'] = true;
 
-		$endpoint = "/$id";
+		$endpoint = sprintf("%s",
+			rawurlencode($id)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
@@ -45,42 +47,42 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getByVersionID($versionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$versionID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
+    		throw new Bf_EmptyArgumentException("Cannot lookup unspecified versionID!");
 		}
 
-		$endpoint = "/version/$versionID";
+		$endpoint = sprintf("version/%s",
+			rawurlencode($versionID)
+			);
 
 		return static::getFirst($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Subscriptions for a given product ID
-	 * @param string ID of the Bf_Product upon which to search
+	 * @param union[string | Bf_Product] $product The Bf_Product to which the Bf_Coupon should be applied. <string>: ID of the Bf_Product. <Bf_Product>: The Bf_Product.
 	 * @return Bf_Subscription[]
 	 */
-	public static function getByProductID($productID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$productID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getByProductID($product, $options = NULL, $customClient = NULL) {
+		$product = Bf_Product::getIdentifier($product);
 
-		$endpoint = "/product/$productID";
+		$endpoint = sprintf("product/%s",
+			rawurlencode($product)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Subscriptions for a given rate plan ID
-	 * @param string ID of the Bf_ProductRatePlan upon which to search
+	 * @param union[string | Bf_ProductRatePlan] $productRatePlan The Bf_ProductRatePlan to which the Bf_Coupon should be applied. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @return Bf_Subscription[]
 	 */
-	public static function getByRatePlanID($productRatePlanID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$productRatePlanID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getByRatePlanID($productRatePlan, $options = NULL, $customClient = NULL) {
+		$productRatePlanID = Bf_ProductRatePlan::getIdentifier($productRatePlan);
 
-		$endpoint = "/product-rate-plan/$productRatePlanID";
+		$endpoint = sprintf("product-rate-plan/%s",
+			rawurlencode($productRatePlanID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
@@ -96,43 +98,41 @@ class Bf_Subscription extends Bf_MutableEntity {
     		throw new Bf_EmptyArgumentException("Cannot lookup unspecified state!");
 		}
 
-		$endpoint = "/state/$state";
+		$endpoint = sprintf("state/%s",
+			rawurlencode($state)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Subscriptions for a given Bf_Account
-	 * @param string version ID of the Bf_Account
+	 * @param union[string | Bf_Account] $account The Bf_Account to which the Bf_Coupon should be applied. <string>: ID of the Bf_Account. <Bf_Account>: The Bf_Account.
 	 * @return Bf_Subscription[]
 	 */
-	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$accountID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getForAccount($account, $options = NULL, $customClient = NULL) {
+		$accountID = Bf_Account::getIdentifier($account);
 
-		$endpoint = "/account/$accountID";
+		$endpoint = sprintf("account/%s",
+			rawurlencode($accountID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets a list of available payment methods for the specified subscription
-	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PaymentMethod[] The fetched payment methods.
 	 */
 	public static function getPaymentMethodsOnSubscription($subscription, $options = NULL, $customClient = NULL) {
-		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
-
-		// empty IDs are no good!
-		if (!$subscriptionIdentifier) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
-		}
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 
 		$encoded = rawurlencode($subscriptionIdentifier);
 
-		$endpoint = "/$encoded/payment-methods";
+		$endpoint = sprintf("%s/payment-methods",
+			rawurlencode($subscriptionID)
+			);
 
 		$responseEntity = Bf_PaymentMethod::getClassName();
 
@@ -141,26 +141,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Gets a list of available payment methods for the specified subscription
-	 * @param union[string $id | Bf_PaymentMethod $paymentMethod] The Bf_PaymentMethod which should be removed. <string>: ID of the Bf_PaymentMethod. <Bf_Subscription>: The Bf_Subscription.
-	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @param union[string | Bf_PaymentMethod] $paymentMethod The Bf_PaymentMethod which should be removed. <string>: ID of the Bf_PaymentMethod. <Bf_Subscription>: The Bf_Subscription.
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PaymentMethod The removed payment method.
 	 */
 	public static function removePaymentMethodFromSubscription($paymentMethod, $subscription) {
-		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
-		$paymentMethodIdentifier = Bf_PaymentMethod::getIdentifier($paymentMethod);
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
+		$paymentMethodID = Bf_PaymentMethod::getIdentifier($paymentMethod);
 
-		// empty IDs are no good!
-		if (!$subscriptionIdentifier)
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
-
-		// empty IDs are no good!
-		if (!$paymentMethodIdentifier)
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
-
-		$subEncoded = rawurlencode($subscriptionIdentifier);
-		$paymentMethodEncoded = rawurlencode($paymentMethodIdentifier);
-
-		$endpoint = "$subEncoded/payment-methods/$paymentMethodEncoded";
+		$endpoint = sprintf("%s/payment-methods/%s",
+			rawurlencode($subscriptionID),
+			rawurlencode($paymentMethodID)
+			);
 
 		$responseEntity = Bf_PaymentMethod::getClassName();
 
@@ -174,7 +166,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public function getCharges($options = NULL, $customClient = NULL) {
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$endpoint = sprintf("/%s/charges",
+		$endpoint = sprintf("%s/charges",
 			rawurlencode($subscriptionID)
 			);
 
@@ -188,7 +180,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Subscription[]
 	 */
 	public function getAllVersions($options = NULL, $customClient = NULL) {
-		return Bf_Subscription::getAllVersionsForID($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_Subscription::getAllVersionsForID($subscriptionID, $options, $customClient);
 	}
 
 	/**
@@ -196,7 +189,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Amendment[]
 	 */
 	public function getAmendments($options = NULL, $customClient = NULL) {
-		return Bf_Amendment::getForSubscription($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_Amendment::getForSubscription($subscriptionID, $options, $customClient);
 	}
 
 	/**
@@ -204,7 +198,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Invoice[]
 	 */
 	public function getInvoices($options = NULL, $customClient = NULL) {
-		return Bf_Invoice::getForSubscription($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_Invoice::getForSubscription($subscriptionID, $options, $customClient);
 	}
 
 	/**
@@ -212,7 +207,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_CreditNote[]
 	 */
 	public function getCreditNotes($options = NULL, $customClient = NULL) {
-		return Bf_CreditNote::getForSubscription($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_CreditNote::getForSubscription($subscriptionID, $options, $customClient);
 	}
 
 	/**
