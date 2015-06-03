@@ -927,7 +927,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			);
 		static::renameKey($stateParams, 'scheduleResumption', 'resume');
 		
-		$requestEntity = new Bf_PauseRequest($stateParams);
+		$requestEntity = new Bf_ResumeRequest($stateParams);
 
 		$endpoint = sprintf("%s/resume",
 			rawurlencode($subscriptionID)
@@ -1053,7 +1053,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$requestEntity = new Bf_ChargeRequest($stateParams);
+		$requestEntity = new Bf_AddChargeRequest($stateParams);
 
 		$endpoint = sprintf("%s/charge",
 			rawurlencode($subscriptionID)
