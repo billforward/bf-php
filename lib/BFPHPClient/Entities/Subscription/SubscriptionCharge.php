@@ -75,5 +75,30 @@ class Bf_SubscriptionCharge extends Bf_MutableEntity {
 		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity);
 		return $constructedEntity;
 	}
+
+	/**
+	 * Synchronously voids the charge.
+	 * @return Bf_SubscriptionCharge the retired entity.
+	 */
+	public function void() {
+		return $this->retire();
+	}
+
+	/**
+	 * Synchronously voids the charge.
+	 * @param union[string $id | Bf_SubscriptionCharge $entity] Reference to charge <string>: $id of the Bf_SubscriptionCharge. <Bf_SubscriptionCharge>: The Bf_SubscriptionCharge entity.
+	 * @return Bf_SubscriptionCharge the retired entity.
+	 */
+	public static function voidCharge($charge) {
+		if (!Bf_SubscriptionCharge::isEntityOfThisClass($charge)) {
+			$chargeID = Bf_SubscriptionCharge::getIdentifier($charge);
+			// make sham object using string ID
+			$charge = new Bf_SubscriptionCharge(array(
+				'id' => $chargeID
+				));
+		}
+
+		return $charge->void();
+	}
 }
 Bf_SubscriptionCharge::initStatics();

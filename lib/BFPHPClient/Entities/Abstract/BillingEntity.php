@@ -415,6 +415,15 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     }
 
     /**
+     * Returns whether entity is a member of this class.
+     * @param mixed $entity Possible entity.
+     * @return boolean Whether the entity is a member of this class.
+     */
+    protected static function isEntityOfThisClass($entityReference) {
+    	return is_a($entityReference, get_called_class());
+    }
+
+    /**
      * Fetches (if necessary) entity by ID from API.
      * Otherwise returns entity as-is.
      * @param union[string $id | static $entity] Reference to the entity. <string>: ID by which the entity can be gotten. <static>: The gotten entity.
@@ -425,7 +434,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		// fetch entity by ID
     		return static::getByID($entityReference);
     	}
-    	if (is_a($entityReference, get_called_class())) {
+    	if (static::isEntityOfThisClass($entityReference)) {
     		return $entityReference;
     	}
     	throw new Bf_MalformedEntityReferenceException('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');

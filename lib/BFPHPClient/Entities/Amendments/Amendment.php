@@ -9,7 +9,7 @@ class Bf_Amendment extends Bf_MutableEntity {
 
 	/**
 	 * Gets Bf_Amendments for a given Bf_Subscription
-	 * @param union[union[string $id | Bf_Subscription $entity]] Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @param union[string $id | Bf_Subscription $entity] Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return Bf_Subscriptions[]
 	 */
 	public static function getForSubscription($subscription, $options = NULL, $customClient = NULL) {
