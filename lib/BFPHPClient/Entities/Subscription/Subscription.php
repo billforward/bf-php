@@ -824,7 +824,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Synchronously generates invoices for outstanding charges on the subscription.
 	 * @param array $invoicingOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param boolean (Default: false) $..['includeAggregated']
-	 *	* @param boolean (Default: false) $..['includeAggregated']
+	 *	* @param boolean (Default: false) $..['includeInvoicedChargesOnly']
 	 *	* @param union[NULL | string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: NULL) $..['invoiceState']]
 	 * @return Bf_Invoice[] The generated invoices.
 	 */
@@ -864,7 +864,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Synchronously freezes the subscription.
 	 * @param array $freezeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption']
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption'] Schedules the frozen subscription to resume at some time.
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function freeze(
@@ -902,9 +902,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * Synchronously resumes the subscription.
 	 * @param array $resumptionOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
-	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption']
-	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['newSubscriptionStart']
-	 *	* @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] $..['newSubscriptionState']
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption'] Schedules the resumption to be actioned at some future time.
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['newSubscriptionStart'] The start date to which the subscription will be advanced, upon resumption.
+	 *	* @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] $..['newSubscriptionState'] The state to which the subscription will be moved, upon resumption.
 	 * @return Bf_Subscription The frozen subscription.
 	 */
 	public function resume(
