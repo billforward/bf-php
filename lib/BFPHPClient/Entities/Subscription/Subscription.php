@@ -853,7 +853,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			rawurlencode($subscriptionID)
 			);
 
-		$responseEntity = Bf_MigrationResponse::getClassName();
+		$responseEntity = Bf_Invoice::getClassName();
 
 		$constructedEntities = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntities;
@@ -1059,7 +1059,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			rawurlencode($subscriptionID)
 			);
 
-		$responseEntity = Bf_MigrationResponse::getClassName();
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
 
 		$constructedEntity = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;

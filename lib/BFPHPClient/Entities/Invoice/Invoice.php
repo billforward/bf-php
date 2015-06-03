@@ -253,6 +253,65 @@ class Bf_Invoice extends Bf_MutableEntity {
 		return $constructedEntity;
 	}
 
+	//// CHARGE
+
+	/**
+	 * Creates a charge on the invoice
+	 * @param array $chargeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param string (Default: NULL) $..['pricingComponentName'] The name of the pricing component (provided the charge pertains to a pricing component)
+	 *	* @param string (Default: NULL) $..['pricingComponentValue'] The value of the pricing component (provided the charge pertains to a pricing component)
+	 *	* @param float (Default: NULL) $..['amount'] The monetary amount of the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
+	 *	* @param string (Default: NULL) $..['description'] The reason for creating the charge
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
+	 *	* @param boolean $..['taxAmount'] Whether to apply tax atop the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
+	 *	* @param string_ENUM['Credit', 'Debit'] (Default: 'Debit') $..['chargeType']
+	 *	*
+	 *	*	<Credit>
+	 *	*
+	 *	*	<Debit> (Default)
+	 *	*
+	 * @return Bf_SubscriptionCharge[] All charges created in the process.
+	 */
+	public function charge(
+		array $chargeOptions = array(
+			'pricingComponentName' => NULL,
+			'pricingComponentValue' => NULL,
+			'amount' => NULL,
+			'description' => NULL,
+			'invoicingType' => 'Aggregated',
+			'taxAmount' => false,
+			'chargeType' => 'Debit'
+			)
+		) {
+		$inputOptions = $chargeOptions;
+
+		$invoiceID = Bf_Invoice::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				),
+			$inputOptions
+			);
+		$requestEntity = new Bf_AddChargeRequest($stateParams);
+
+		$endpoint = sprintf("%s/charges",
+			rawurlencode($invoiceID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
 	/**
 	 * Gets Bf_Invoices for a given Bf_Subscription
 	 * @param union[union[string $id | Bf_Subscription $entity]] Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
