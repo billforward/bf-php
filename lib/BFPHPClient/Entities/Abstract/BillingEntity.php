@@ -508,11 +508,19 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param array $lambdaParams Params to be added into the lambda call.
 	 * @return static The modified array.
 	 */
-	protected function mutateKeyByStaticLambda(array &$stateParams, $key, $class, $lambda, array $lambdaParams = array()) {
+	protected static function mutateKeyByStaticLambda(array &$stateParams, $key, $lambda, array $lambdaParams = array()) {
+		$originalValue = static::popKey($stateParams, $key);
+		if (is_null($originalValue)) {
+			// means the user wanted to not send this kvp; let's not parse it.
+			return $stateParams;
+		}
+
 		$parsedTime = forward_static_call_array(
-			array($class, $lambda),
+			is_array($lambda)
+			? $lambda
+			: array(get_class(), $lambda),
 			array_merge(
-				(array)static::popKey($stateParams, $key),
+				(array)$originalValue,
 				$lambdaParams
 				)
 			);
@@ -524,28 +532,6 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	/**
-	 * Mutates any key in the referenced array, by applying it to some static lambda.
-	 * Uses `static` class.
-	 * @param array $stateParams Map possibly containing time key that desires parsing.
-	 * @param string $key Key of the pertinent time field
-	 * @param string $lambda Name of the static function on this class that will return the parsed time
-	 * @param array $lambdaParams Params to be added into the lambda call.
-	 * @return static The modified array.
-	 */
-	protected function mutateKeyByMyStaticLambda(array &$stateParams, $key, $lambda, array $lambdaParams = array()) {
-		$class = get_class();
-		$mutator = array($this, 'mutateKeyByStaticLambda');
-		return call_user_func_array($mutator,
-			array(
-				&$stateParams,
-				$key,
-				$class,
-				$lambda,
-				$lambdaParams
-				));
-	}
-
-	/**
 	 * Mutates actioningTime in the referenced array
 	 * @param array $stateParams Map possibly containing time key that desires parsing.
 	 * @param string $key Key of the pertinent time field
@@ -553,8 +539,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified array.
 	 */
-	protected function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda, $subscription = NULL) {
-		$mutator = array($this, 'mutateKeyByMyStaticLambda');
+	protected static function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda, $subscription = NULL) {
+		$mutator = array(get_class(), 'mutateKeyByStaticLambda');
 		return call_user_func_array($mutator,
 			array(
 				&$stateParams,
@@ -571,8 +557,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return static The modified array.
 	 */
-	protected function mutateTimesByKeyAndLambda(array &$stateParams, array $keyLambdaMap, $subscription = NULL) {
-		$mutator = array($this, 'mutateTimeByKeyAndLambda');
+	protected static function mutateTimesByKeyAndLambda(array &$stateParams, array $keyLambdaMap, $subscription = NULL) {
+		$mutator = array(get_class(), 'mutateTimeByKeyAndLambda');
 		array_map(function($key, $lambda) use(&$stateParams, $mutator) {
 			call_user_func_array($mutator, array(
 				&$stateParams,
@@ -588,36 +574,27 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	/**
 	 * Mutates keys in the referenced array
 	 * @param array $stateParams Map possibly containing time key that desires parsing.
-	 * @param array $keyLambdaMap Map of $stateParams keys to the parseTime lambda which will be used to mutate them
+	 * @param array (string $key => union[string | callable])  $keyLambdaMap Map of $stateParams keys to the parseTime lambda which will be used to 591 them
 	 * @param array $lambdaParams Params to be added into the lambda call.
 	 * @return static The modified array.
 	 */
-	protected function mutateKeysByStaticLambdas(array &$stateParams, array $keyClassMap, array $keyLambdaMap, $keyLambdaParams) {
-		$mutatorWithClass = array($this, 'mutateKeyByStaticLambda');
-		$mutator = array($this, 'mutateKeyByMyStaticLambda');
-		array_map(function($key, $lambda) use(&$stateParams, $mutator, $keyClassMap, $keyLambdaParams) {
+	protected function mutateKeysByStaticLambdas(array &$stateParams, array $keyLambdaMap, $keyLambdaParams = NULL) {
+		$mutator = array(get_class(), 'mutateKeyByStaticLambda');
+		array_map(function($key, $lambda) use(&$stateParams, $mutator, $keyLambdaParams) {
 			$params = array_merge(
 				array(),
 				(!is_null($keyLambdaParams) && array_key_exists($key, $keyLambdaParams))
 				? (array)$keyLambdaParams[$key]
 				: array()
 				);
-			if (array_key_exists($key, $keyClassMap)) {
-				call_user_func_array($mutatorWithClass, array(
-					&$stateParams,
-					$key,
-					$mutatorWithClass[$key],
-					$lambda,
-					$params
-					));
-			} else {
-				call_user_func_array($mutator, array(
+			call_user_func_array($mutator,
+				array(
 					&$stateParams,
 					$key,
 					$lambda,
 					$params
-					));
-			}
+					)
+				);
 		},
 		array_keys($keyLambdaMap),
 		$keyLambdaMap);

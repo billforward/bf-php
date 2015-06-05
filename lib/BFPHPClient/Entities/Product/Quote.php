@@ -83,6 +83,9 @@ class Bf_Quote extends Bf_InsertableEntity {
 				),
 			$inputOptions
 			);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('subscription' => array('Bf_Subscription', 'getIdentifier')));
 
 		$requestEntity = new Bf_QuoteRequest($stateParams);
 
