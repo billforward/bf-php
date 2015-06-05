@@ -26,7 +26,7 @@ class Bf_Quote extends Bf_InsertableEntity {
 
 	/**
 	 * Retrieves a quote for the price of the specified quantities of pricing components of the product rate plan
-	 * @param union[union[string $id | Bf_ProductRatePlan $entity]] Reference to rate plan <string>: $id of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan entity.
+	 * @param union[string | Bf_ProductRatePlan] Reference to rate plan <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan entity.
 	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
 	 * Example:
 	 * array(
@@ -43,6 +43,9 @@ class Bf_Quote extends Bf_InsertableEntity {
 	 *	*
 	 *	* 	<Upgrade>
 	 *	*
+	 *	* @param boolean (Default: true) $..['prorated']
+	 *	* @param boolean (Default: false) $..['free']
+	 *	* @param union[string | Bf_Subscription] (Default: NULL) $..['subscription'] Reference to some subscription for whom the quote is producted. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
 	 * @return Bf_APIQuote The price quote
 	 */
 	public static function getQuote(
@@ -50,7 +53,10 @@ class Bf_Quote extends Bf_InsertableEntity {
 		array $namesToValues,
 		array $quoteOptions = array(
 			'couponCodes' => array(),
-			'quoteFor' => 'InitialPeriod'
+			'quoteFor' => 'InitialPeriod',
+			'prorated' => true,
+			'free' => false,
+			'subscription' => NULL
 			)
 		) {
 		$inputOptions = $quoteOptions;
