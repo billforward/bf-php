@@ -534,7 +534,15 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 */
 	protected function mutateKeyByMyStaticLambda(array &$stateParams, $key, $lambda, array $lambdaParams = array()) {
 		$class = get_class();
-		return $this->mutateKeyByStaticLambda(&$stateParams, $key, $class, $lambda, $lambdaParams);
+		$mutator = array($this, 'mutateKeyByStaticLambda');
+		return call_user_func_array($mutator,
+			array(
+				&$stateParams,
+				$key,
+				$class,
+				$lambda,
+				$lambdaParams
+				));
 	}
 
 	/**
@@ -546,7 +554,14 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @return static The modified array.
 	 */
 	protected function mutateTimeByKeyAndLambda(array &$stateParams, $key, $lambda, $subscription = NULL) {
-		return $this->mutateKeyByMyStaticLambda(&$stateParams, $key, $lambda, array($subscription));
+		$mutator = array($this, 'mutateKeyByMyStaticLambda');
+		return call_user_func_array($mutator,
+			array(
+				&$stateParams,
+				$key,
+				$lambda,
+				array($subscription)
+				));
 	}
 
 	/**
