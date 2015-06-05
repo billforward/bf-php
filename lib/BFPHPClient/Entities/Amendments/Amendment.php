@@ -46,7 +46,10 @@ class Bf_Amendment extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $subscriptionID);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($subscriptionID)));
 
 		// create model of amendment
 		$amendment = new Bf_AmendmentDiscardAmendment($stateParams);

@@ -546,7 +546,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $this);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($this)));
 
 		$amendment = new Bf_PricingComponentValueAmendment($stateParams);
 
@@ -639,7 +642,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 			$inputOptions
 			);
 		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $this);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($this)));
 
 		$amendment = new Bf_ProductRatePlanMigrationAmendment($stateParams);
 
@@ -738,7 +744,10 @@ class Bf_Subscription extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $this);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($this)));
 
 		// create model of amendment
 		$amendment = new Bf_CancellationAmendment($stateParams);
@@ -979,14 +988,16 @@ class Bf_Subscription extends Bf_MutableEntity {
 			array(),
 			$inputOptions
 			);
-		$this->mutateTimesByKeyAndLambda(
+		static::mutateKeysByStaticLambdas(
 			$stateParams,
 			array(
 				'from' => 'parseTimeRequestFromTime',
 				'to' => 'parseTimeRequestToTime'
 				),
-			$this
-			);
+			array(
+				'from' => array($this),
+				'to' => array($this)
+				));
 
 		$requestEntity = new Bf_TimeRequest($stateParams);
 

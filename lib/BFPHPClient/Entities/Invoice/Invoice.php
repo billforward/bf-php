@@ -101,7 +101,10 @@ class Bf_Invoice extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $subscriptionID);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($subscriptionID)));
 
 		$amendment = new Bf_IssueInvoiceAmendment($stateParams);
 
@@ -166,7 +169,10 @@ class Bf_Invoice extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $subscriptionID);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($subscriptionID)));
 
 		$amendment = new Bf_InvoiceRecalculationAmendment($stateParams);
 
@@ -232,7 +238,10 @@ class Bf_Invoice extends Bf_MutableEntity {
 				),
 			$inputOptions
 			);
-		$this->mutateTimeByKeyAndLambda($stateParams, 'actioningTime', 'parseActioningTime', $subscriptionID);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($subscriptionID)));
 
 		$amendment = new Bf_InvoiceNextExecutionAttemptAmendment($stateParams);
 
