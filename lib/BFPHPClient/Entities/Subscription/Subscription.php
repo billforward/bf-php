@@ -676,7 +676,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$mappings = array_map(
 			function($name, $value) {
 				return new Bf_PricingComponentMigrationValue(array(
-					'pricingComponentName' => $name,
+					'pricingComponent' => $name,
 					'value' => $value
 				));
 			},
@@ -1018,7 +1018,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Creates a charge on the subscription
 	 * @param array $chargeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param string (Default: NULL) $..['pricingComponentName'] The name of the pricing component (provided the charge pertains to a pricing component)
+	 *	* @param string (Default: NULL) $..['pricingComponent'] The name or ID of the pricing component (provided the charge pertains to a pricing component)
 	 *	* @param string (Default: NULL) $..['pricingComponentValue'] The value of the pricing component (provided the charge pertains to a pricing component)
 	 *	* @param float (Default: NULL) $..['amount'] The monetary amount of the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
 	 *	* @param string (Default: NULL) $..['description'] The reason for creating the charge
@@ -1041,7 +1041,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function charge(
 		array $chargeOptions = array(
-			'pricingComponentName' => NULL,
+			'pricingComponent' => NULL,
 			'pricingComponentValue' => NULL,
 			'amount' => NULL,
 			'description' => NULL,
@@ -1074,7 +1074,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Creates multiple pricing component charges on the subscription
-	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
+	 * @param array[string => number] $namesToValues The map of pricing component names (or IDs) to quantities
 	 * Example:
 	 * array(
 	 * 	'Bandwidth' => 102,
@@ -1096,7 +1096,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			function($key, $value) use($_this, $chargeOptions) {
 				return $_this->charge(array_merge($chargeOptions,
 					array(
-						'pricingComponentName' => $key,
+						'pricingComponent' => $key,
 						'pricingComponentValue' => $value
 						)));
 			},
