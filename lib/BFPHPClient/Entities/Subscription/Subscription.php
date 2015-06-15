@@ -32,7 +32,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 		}
 		$options['include_retired'] = true;
 
-		$endpoint = "/$id";
+		$endpoint = sprintf("%s",
+			rawurlencode($id)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
@@ -45,49 +47,49 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function getByVersionID($versionID, $options = NULL, $customClient = NULL) {
 		// empty IDs are no good!
 		if (!$versionID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
+    		throw new Bf_EmptyArgumentException("Cannot lookup unspecified versionID!");
 		}
 
-		$endpoint = "/version/$versionID";
+		$endpoint = sprintf("version/%s",
+			rawurlencode($versionID)
+			);
 
 		return static::getFirst($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Subscriptions for a given product ID
-	 * @param string ID of the Bf_Product upon which to search
+	 * @param union[string | Bf_Product] $product The Bf_Product to which the Bf_Coupon should be applied. <string>: ID of the Bf_Product. <Bf_Product>: The Bf_Product.
 	 * @return Bf_Subscription[]
 	 */
-	public static function getByProductID($productID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$productID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getByProductID($product, $options = NULL, $customClient = NULL) {
+		$product = Bf_Product::getIdentifier($product);
 
-		$endpoint = "/product/$productID";
+		$endpoint = sprintf("product/%s",
+			rawurlencode($product)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Subscriptions for a given rate plan ID
-	 * @param string ID of the Bf_ProductRatePlan upon which to search
+	 * @param union[string | Bf_ProductRatePlan] $productRatePlan The Bf_ProductRatePlan to which the Bf_Coupon should be applied. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @return Bf_Subscription[]
 	 */
-	public static function getByRatePlanID($productRatePlanID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$productRatePlanID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getByRatePlanID($productRatePlan, $options = NULL, $customClient = NULL) {
+		$productRatePlanID = Bf_ProductRatePlan::getIdentifier($productRatePlan);
 
-		$endpoint = "/product-rate-plan/$productRatePlanID";
+		$endpoint = sprintf("product-rate-plan/%s",
+			rawurlencode($productRatePlanID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Subscriptions for a given state
-	 * @param string ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] State upon which to search
+	 * @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] State upon which to search
 	 * @return Bf_Subscription[]
 	 */
 	public static function getByState($state, $options = NULL, $customClient = NULL) {
@@ -96,43 +98,41 @@ class Bf_Subscription extends Bf_MutableEntity {
     		throw new Bf_EmptyArgumentException("Cannot lookup unspecified state!");
 		}
 
-		$endpoint = "/state/$state";
+		$endpoint = sprintf("state/%s",
+			rawurlencode($state)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets Bf_Subscriptions for a given Bf_Account
-	 * @param string version ID of the Bf_Account
+	 * @param union[string | Bf_Account] $account The Bf_Account to which the Bf_Coupon should be applied. <string>: ID of the Bf_Account. <Bf_Account>: The Bf_Account.
 	 * @return Bf_Subscription[]
 	 */
-	public static function getForAccount($accountID, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$accountID) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+	public static function getForAccount($account, $options = NULL, $customClient = NULL) {
+		$accountID = Bf_Account::getIdentifier($account);
 
-		$endpoint = "/account/$accountID";
+		$endpoint = sprintf("account/%s",
+			rawurlencode($accountID)
+			);
 
 		return static::getCollection($endpoint, $options, $customClient);
 	}
 
 	/**
 	 * Gets a list of available payment methods for the specified subscription
-	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PaymentMethod[] The fetched payment methods.
 	 */
 	public static function getPaymentMethodsOnSubscription($subscription, $options = NULL, $customClient = NULL) {
-		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
-
-		// empty IDs are no good!
-		if (!$subscriptionIdentifier) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
-		}
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 
 		$encoded = rawurlencode($subscriptionIdentifier);
 
-		$endpoint = "/$encoded/payment-methods";
+		$endpoint = sprintf("%s/payment-methods",
+			rawurlencode($subscriptionID)
+			);
 
 		$responseEntity = Bf_PaymentMethod::getClassName();
 
@@ -141,26 +141,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Gets a list of available payment methods for the specified subscription
-	 * @param union[string $id | Bf_PaymentMethod $paymentMethod] The Bf_PaymentMethod which should be removed. <string>: ID of the Bf_PaymentMethod. <Bf_Subscription>: The Bf_Subscription.
-	 * @param union[string $id | Bf_Subscription $subscription] The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @param union[string | Bf_PaymentMethod] $paymentMethod The Bf_PaymentMethod which should be removed. <string>: ID of the Bf_PaymentMethod. <Bf_Subscription>: The Bf_Subscription.
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PaymentMethod The removed payment method.
 	 */
 	public static function removePaymentMethodFromSubscription($paymentMethod, $subscription) {
-		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
-		$paymentMethodIdentifier = Bf_PaymentMethod::getIdentifier($paymentMethod);
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
+		$paymentMethodID = Bf_PaymentMethod::getIdentifier($paymentMethod);
 
-		// empty IDs are no good!
-		if (!$subscriptionIdentifier)
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
-
-		// empty IDs are no good!
-		if (!$paymentMethodIdentifier)
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty subscription ID!");
-
-		$subEncoded = rawurlencode($subscriptionIdentifier);
-		$paymentMethodEncoded = rawurlencode($paymentMethodIdentifier);
-
-		$endpoint = "$subEncoded/payment-methods/$paymentMethodEncoded";
+		$endpoint = sprintf("%s/payment-methods/%s",
+			rawurlencode($subscriptionID),
+			rawurlencode($paymentMethodID)
+			);
 
 		$responseEntity = Bf_PaymentMethod::getClassName();
 
@@ -168,11 +160,28 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_SubscriptionCharges for this Bf_Subscription
+	 * @return Bf_SubscriptionCharge[]
+	 */
+	public function getCharges($options = NULL, $customClient = NULL) {
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$endpoint = sprintf("%s/charges",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
+	}
+
+	/**
 	 * Fetches all versions of Bf_Subscription for this Bf_Subscription.
 	 * @return Bf_Subscription[]
 	 */
 	public function getAllVersions($options = NULL, $customClient = NULL) {
-		return Bf_Subscription::getAllVersionsForID($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_Subscription::getAllVersionsForID($subscriptionID, $options, $customClient);
 	}
 
 	/**
@@ -180,7 +189,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Amendment[]
 	 */
 	public function getAmendments($options = NULL, $customClient = NULL) {
-		return Bf_Amendment::getForSubscription($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_Amendment::getForSubscription($subscriptionID, $options, $customClient);
 	}
 
 	/**
@@ -188,7 +198,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_Invoice[]
 	 */
 	public function getInvoices($options = NULL, $customClient = NULL) {
-		return Bf_Invoice::getForSubscription($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_Invoice::getForSubscription($subscriptionID, $options, $customClient);
 	}
 
 	/**
@@ -196,7 +207,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_CreditNote[]
 	 */
 	public function getCreditNotes($options = NULL, $customClient = NULL) {
-		return Bf_CreditNote::getForSubscription($this->id, $options, $customClient);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+		return Bf_CreditNote::getForSubscription($subscriptionID, $options, $customClient);
 	}
 
 	/**
@@ -222,6 +234,14 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 */
 	public function getPaymentMethods($options = NULL, $customClient = NULL) {
 		return Bf_Subscription::getPaymentMethodsOnSubscription($this, $options, $customClient);
+	}
+
+	public function getCurrentPeriodEnd() {
+		if (!is_null($this->currentPeriodEnd)) {
+			return $this->currentPeriodEnd;
+		} else {
+			throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end. This could mean the subscription has not yet been instantiated by the BillForward engines. You could try again in a few seconds, or in future invoke this functionality after a WebHook confirms the subscription has reached the necessary state.');
+		}
 	}
 
 	/**
@@ -432,103 +452,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $this;
 	}
 
-	//// UPGRADE/DOWNGRADE VIA AMENDMENT
-
-	/**
-	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to Bf_PricingComponents whose properties match.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
-	 * @param array List of values to assign to respective pricing components; array(103, 2)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
-	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
-	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
-	 */
-	public function changeValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
-		if (!is_array($propertiesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
-		}
-
-		if (!is_array($valuesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
-		}
-
-		$componentChanges = array();
-
-		foreach ($propertiesList as $key => $propertyMap) {
-			if (!is_array($propertyMap)) {
-				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
-			}
-
-			$newValue = $valuesList[$key];
-
-			$pricingComponentValue = $this->getValueOfPricingComponentWithProperties($propertyMap);
-			$componentChange = new Bf_ComponentChange(array(
-				'pricingComponentID' => $pricingComponentValue->pricingComponentID,
-				'newValue' => $newValue
-			));
-
-			if (!is_null($changeModeOverride)) {
-				if ($changeModeOverride === 'Immediate') {
-					$componentChange->changeMode = 'immediate';
-				} else if ($changeModeOverride === 'Delayed') {
-					$componentChange->changeMode = 'delayed';
-				}
-			}
-
-			array_push($componentChanges, $componentChange);
-		}
-		
-		$amendment = new Bf_PricingComponentValueAmendment(array(
-			'subscriptionID' => $this->id,
-			'componentChanges' => $componentChanges,
-			'invoicingType' => $invoicingType
-			));
-
-		$date = NULL; // defaults to Immediate
-		if (is_int($actioningTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'AtPeriodEnd') {
-			if (!is_null($this->currentPeriodEnd)) {
-				$date = $this->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
-			}
-		}
-
-		if (!is_null($date)) {
-			$amendment->actioningTime = $date;
-		}
-
-		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
-		return $createdAmendment;
-	}
-
-	/**
-	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the upgrade amendment
-	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
-	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
-	 */
-	public function changeValueOfPricingComponentsByName(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
-		$propertiesList = array();
-		$valuesList = array();
-
-		foreach($namesToValues as $key => $value) {
-			// from pricing component name, create a dictionary of identifying properties
-			$pricingComponentPropertyMap = array(
-				'name' => $key
-				);
-			array_push($propertiesList, $pricingComponentPropertyMap);
-			array_push($valuesList, $value);
-		}
-
-		return $this->changeValueOfPricingComponentByProperties($propertiesList, $valuesList, $invoicingType, $actioningTime, $changeModeOverride);
-	}
-
 	/**
 	 * Applies Bf_Coupon to this Bf_Subscription
 	 * @param Bf_Coupon The coupon to apply to this subscription
@@ -547,234 +470,764 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return Bf_Coupon::applyCouponCodeToSubscription($couponCode, $this);
 	}
 
+	//// UPGRADE/DOWNGRADE
+
 	/**
 	 * Upgrades/downgrades subscription to Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type. <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] (Default: 'Immediate') When to action the upgrade amendment
-	 * @param string[NULL, 'Immediate', 'Delayed'] (Default: NULL) When to effect the change in pricing component values. <Immediate>: Upon actioning time, pricing components immediately change to the new value. <Delayed>: Wait until end of billing period to change pricing component to new value. <NULL>: Don't override the change mode that is already specified on the pricing component.
+	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @param array $upgradeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param array[string => string_ENUM[NULL, 'Immediate', 'Delayed']] (Default: array()) $..['namesToChangeModeOverrides'] The map of pricing component names to change mode overrides.
+	 *	*
+	 *	*	Each key in the this array maps to a value of the following ENUM:
+	 *	*  *	<NULL> (Behaviour for omitted keys)
+	 *	*  *	Don't override the change mode that is already specified on the pricing component.
+	 *	*  *	
+	 *	*  *	<Immediate>
+	 *	*  *	Upon actioning the upgrade, this pricing component will immediately change to the new value.
+	 *	*  *	
+	 *	*  *	<Delayed>
+	 *	*  *	Wait until end of billing period to change pricing component to new value.
+	 *	* Example:
+	 *	* array(
+	 *	* 	'CPU' => 'Immediate',
+	 *	* 	'RAM' => 'Delayed'
+	 *	* )
+	 *	*
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)}  $..['actioningTime'] When to action the upgrade amendment
 	 * @return Bf_PricingComponentValueAmendment The created upgrade amendment.
 	 */
-	public function upgrade(array $namesToValues, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $changeModeOverride = NULL) {
-		return $this->changeValueOfPricingComponentsByName($namesToValues, $invoicingType, $actioningTime, $changeModeOverride);
+	public function scheduleUpgrade(
+		array $namesToValues,
+		array $upgradeOptions = array(
+			'namesToChangeModeOverrides' => array(),
+			'invoicingType' => 'Aggregated',
+			'actioningTime' => 'Immediate'
+			)
+		) {
+
+		$inputOptions = $upgradeOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$componentChanges = array_map(function($key, $value) use($namesToChangeModeOverrides) {
+			$change = new Bf_ComponentChange(array(
+				'pricingComponentName' => $key,
+				'newValue' => $value
+			));
+			if (array_key_exists($key, $namesToChangeModeOverrides)) {
+				if (!is_null($namesToChangeModeOverrides[$key])) {
+					$componentChange->changeMode = strtolower($namesToChangeModeOverrides[$key]);
+				}	
+			}
+			return $change;
+		}, array_keys($namesToValues), $namesToValues);
+
+		static::popKey($inputOptions, 'namesToChangeModeOverrides');
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'subscriptionID' => $subscriptionID,
+				'componentChanges' => $componentChanges
+				),
+			$inputOptions
+			);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($this)));
+
+		$amendment = new Bf_PricingComponentValueAmendment($stateParams);
+
+		$createdAmendment = Bf_PricingComponentValueAmendment::create($amendment);
+		return $createdAmendment;
 	}
 
-	//// MIGRATE PLAN VIA AMENDMENT
+	//// MIGRATE PLAN
 
 	/**
-	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to Bf_PricingComponents whose properties match.
+	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
 	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array List of pricing component properties; array(array('name' => 'Bandwidth usage'), array('name' => 'CPU usage'))
-	 * @param array List of values to assign to respective pricing components; array(103, 2)
-	 * @param Bf_ProductRatePlan The plan to migrate to.
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
-	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
-	 ***
-	 *  <None>
-	 *  No migration charge will be issued at all.
-	 *
-	 *  <Full>
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
-	 *  
-	 *  <Difference>
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  
-	 *  <DifferenceProRated>
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  
-	 *  <ProRated>
-	 *  This value has two definitions.
-	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
-	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
-	 *  
-	 *   2. We are migration to a plan of a different period duration. 
-	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 ***
+	 * @param array[string => number] $namesToValues The map of pricing component names to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @param union[string $id | Bf_ProductRatePlan $entity] $newPlan The rate plan to which you wish to migrate. <string>: ID of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
+	 * @param array $migrationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param union[NULL | string] (Default: NULL) $..['renameSubscription'] Optionally rename the subscription upon migration. <NULL> Leave the subscription's name unchanged. <string> The name to which you would like to rename the subscription.
+	 *	* @param string_ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') $..['pricingBehaviour'] Strategy for calculating migration charges.
+	 *	*
+	 *	*  <None>
+	 *	*  No migration charge will be issued at all.
+	 *	*
+	 *	*  <Full>
+	 *	*  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
+	 *	*  
+	 *	*  <Difference>
+	 *	*  The migration cost will be the difference between the in advance components  
+	 *	*  of the current Product Rate Plan and the new Product Rate plan.
+	 *	*  
+	 *	*  <DifferenceProRated> (Default)
+	 *	*  The migration cost will be the difference between the in advance components  
+	 *	*  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
+	 *	*  
+	 *	*  <ProRated>
+	 *	*  This value has two definitions.
+	 *	*   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
+	 *	*   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
+	 *	*  
+	 *	*   2. We are migrating to a plan of a different period duration. 
+	 *	*   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
+	 *	*
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $..['actioningTime'] When to action the migration amendment.
 	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
 	 */
-	public function migrateWithValueOfPricingComponentByProperties(array $propertiesList, array $valuesList, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated') {
-		if (!is_array($propertiesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of entity property maps). Instead received: '+$propertiesList);
-		}
+	public function scheduleMigratePlan(
+		array $namesToValues,
+		$newPlan,
+		array $migrationOptions = array(
+			'renameSubscription' => NULL,
+			'pricingBehaviour' => 'DifferenceProRated',
+			'invoicingType' => 'Aggregated',
+			'actioningTime' => 'Immediate'
+			)
+		) {
+		$inputOptions = $migrationOptions;
 
-		if (!is_array($valuesList)) {
-			throw new Bf_MalformedInputException('Expected input to be an array (a list of integer values). Instead received: '+$valuesList);
-		}
+		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$mappings = array();
+		$mappings = array_map(
+			function($name, $value) {
+				return new Bf_PricingComponentValueMigrationAmendmentMapping(array(
+					'pricingComponentName' => $name,
+					'value' => $value
+				));
+			},
+			array_keys($namesToValues),
+			$namesToValues
+			);
 
-		foreach ($propertiesList as $key => $propertyMap) {
-			if (!is_array($propertyMap)) {
-				throw new Bf_MalformedInputException('Expected each element of input array to be an array (a map of expected properties on entity, to values). Instead received: '+$propertyMap);
-			}
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'mappings' => $mappings,
+				'subscriptionID' => $subscriptionID,
+				'productRatePlanID' => $planID
+				),
+			$inputOptions
+			);
+		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($this)));
 
-			$newValue = $valuesList[$key];
-
-			$pricingComponent = $newPlan->getPricingComponentWithProperties($propertyMap);
-			$mapping = new Bf_PricingComponentValueMigrationAmendmentMapping(array(
-				'pricingComponentID' => $pricingComponent->id,
-				'value' => $newValue
-			));
-
-			array_push($mappings, $mapping);
-		}
-		
-		$amendment = new Bf_ProductRatePlanMigrationAmendment(array(
-			'subscriptionID' => $this->id,
-			'productRatePlanID' => $newPlan->id,
-			'mappings' => $mappings,
-			'invoicingType' => $invoicingType,
-			'pricingBehaviour' => $pricingBehaviour
-			));
-
-		$date = NULL; // defaults to Immediate
-		if (is_int($actioningTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'AtPeriodEnd') {
-			if (!is_null($this->currentPeriodEnd)) {
-				$date = $this->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
-			}
-		}
-
-		if (!is_null($date)) {
-			$amendment->actioningTime = $date;
-		}
+		$amendment = new Bf_ProductRatePlanMigrationAmendment($stateParams);
 
 		$createdAmendment = Bf_ProductRatePlanMigrationAmendment::create($amendment);
 		return $createdAmendment;
 	}
 
 	/**
-	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param Bf_ProductRatePlan The plan to migrate to.
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
-	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
-	 ***
-	 *  No migration charge will be issued at all.
-	 *  <None>
-	 *
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
-	 *  <Full>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  <Difference>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  <DifferenceProRated>
-	 *  
-	 *  This value has two definitions.
-	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
-	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
-	 *  
-	 *   2. We are migration to a plan of a different period duration. 
-	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 *  <ProRated>
-	 ***
-	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
+	 * Synchronously migrates the subscription to the specified plan.
+	 * @see migratePlan()
+	 * @return Bf_MigrationResponse The migration result.
 	 */
-	public function migrateWithValueOfPricingComponentsByName(array $namesToValues, Bf_ProductRatePlan $newPlan, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated') {
-		$propertiesList = array();
-		$valuesList = array();
+	public function migratePlan(
+		array $namesToValues,
+		$newPlan,
+		array $migrationOptions = array(
+			'renameSubscription' => NULL,
+			'pricingBehaviour' => 'DifferenceProRated',
+			'invoicingType' => 'Aggregated',
+			'dryRun' => false
+			)
+		) {
+		$inputOptions = $migrationOptions;
 
-		foreach($namesToValues as $key => $value) {
-			// from pricing component name, create a dictionary of identifying properties
-			$pricingComponentPropertyMap = array(
-				'name' => $key
-				);
-			array_push($propertiesList, $pricingComponentPropertyMap);
-			array_push($valuesList, $value);
-		}
+		$planID = Bf_ProductRatePlan::getIdentifier($newPlan);
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		return $this->migrateWithValueOfPricingComponentByProperties($propertiesList, $valuesList, $newPlan, $invoicingType, $actioningTime, $pricingBehaviour);
+		$mappings = array_map(
+			function($name, $value) {
+				return new Bf_PricingComponentMigrationValue(array(
+					'pricingComponent' => $name,
+					'value' => $value
+				));
+			},
+			array_keys($namesToValues),
+			$namesToValues
+			);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'mappings' => $mappings
+				),
+			$inputOptions
+			);
+		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
+		$requestEntity = new Bf_MigrationRequest($stateParams);
+
+		$endpoint = sprintf("%s/migrate/%s",
+			rawurlencode($subscriptionID),
+			rawurlencode($planID)
+			);
+
+		$responseEntity = Bf_MigrationResponse::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
 	}
 
-	/**
-	 * Migrates subscription to new plan, with Bf_PricingComponentValue values corresponding to named Bf_PricingComponents.
-	 * This works only for 'arrears' or 'in advance' pricing components.
-	 * @param array The map of pricing component names to numerical values ('Bandwidth usage' => 102)
-	 * @param string ID of the plan to migrate to.
-	 * @param string ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') Subscription-charge invoicing type <Immediate>: Generate invoice straight away with this charge applied, <Aggregated>: Add this charge to next invoice
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the migration amendment
-	 * @param string ENUM['None', 'Full', 'Difference', 'DifferenceProRated', 'ProRated'] (Default: 'DifferenceProRated') Strategy for calculating migration charges.
-	 ***
-	 *  No migration charge will be issued at all.
-	 *  <None>
-	 *
-	 *  The migration cost will be the cost of the in advance components of the new Product Rate Plan.
-	 *  <Full>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and the new Product Rate plan.
-	 *  <Difference>
-	 *  
-	 *  The migration cost will be the difference between the in advance components  
-	 *  of the current Product Rate Plan and new Product Rate plan multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod.
-	 *  <DifferenceProRated>
-	 *  
-	 *  This value has two definitions.
-	 *   1. We are migrating to a plan of the same period duration. The migration cost will be the cost of the in advance components of the new Product Rate Plan
-	 *   multiplied by the ratio SecondsRemaining/SecondsInInvoicePeriod. 
-	 *  
-	 *   2. We are migration to a plan of a different period duration. 
-	 *   This means that a Credit Note will be generated with a ProRata value for the remaining duration of the current period.
-	 *  <ProRated>
-	 ***
-	 * @param Bf_ProductRatePlan (Alternative parameter to avoid extra API request) The plan to migrate to.
-	 * @return Bf_ProductRatePlanMigrationAmendment The created migration amendment.
-	 */
-	public function migratePlan(array $namesToValues, $newPlanID = NULL, $invoicingType = 'Aggregated', $actioningTime = 'Immediate', $pricingBehaviour = 'DifferenceProRated', Bf_ProductRatePlan $newPlan = NULL) {
-		if (is_null($newPlan)) {
-			// fetch plan for you
-			$newPlan = Bf_ProductRatePlan::getByID($newPlanID);
-		}
-
-		return $this->migrateWithValueOfPricingComponentsByName($namesToValues, $newPlan, $invoicingType, $actioningTime, $pricingBehaviour);
-	}
-
-	//// CANCEL VIA AMENDMENT
+	//// CANCEL
 
 	/**
 	 * Cancels subscription at a specified time.
-	 * @param string ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') Specifies whether the service will end immediately on cancellation or if it will continue until the end of the current period.
-	 * @param mixed[int $timestamp, 'Immediate', 'AtPeriodEnd'] Default: 'Immediate'. When to action the cancellation amendment
+	 * @param array $cancellationOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param string_ENUM['Immediate', 'AtPeriodEnd'] (Default: 'AtPeriodEnd') $..['serviceEnd'] Specifies when the service ends after the subscription is cancelled.
+	 *	* 	<Immediate>
+	 *	* 	Subscription ends service as soon as it is cancelled.
+	 *	*
+	 *	* 	<AtPeriodEnd> (Default)
+	 *	* 	After cancellation, the subscription continues to provide service until its billing period ends.
+	 *	*
+	 *	* @param string_ENUM['Credit', 'None'] (Default: 'Credit') $..['cancellationCredit'] 
+	 *	*
+	 *	* 	<Credit> (Default)
+	 *	*
+	 *	* 	<None>
+	 *	*
+	 *	* @param {@see Bf_Amendment::parseActioningTime(mixed)} $..['actioningTime'] When to action the cancellation amendment
 	 * @return Bf_CancellationAmendment The created cancellation amendment.
 	 */
-	public function cancel($serviceEnd = 'AtPeriodEnd', $actioningTime = 'Immediate') {
+	public function scheduleCancellation(
+		array $cancellationOptions = array(
+			'serviceEnd' => 'AtPeriodEnd',
+			'cancellationCredit' => 'Credit',
+			'actioningTime' => 'Immediate'
+			)
+		) {
+		$inputOptions = $cancellationOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'subscriptionID' => $subscriptionID
+				),
+			$inputOptions
+			);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array('actioningTime' => 'parseActioningTime'),
+			array('actioningTime' => array($this)));
+
 		// create model of amendment
-		$amendment = new Bf_CancellationAmendment(array(
-		  'subscriptionID' => $this->id,
-		  'serviceEnd' => $serviceEnd
-		  ));
-
-		$date = NULL; // defaults to Immediate
-		if (is_int($actioningTime)) {
-			$date = Bf_BillingEntity::makeBillForwardDate($actioningTime);
-		} else if ($actioningTime === 'AtPeriodEnd') {
-			if (!is_null($this->currentPeriodEnd)) {
-				$date = $this->currentPeriodEnd;
-			} else {
-				throw new Bf_PreconditionFailedException('Cannot set actioning time to period end, because the subscription does not declare a period end.');
-			}
-		}
-
-		if (!is_null($date)) {
-			$amendment->actioningTime = $date;
-		}
+		$amendment = new Bf_CancellationAmendment($stateParams);
 
 		// create amendment using API
 		$createdAmendment = Bf_CancellationAmendment::create($amendment);
 		return $createdAmendment;
+	}
+
+	/**
+	 * Synchronously cancels the subscription.
+	 * @see cancel()
+	 * @return Bf_SubscriptionCancellation The cancellation result.
+	 */
+	public function cancel(
+		array $cancellationOptions = array(
+			'serviceEnd' => 'AtPeriodEnd',
+			'cancellationCredit' => 'Credit'
+			)
+		) {
+
+		$inputOptions = $cancellationOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+
+		$requestEntity = new Bf_SubscriptionCancellation($stateParams);
+
+		$endpoint = sprintf("%s/cancel",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCancellation::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	//// REVIVE CANCELLED SUBSCRIPTION
+
+	/**
+	 * Synchronously revives the subscription.
+	 * @return Bf_Subscription The revived subscription.
+	 */
+	public function revive(
+		array $revivalOptions = array(
+			)
+		) {
+		$inputOptions = $revivalOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+
+		$requestEntity = new Bf_SubscriptionReviveRequest($stateParams);
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$endpoint = sprintf("%s/revive",
+			rawurlencode($subscriptionID)
+			);
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity);
+		return $constructedEntity;
+	}
+
+	//// INVOICE OUTSTANDING CHARGES
+
+	/**
+	 * Synchronously generates invoices for outstanding charges on the subscription.
+	 * @param array $invoicingOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param boolean (Default: false) $..['includeAggregated']
+	 *	* @param boolean (Default: false) $..['includeInvoicedChargesOnly']
+	 *	* @param union[NULL | string_ENUM['Paid', 'Unpaid', 'Pending', 'Voided'] (Default: NULL) $..['invoiceState']]
+	 * @return Bf_Invoice[] The generated invoices.
+	 */
+	public function invoiceOutstandingCharges(
+		array $invoicingOptions = array(
+			'includeAggregated' => false,
+			'includeInvoicedChargesOnly' => false,
+			'invoiceState' => NULL
+			)
+		) {
+		$inputOptions = $invoicingOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+
+		$requestEntity = new Bf_SubscriptionReviveRequest($stateParams);
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$endpoint = sprintf("%s/invoiceCharges",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_Invoice::getClassName();
+
+		$constructedEntities = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntities;
+	}
+
+	//// FREEZE
+
+	/**
+	 * Synchronously freezes the subscription.
+	 * @param array $freezeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption'] Schedules the frozen subscription to resume at some time.
+	 * @return Bf_Subscription The frozen subscription.
+	 */
+	public function freeze(
+		array $freezeOptions = array(
+			'scheduleResumption' => NULL
+			)
+		) {
+
+		$inputOptions = $freezeOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+		static::renameKey($stateParams, 'scheduleResumption', 'resume');
+		
+		$requestEntity = new Bf_PauseRequest($stateParams);
+
+		$endpoint = sprintf("%s/freeze",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	//// RESUME FROZEN SUBSCRIPTION
+
+	/**
+	 * Synchronously resumes the subscription.
+	 * @param array $resumptionOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['scheduleResumption'] Schedules the resumption to be actioned at some future time.
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['newSubscriptionStart'] The start date to which the subscription will be advanced, upon resumption.
+	 *	* @param string_ENUM['Trial', 'Provisioned', 'Paid', 'AwaitingPayment', 'Cancelled', 'Failed', 'Expired'] $..['newSubscriptionState'] The state to which the subscription will be moved, upon resumption.
+	 * @return Bf_Subscription The frozen subscription.
+	 */
+	public function resume(
+		array $resumptionOptions = array(
+			'dryRun' => false,
+			'scheduleResumption' => NULL,
+			'newSubscriptionStart' => NULL,
+			'newSubscriptionState' => NULL
+			)
+		) {
+
+		$inputOptions = $resumptionOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+		static::renameKey($stateParams, 'scheduleResumption', 'resume');
+		
+		$requestEntity = new Bf_ResumeRequest($stateParams);
+
+		$endpoint = sprintf("%s/resume",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	//// ADVANCE SUBSCRIPTION THROUGH TIME
+
+	/**
+	 * Synchronously resumes the subscription.
+	 * @param array $advancementOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param boolean (Default: false) $..['skipIntermediatePeriods']
+	 *	* @param boolean (Default: true) $..['handleAmendments']
+	 *	* @param string_ENUM['SingleAttempt', 'FollowDunning', 'None'] (Default: 'SingleAttempt') $..['executionStrategy']
+	 *	*
+	 *	* 	<SingleAttempt> (Default)
+	 *	*
+	 *	*	<FollowDunning>
+	 *	*
+	 *	* 	<None>
+	 *	*
+	 *	* @param boolean (Default: false) $..['freezeOnCompletion']
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
+	 *	* @param {@see self::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
+	 *	* @param integer (Default: NULL) (Non-null value of param requires that $..['to'] be NULL instead) $..['periods']
+	 * @return Bf_Subscription The frozen subscription.
+	 */
+	public function advance(
+		array $advancementOptions = array(
+			'dryRun' => false,
+			'skipIntermediatePeriods' => false,
+			'handleAmendments' => true,
+			'executionStrategy' => 'SingleAttempt',
+			'freezeOnCompletion' => false,
+			'from' => NULL,
+			'to' => 'CurrentPeriodEnd',
+			'periods' => NULL
+			)
+		) {
+
+		$inputOptions = $advancementOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array(
+				'from' => 'parseTimeRequestFromTime',
+				'to' => 'parseTimeRequestToTime'
+				),
+			array(
+				'from' => array($this),
+				'to' => array($this)
+				));
+
+		$requestEntity = new Bf_TimeRequest($stateParams);
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$endpoint = sprintf("%s/advance",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	//// CHARGE
+
+	/**
+	 * Creates a charge on the subscription
+	 * @param array $chargeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param string (Default: NULL) $..['pricingComponent'] The name or ID of the pricing component (provided the charge pertains to a pricing component)
+	 *	* @param string (Default: NULL) $..['pricingComponentValue'] The value of the pricing component (provided the charge pertains to a pricing component)
+	 *	* @param float (Default: NULL) $..['amount'] The monetary amount of the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
+	 *	* @param string (Default: NULL) $..['description'] The reason for creating the charge
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
+	 *	* @param boolean $..['taxAmount'] Whether to apply tax atop the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
+	 *	* @param string_ENUM['Credit', 'Debit'] (Default: 'Debit') $..['chargeType']
+	 *	*
+	 *	*	<Credit>
+	 *	*
+	 *	*	<Debit> (Default)
+	 *	*
+	 * @return Bf_SubscriptionCharge[] All charges created in the process.
+	 */
+	public function charge(
+		array $chargeOptions = array(
+			'pricingComponent' => NULL,
+			'pricingComponentValue' => NULL,
+			'amount' => NULL,
+			'description' => NULL,
+			'invoicingType' => 'Aggregated',
+			'taxAmount' => false,
+			'chargeType' => 'Debit'
+			)
+		) {
+		$inputOptions = $chargeOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				),
+			$inputOptions
+			);
+		$requestEntity = new Bf_AddChargeRequest($stateParams);
+
+		$endpoint = sprintf("%s/charge",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_SubscriptionCharge::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	/**
+	 * Creates multiple pricing component charges on the subscription
+	 * @param array[string => number] $namesToValues The map of pricing component names (or IDs) to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @see charge()
+	 * @return Bf_SubscriptionCharge[] All charges created in the process.
+	 */
+	public function chargeComponents(
+		array $namesToValues,
+		array $chargeOptions = array(
+			'description' => NULL,
+			'invoicingType' => 'Aggregated',
+			'chargeType' => 'Debit'
+			)
+		) {
+		$_this = $this;
+		return array_reduce(array_map(
+			function($key, $value) use($_this, $chargeOptions) {
+				return $_this->charge(array_merge($chargeOptions,
+					array(
+						'pricingComponent' => $key,
+						'pricingComponentValue' => $value
+						)));
+			},
+			array_keys($namesToValues), $namesToValues
+			), 'array_merge', array());
+	}
+
+	//// TIME PARSING HELPERS
+
+	/**
+	 * Parses into a BillForward timestamp the Bf_TimeRequest 'From' time
+	 * @param union[int $timestamp | string_ENUM['Now', 'CurrentPeriodEnd']] (Default: 'Immediate') When to action the amendment
+	 *
+	 *  int
+	 *  'From' the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *
+	 *	string (within ENUM)
+	 *  <Immediate> (Default)
+	 *  'From' the time at which the request reaches the server
+	 *
+	 *  <ClientNow>
+	 *  'From' the current time by this client's clock.
+	 *  
+	 *  <CurrentPeriodEnd>
+	 *  'From' the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the amendment to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 *
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'CurrentPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return string The BillForward-formatted time.
+	 */
+	public static function parseTimeRequestFromTime($fromTime, $subscription = NULL) {
+		$intSpecified = NULL;
+
+		switch ($fromTime) {
+			case 'ServerNow':
+			case 'Immediate':
+				return NULL;
+			case 'CurrentPeriodEnd':
+				// we need to consult subscription
+				if (is_null($subscription)) {
+					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain CurrentPeriodEnd time, because a null reference was provided to the subscription.');
+				}
+				$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
+				return $subscriptionFetched->getCurrentPeriodEnd();
+			case 'ClientNow':
+				$intSpecified = time();
+			default:
+				if (is_int($fromTime)) {
+					$intSpecified = $fromTime;
+				}
+				if (!is_null($intSpecified)) {
+					return Bf_BillingEntity::makeBillForwardDate($intSpecified);
+				}
+				if (is_string($fromTime)) {
+					return $fromTime;
+				}
+		}
+
+		return NULL;
+	}
+
+	/**
+	 * Parses into a BillForward timestamp the Bf_TimeRequest 'From' time
+	 * @param union[int $timestamp | string_ENUM['Now', 'CurrentPeriodEnd']] (Default: 'Immediate') When to action the amendment
+	 *
+	 *  int
+	 *  'From' the specified UNIX timestamp.
+	 *  Examples:
+	 *  	* time()
+	 *  	* 1431704624
+	 *  	* Bf_BillingEntity::makeUTCTimeFromBillForwardDate('2015-04-23T17:13:37Z')
+	 *
+	 *	string (within ENUM)
+	 *  <Immediate> (Default)
+	 *  'To' the time at which the request reaches the server
+	 *
+	 *  <ClientNow>
+	 *  'To' the current time by this client's clock.
+	 *  
+	 *  <CurrentPeriodEnd>
+	 *  'To' the end of the subscription's current billing period.
+	 *
+	 *  string (outside ENUM)
+	 *  Schedule the amendment to occur at the specified BillForward-formatted timestamp.
+	 *  Examples:
+	 *  	* '2015-04-23T17:13:37Z'
+	 *  	* Bf_BillingEntity::makeBillForwardDate(time())
+	 *  	* Bf_BillingEntity::makeBillForwardDate(1431704624)
+	 *
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'CurrentPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return string The BillForward-formatted time.
+	 */
+	public static function parseTimeRequestToTime($fromTime, $subscription = NULL) {
+		$intSpecified = NULL;
+
+		switch ($fromTime) {
+			case 'ServerNow':
+			case 'Immediate':
+				return NULL;
+			case 'CurrentPeriodEnd':
+				// we need to consult subscription
+				if (is_null($subscription)) {
+					throw new Bf_EmptyArgumentException('Failed to consult subscription to ascertain CurrentPeriodEnd time, because a null reference was provided to the subscription.');
+				}
+				$subscriptionFetched = Bf_Subscription::fetchIfNecessary($subscription);
+				return $subscriptionFetched->getCurrentPeriodEnd();
+			case 'ClientNow':
+				$intSpecified = time();
+			default:
+				if (is_int($fromTime)) {
+					$intSpecified = $fromTime;
+				}
+				if (!is_null($intSpecified)) {
+					return Bf_BillingEntity::makeBillForwardDate($intSpecified);
+				}
+				if (is_string($fromTime)) {
+					return $fromTime;
+				}
+		}
+
+		return NULL;
 	}
 
 	public static function initStatics() {

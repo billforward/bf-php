@@ -23,7 +23,7 @@ class Bf_Notification extends Bf_MutableEntity {
 			$timeEnd = time();
 		}
 
-		$webhookIdentifier = is_null($webhook) ? NULL : Bf_Webhook::getIdentifier($webhook);
+		$webhookID = is_null($webhook) ? NULL : Bf_Webhook::getIdentifier($webhook);
 
 		// empty IDs are no good!
 		if (!$timeStart) {
@@ -44,12 +44,12 @@ class Bf_Notification extends Bf_MutableEntity {
 		$timeStart = rtrim($timeStart, "Z");
 		$timeEnd = rtrim($timeEnd, "Z");
 
-		$endpoint = sprintf("/%s/%s%s",
+		$endpoint = sprintf("%s/%s%s",
 			$timeStart,
 			$timeEnd,
 			is_null($webhookID)
 			? "" 
-			: sprintf("/%s", rawurlencode($webhookIdentifier))
+			: sprintf("/%s", rawurlencode($webhookID))
 			);
 
 		return static::getCollection($endpoint, $options, $customClient);

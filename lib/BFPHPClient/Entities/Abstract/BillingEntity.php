@@ -143,7 +143,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entityArray;
 	}
 
-	public static function constructEntityFromArgs($entityClass, $constructArgs, $client) {
+	protected static function constructEntityFromArgs($entityClass, $constructArgs, $client) {
 		$newEntity = new $entityClass($constructArgs, $client);
 		return $newEntity;
 	}
@@ -200,14 +200,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	}
 
 	public static function getByID($id, $options = NULL, $customClient = NULL) {
-		// empty IDs are no good!
-		if (!$id) {
-    		throw new Bf_EmptyArgumentException("Cannot lookup empty ID!");
-		}
+		$identifier = static::getIdentifier($id);
 
-		$encoded = rawurlencode($id);
-
-		$endpoint = "/$encoded";
+		$endpoint = sprintf("%s",
+			rawurlencode($id)
+			);
 
 		try {
 			return static::getFirst($endpoint, $options, $customClient);
@@ -221,7 +218,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 	protected static function prefixPathWithController($path) {
 		$controller = static::getResourcePath()->getPath();
-		$qualified = "$controller/$path";
+		$qualified = sprintf("%s/%s",
+			$controller,
+			$path
+			);
 		return $qualified;
 	}
 
@@ -261,6 +261,13 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
 		$constructedEntities = static::responseToEntityCollection($response, $client, $responseEntity);
 		return $constructedEntities;
+	}
+
+	protected static function putEntityAndGrabFirst($endpoint, $entity, $responseEntity = NULL) {
+		$serial = $entity->getSerialized();
+		$client = $entity->getClient();
+
+		return static::putAndGrabFirst($endpoint, $serial, $client, $responseEntity);
 	}
 
 	protected static function putAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
@@ -312,21 +319,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $constructedEntity;
 	}
 
-	protected static function getResponseRaw($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
-		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
-
-		$apiRoute = $entityClass::getResourcePath()->getPath();
-		$fullRoute = $apiRoute.$endpoint;
-		
-		$response = $client->doGet($fullRoute, $options);
-		return $response;
-	}
-
 	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 
-		$response = static::getResponseRaw($endpoint, $options, $client);
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doGet($url, $payload);
 
 		$entities = static::responseToEntityCollection($response, $client, $responseEntity);
 		return $entities;
@@ -335,18 +332,19 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 		
-		$response = static::getResponseRaw($endpoint, $options, $client);
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doGet($url, $payload);
 
 		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $constructedEntity;
 	}
 
-	public static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {
+	protected static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {
 		$entities = self::getAll($options, $customClient);
 		return self::fromCollectionFindAllWhoMatchProperties($entities, $properties);
 	}
 
-	public static function getAllThenGrabFirstWithProperties(array $properties, $options = NULL, $customClient = NULL) {
+	protected static function getAllThenGrabFirstWithProperties(array $properties, $options = NULL, $customClient = NULL) {
 		$entities = self::getAll($options, $customClient);
 		return self::fromCollectionFindFirstWhoMatchesProperties($entities, $properties);
 	}
@@ -404,21 +402,51 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	return $dateTime->getTimestamp();
     }
 
+    protected static function getFinalArgDefault($method) {
+    	$reflectionMethod = new ReflectionMethod($method);
+    	$methodParams = $reflectionMethod->getParameters();
+    	$methodParamsCount = $reflectionMethod->getNumberOfParameters();
+    	$finalParamIndex = $methodParamsCount - 1;
+    	$finalParam = $methodParams[$finalParamIndex];
+    	$finalParamDefaultValue = $finalParam->getDefaultValue();
+    	return $finalParamDefaultValue;
+    }
+
+    /**
+     * Returns whether entity is a member of this class.
+     * @param mixed $entity Possible entity.
+     * @return boolean Whether the entity is a member of this class.
+     */
+    protected static function isEntityOfThisClass($entityReference) {
+    	return is_a($entityReference, get_called_class());
+    }
+
     /**
      * Fetches (if necessary) entity by ID from API.
      * Otherwise returns entity as-is.
      * @param union[string $id | static $entity] Reference to the entity. <string>: ID by which the entity can be gotten. <static>: The gotten entity.
      * @return static The gotten entity.
      */
-    public static function fetchIfNecessary($entityReference) {
+    protected static function fetchIfNecessary($entityReference) {
     	if (is_string($entityReference)) {
     		// fetch entity by ID
     		return static::getByID($entityReference);
     	}
-    	if (is_subclass_of($entityReference, get_called_class())) {
+    	if (static::isEntityOfThisClass($entityReference)) {
     		return $entityReference;
     	}
     	throw new Bf_MalformedEntityReferenceException('Cannot fetch entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
+    }
+
+    protected static function mergeUserArgsOverNonNullDefaults($defaultMethod, array $composedArgs, array $userInput) {
+    	return array_merge(
+    		array_filter(
+    			array_merge(static::getFinalArgDefault($defaultMethod), $composedArgs),
+    			function($value) {
+					return !is_null($value);
+				}),
+			$userInput
+			);
     }
 
     /**
@@ -426,7 +454,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
      * @param union[string ($id | $name) | static $entity] Reference to the entity. <string>: $id or $name of the entity. <static>: An $entity object from which $entity->id can be ascertained.
      * @return string ID by which the referenced entity can be gotten.
      */
-    public static function getIdentifier($entityReference) {
+    protected static function getIdentifier($entityReference) {
     	if (is_null($entityReference)) {
     		throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <NULL>.');
     	}
@@ -434,7 +462,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     		throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; Expected: <ID, or object extending desired entity class> Received: <array>.');
     	}
     	if (is_string($entityReference)) {
-    		// already an identifier; return verbatim
+    		// already an identifier
+
+    		if ($entityReference === '') {
+    			throw new Bf_EmptyArgumentException("Cannot distill identifier from empty string. Expected: <non-empty ID string, or object extending desired entity class> Received: <''>");
+    		}
+    		// return verbatim
     		return $entityReference;
     	}
     	if ($entityReference->getClassName() === static::getClassName()) {
@@ -445,6 +478,251 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	}
     	throw new Bf_EntityLacksIdentifierException('Cannot distill identifier from referenced entity; referenced entity is neither an ID, nor an object extending the desired entity class.');
     }
+
+    protected static function renameKey(array &$associative, $nominalKey, $newName) {
+    	if (!array_key_exists($nominalKey, $associative)) {
+    		return NULL;
+    	}
+    	// only overwrite if no param by that name is presently present.
+    	if (!array_key_exists($newName, $associative)) {
+	    	$associative[$newName] = $associative[$nominalKey];
+	    }
+    	return static::popKey($associative, $nominalKey);
+    }
+
+    protected static function popKey(array &$associative, $nominalKey) {
+    	if (!array_key_exists($nominalKey, $associative)) {
+    		return NULL;
+    	}
+    	$value = $associative[$nominalKey];
+    	unset($associative[$nominalKey]);
+    	return $value;
+    }
+
+    /**
+	 * Mutates any key in the referenced array, by applying it to some static lambda
+	 * @param array $stateParams Map possibly containing time key that desires parsing.
+	 * @param string $key Key of the pertinent time field
+	 * @param string $class Name of the class to which the static call will be forwarded
+	 * @param string $lambda Name of the static function on this class that will return the parsed time
+	 * @param array $lambdaParams Params to be added into the lambda call.
+	 * @return static The modified array.
+	 */
+	protected static function mutateKeyByStaticLambda(array &$stateParams, $key, $lambda, array $lambdaParams = array()) {
+		$originalValue = static::popKey($stateParams, $key);
+		if (is_null($originalValue)) {
+			// means the user wanted to not send this kvp; let's not parse it.
+			return $stateParams;
+		}
+
+		$parsedTime = forward_static_call_array(
+			is_array($lambda)
+			? $lambda
+			: array(get_called_class(), $lambda),
+			array_merge(
+				(array)$originalValue,
+				$lambdaParams
+				)
+			);
+
+		if (!is_null($parsedTime)) {
+			$stateParams[$key] = $parsedTime;
+		}
+		return $stateParams;
+	}
+
+	/**
+	 * Mutates keys in the referenced array
+	 * @param array $stateParams Map possibly containing time key that desires parsing.
+	 * @param array (string $key => union[string | callable])  $keyLambdaMap Map of $stateParams keys to the parseTime lambda which will be used to 591 them
+	 * @param array $lambdaParams Params to be added into the lambda call.
+	 * @return static The modified array.
+	 */
+	protected function mutateKeysByStaticLambdas(array &$stateParams, array $keyLambdaMap, array $keyLambdaParams = array()) {
+		$mutator = array(get_called_class(), 'mutateKeyByStaticLambda');
+		array_map(function($key, $lambda) use(&$stateParams, $mutator, $keyLambdaParams) {
+			$params = array_key_exists($key, $keyLambdaParams)
+				? $keyLambdaParams[$key]
+				: array();
+
+			call_user_func_array($mutator,
+				array(
+					&$stateParams,
+					$key,
+					$lambda,
+					$params
+					)
+				);
+		},
+		array_keys($keyLambdaMap),
+		$keyLambdaMap);
+	}
+
+	/**
+	 * Parses into a BillForward timestamp the actioning time for some amendment
+	 * @param {@see Bf_Amendment::parseActioningTime(mixed)} $actioningTime When to action the amendment
+	 * @param union[NULL | union[string $id | Bf_Subscription $entity]] (Default: NULL) (Optional unless 'AtPeriodEnd' actioningTime specified) Reference to subscription <string>: $id of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription entity.
+	 * @return string The BillForward-formatted time.
+	 */
+	protected static function parseActioningTime($actioningTime, $subscription = NULL) {
+		return Bf_Amendment::parseActioningTime($actioningTime, $subscription);
+	}
+
+	/**
+	 * Calls the GET method multiple times with increasing paging offsets, until it has gotten all entities
+	 * @param string $lambda The name of the GET method to invoke
+	 *
+	 *  Example:
+	 *   $subscription->callMethodAndPageThrough('getCharges');
+	 *
+	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
+	 *
+	 *  Example:
+	 *   $invoice->callMethodAndPageThrough('getCharges' array());
+	 *
+	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
+	 *
+	 *  Example:
+	 *   $invoice->callMethodAndPageThrough('getCharges' array(), function($invoice) {
+	 *    	   return $charge->state === 'Unpaid';
+	 *   });
+	 *
+	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
+	 *
+	 *  Example:
+	 *   $invoice->callMethodAndPageThrough('getCharges' array(), function($invoice) {
+	 *    	   return $charge->state === 'Unpaid';
+	 *   }, true);
+	 *
+	 * @param int $initialPageSize (Default: 10) How many records to return in each page. This window scales by 50% with each request.
+	 *
+	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
+	 */
+	public function callMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+		$reflectionMethod = new ReflectionMethod($this, $lambda);
+		return forward_static_call_array(
+			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
+			array_merge(
+				array($this),
+				array_replace(func_get_args(), array($reflectionMethod))
+				)
+			);
+	}
+
+	/**
+	 * Calls the GET method multiple times with increasing paging offsets, until it has gotten all entities
+	 * @param callable $lambda The GET method to invoke
+	 *
+	 *  Example:
+	 *   Bf_Subscription::callFunctionAndPageThrough('getAll');
+	 *
+	 * @param array $lambdaParams (Default: array()) A list of params with which to invoke the lambda
+	 *
+	 *  Example:
+	 *   Bf_Subscription::callFunctionAndPageThrough('getByProductID' array('PRO-65F14D63-D027-4E2F-9DC0-4FFEFBCB'));
+	 *
+	 * @param (callable returns boolean) $filter (Default: NULL) Return only entities for whom the filter callback returns true
+	 *
+	 *  Example:
+	 *   Bf_Amendment::callFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *    	   return $amendment->amendmentType === 'Cancellation';
+	 *   });
+	 *
+	 * @param boolean $breakOnFirst (Default: false) (Requires that $filter be specified)
+	 *
+	 *  Example:
+	 *   Bf_Amendment::callFunctionAndPageThrough('getForSubscription' array($subscription), function($amendment) {
+	 *    	   return $amendment->amendmentType === 'ServiceEnd';
+	 *   }, true);
+	 *
+	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
+	 */
+	public static function callFunctionAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+		$reflectionMethod = new ReflectionMethod(get_called_class(), $lambda);
+		return forward_static_call_array(
+			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
+			array_merge(
+				array(NULL),
+				array_replace(func_get_args(), array($reflectionMethod))
+				)
+			);
+	}
+
+	protected static function callFunctionAbstractAndPageThrough($caller, ReflectionMethod $extendsReflectionFunctionAbstract, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+		$optionsParams = array_filter($extendsReflectionFunctionAbstract->getParameters(),
+			function($param) {
+				return $param->name === 'options';
+			});
+		if (count($optionsParams) <= 0) {
+			throw new Bf_InvocationException(sprintf("The method '%s' has no 'options' parameter with which we can page through its results", $lambda));
+		}
+
+		$optionParamPosition = array_keys($optionsParams)[0];
+
+		if (!array_key_exists($optionParamPosition, $lambdaParams)) {
+			$lambdaParams[$optionParamPosition] = array();
+		}
+		if (!is_array($lambdaParams[$optionParamPosition])) {
+			throw new Bf_InvocationException(sprintf("Received in 'options' param slot a non-array value: '%s'", $lambdaParams[$optionParamPosition]));
+		}
+
+		$existingOptionsParams = $lambdaParams[$optionParamPosition];
+
+		$pageSize = min($initialPageSize, $recordLimit);
+
+		$recordsRequestedTotal = 0;
+		$matchingRecordsEncountered = 0;
+
+		$offset = 0;
+
+		$accumulator = array();
+		while(true) {
+			$lambdaParams[$optionParamPosition] = array_replace(
+				$lambdaParams[$optionParamPosition],
+				array(
+					'offset' => $offset,
+					'records' => $pageSize
+					)
+				);
+			$matchingResults = array();
+			$newResults = $extendsReflectionFunctionAbstract->invokeArgs($caller, $lambdaParams);
+			$resultsForAccumulator = $newResults;
+
+			// var_export($recordsRequestedTotal);
+
+			if (is_callable($filter)) {
+				$matchingResults = array_values(array_filter($newResults, $filter));
+				$resultsForAccumulator = $matchingResults;
+			}
+			$matchingRecordsEncountered += count($resultsForAccumulator);
+			$recordsRequestedTotal += $pageSize;
+
+			$accumulator = array_merge($accumulator, $resultsForAccumulator);
+			if ($breakOnFirst) {
+				if (count($accumulator) > 0) {
+					return array_values($accumulator)[0];
+				}
+			}
+			if ($recordsRequestedTotal >= $recordLimit) {
+				throw new Bf_SearchLimitReachedException(
+					sprintf(
+						"Failed to exhaust search space within the imposed record limit (%d).\nUltimately fetched '%d' records, and '%d' matched the search criteria.",
+						$recordLimit,
+						$recordsRequestedTotal,
+						$matchingRecordsEncountered
+						)
+					);
+			}
+			if (count($newResults) < $pageSize) {
+				// no further results expected
+				break;
+			}
+			$offset += $pageSize;
+			$pageSize = min(ceil($pageSize*1.5), $recordLimit-$recordsRequestedTotal);
+		}
+
+		return $accumulator;
+	}
 
     public function getJson() {
     	return json_encode($this, JSON_PRETTY_PRINT);

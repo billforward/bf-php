@@ -12,9 +12,11 @@ class Bf_GetCouponsRequest extends Bf_BillingEntity {
 	}
 
 	public static function getCouponsForSubscription($subscription, $options = NULL, $customClient = NULL) {
-		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 
-		$endpoint = "/$subscriptionIdentifier/coupons";
+		$endpoint = sprintf("%s/coupons",
+			rawurlencode($subscriptionID)
+			);
 
 		$responseEntity = Bf_Coupon::getClassName();
 
@@ -22,9 +24,11 @@ class Bf_GetCouponsRequest extends Bf_BillingEntity {
 	}
 
 	public static function getApplicableCouponsForSubscription($subscription, $options = NULL, $customClient = NULL) {
-		$subscriptionIdentifier = Bf_Subscription::getIdentifier($subscription);
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 
-		$endpoint = "/$subscriptionIdentifier/applicable-coupons";
+		$endpoint = sprintf("%s/applicable-coupons",
+			rawurlencode($subscriptionID)
+			);
 
 		$responseEntity = Bf_Coupon::getClassName();
 

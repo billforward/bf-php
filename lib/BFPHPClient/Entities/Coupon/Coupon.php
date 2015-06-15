@@ -108,7 +108,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 	/**
 	 * Adds a collection of Bf_CouponDiscounts to this Bf_Coupon model.
-	 * @param string ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
+	 * @param string_ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
 	 ***
 	 *  <percentageDiscount>
 	 *  Discounts from the price of the specified pricing component: a percentage.
@@ -137,7 +137,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 	/**
 	 * Adds a collection of Bf_CouponDiscounts to this Bf_Coupon model.
-	 * @param string ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
+	 * @param string_ENUM['percentageDiscount', 'cashDiscount', 'unitsFree'] Nature of the discount being conferred.
 	 ***
 	 *  <percentageDiscount>
 	 *  Discounts from the price of the specified pricing component: a percentage.
@@ -248,9 +248,9 @@ class Bf_Coupon extends Bf_MutableEntity {
     		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon base code!");
 		}
 
-		$encoded = rawurlencode($baseCode);
-
-		$endpoint = "/$encoded/codes";
+		$endpoint = sprintf("%s/codes",
+			rawurlencode($baseCode)
+			);
 
 		$responseEntity = Bf_CouponUniqueCodesResponse::getClassName();
 
@@ -268,9 +268,9 @@ class Bf_Coupon extends Bf_MutableEntity {
     		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon base code!");
 		}
 
-		$encoded = rawurlencode($baseCode);
-
-		$endpoint = "/$encoded/applied";
+		$endpoint = sprintf("%s/applied",
+			rawurlencode($baseCode)
+			);
 
 		$responseEntity = Bf_CouponUniqueCodesResponse::getClassName();
 
@@ -291,9 +291,9 @@ class Bf_Coupon extends Bf_MutableEntity {
 		$coupon = new Bf_Coupon();
 		$coupon->quantity = $quantity;
 
-		$encoded = rawurlencode($baseCode);
-
-		$endpoint = "$encoded/codes";
+		$endpoint = sprintf("%s/codes",
+			rawurlencode($baseCode)
+			);
 
 		$responseEntity = Bf_CouponUniqueCodesResponse::getClassName();
 
@@ -341,9 +341,9 @@ class Bf_Coupon extends Bf_MutableEntity {
     		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon base code!");
 		}
 
-		$encoded = rawurlencode($baseCode);
-
-		$endpoint = "/$encoded/subscriptions";
+		$endpoint = sprintf("%s/subscriptions",
+			rawurlencode($baseCode)
+			);
 
 		$responseEntity = Bf_Subscription::getClassName();
 

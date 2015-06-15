@@ -14,6 +14,7 @@ class Bf_MalformedEntityReferenceException extends Bf_MalformedInputException {}
 class Bf_EntityLacksIdentifierException extends Bf_MalformedInputException {}
 
 class Bf_NoMatchingEntityException extends Bf_SDKException {}
+class Bf_SearchLimitReachedException extends Bf_SDKException {}
 
 class Bf_APIException extends Bf_SDKException {}
 class Bf_NoAPIResponseException extends Bf_APIException {}
