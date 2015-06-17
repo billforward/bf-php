@@ -657,7 +657,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			throw new Bf_InvocationException(sprintf("The method '%s' has no 'options' parameter with which we can page through its results", $lambda));
 		}
 
-		$optionParamPosition = array_keys($optionsParams)[0];
+		$paramKeys = array_keys($optionsParams);
+		$optionParamPosition = $paramKeys[0];
 
 		if (!array_key_exists($optionParamPosition, $lambdaParams)) {
 			$lambdaParams[$optionParamPosition] = array();
@@ -700,7 +701,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			$accumulator = array_merge($accumulator, $resultsForAccumulator);
 			if ($breakOnFirst) {
 				if (count($accumulator) > 0) {
-					return array_values($accumulator)[0];
+					$matchingEntities = array_values($accumulator);
+					return $matchingEntities[0];
 				}
 			}
 			if ($recordsRequestedTotal >= $recordLimit) {

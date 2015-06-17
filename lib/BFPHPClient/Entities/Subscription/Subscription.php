@@ -655,7 +655,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 	/**
 	 * Synchronously migrates the subscription to the specified plan.
-	 * @see migratePlan()
+	 * @see scheduleMigratePlan()
 	 * @return Bf_MigrationResponse The migration result.
 	 */
 	public function migratePlan(
