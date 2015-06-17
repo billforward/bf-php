@@ -687,16 +687,16 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$stateParams = static::mergeUserArgsOverNonNullDefaults(
 			__METHOD__,
 			array(
-				'mappings' => $mappings
+				'mappings' => $mappings,
+				'productRatePlan' => $planID
 				),
 			$inputOptions
 			);
 		static::renameKey($stateParams, 'renameSubscription', 'nextSubscriptionName');
 		$requestEntity = new Bf_MigrationRequest($stateParams);
 
-		$endpoint = sprintf("%s/migrate/%s",
-			rawurlencode($subscriptionID),
-			rawurlencode($planID)
+		$endpoint = sprintf("%s/migrate",
+			rawurlencode($subscriptionID)
 			);
 
 		$responseEntity = Bf_MigrationResponse::getClassName();
