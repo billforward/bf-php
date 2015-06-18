@@ -93,6 +93,7 @@ spl_autoload_register(function($className) {
             'Bf_QuoteResponseValue' => $baseDir . '/BFPHPClient/Entities/Product/QuoteResponseValue.php',
             'Bf_RawAPIOutput' => $baseDir . '/BFPHPClient/BillForwardClient.php',
             'Bf_RecalculateChargeRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/RecalculateChargeRequest.php',
+            'Bf_Refund' => $baseDir . '/BFPHPClient/Entities/Payment/Refund.php',
             'Bf_ResourcePath' => $baseDir . '/BFPHPClient/Entities/Abstract/ResourcePath.php',
             'Bf_ResumeRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/ResumeRequest.php',
             'Bf_Role' => $baseDir . '/BFPHPClient/Entities/Account/Role.php',

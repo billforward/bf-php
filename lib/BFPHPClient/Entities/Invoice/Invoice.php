@@ -16,6 +16,9 @@ class Bf_Invoice extends Bf_MutableEntity {
 		$this->unserializeArrayEntities('invoiceLines', Bf_InvoiceLine::getClassName(), $json);
 		$this->unserializeArrayEntities('taxLines', Bf_TaxLine::getClassName(), $json);
 		$this->unserializeArrayEntities('invoicePayments', Bf_InvoicePayment::getClassName(), $json);
+		$this->unserializeArrayEntities('invoiceRefunds', Bf_Refund::getClassName(), $json);
+		$this->unserializeArrayEntities('invoiceCreditNotes', Bf_CreditNote::getClassName(), $json);
+		$this->unserializeArrayEntities('charges', Bf_SubscriptionCharge::getClassName(), $json);
 	}
 
 	/**
