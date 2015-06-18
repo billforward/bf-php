@@ -598,7 +598,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public function callMethodAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	public function callMethodAndPageThrough($lambda, array $lambdaParams = array(), $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
 		$reflectionMethod = new ReflectionMethod($this, $lambda);
 		return forward_static_call_array(
 			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
@@ -637,7 +637,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public static function callFunctionAndPageThrough($lambda, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	public static function callFunctionAndPageThrough($lambda, array $lambdaParams = array(), $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
 		$reflectionMethod = new ReflectionMethod(get_called_class(), $lambda);
 		return forward_static_call_array(
 			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
@@ -648,7 +648,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			);
 	}
 
-	protected static function callFunctionAbstractAndPageThrough($caller, ReflectionMethod $extendsReflectionFunctionAbstract, array $lambdaParams = array(), callable $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	protected static function callFunctionAbstractAndPageThrough($caller, ReflectionMethod $extendsReflectionFunctionAbstract, array $lambdaParams = array(), $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
 		$optionsParams = array_filter($extendsReflectionFunctionAbstract->getParameters(),
 			function($param) {
 				return $param->name === 'options';
