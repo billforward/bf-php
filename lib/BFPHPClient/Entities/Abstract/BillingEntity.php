@@ -323,7 +323,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doGet($url, $payload);
+		$response = $client->doGet($url, $options);
 
 		$entities = static::responseToEntityCollection($response, $client, $responseEntity);
 		return $entities;
@@ -333,7 +333,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 		
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doGet($url, $payload);
+		$response = $client->doGet($url, $options);
 
 		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
 		return $constructedEntity;
@@ -685,6 +685,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 					'records' => $pageSize
 					)
 				);
+
 			$matchingResults = array();
 			$newResults = $extendsReflectionFunctionAbstract->invokeArgs($caller, $lambdaParams);
 			$resultsForAccumulator = $newResults;
