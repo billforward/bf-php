@@ -156,7 +156,8 @@ class Bf_Invoice extends Bf_MutableEntity {
 		array $recalculationOptions = array(
 			'newInvoiceState' => 'Pending',
 			'recalculationBehaviour' => 'RecalculateAsLatestSubscriptionVersion',
-			'actioningTime' => 'Immediate'
+			'actioningTime' => 'Immediate',
+			'includeInvoicedChargesOnly' => true
 			)
 		) {
 		$inputOptions = $recalculationOptions;
@@ -190,8 +191,10 @@ class Bf_Invoice extends Bf_MutableEntity {
 	 */
 	public function recalculate(
 		array $recalculationOptions = array(
-			'newInvoiceState' => 'Pending',
-			'recalculationBehaviour' => 'RecalculateAsLatestSubscriptionVersion'
+			'newState' => 'Pending',
+			'recalculationBehaviour' => 'RecalculateAsLatestSubscriptionVersion',
+			'onlyInvoiceAssociatedCharges' => true,
+			'dryRun' => false
 			)
 		) {
 
