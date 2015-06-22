@@ -557,6 +557,105 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $createdAmendment;
 	}
 
+	/**
+	 * Upgrades/downgrades a pricing component value on the subscription
+	 * @param union[string $name | Bf_PricingComponent $entity] Reference to pricing component whose value you wish to change. <string>: name of the Bf_PricingComponent. <Bf_PricingComponent>: The Bf_PricingComponent entity.
+	 * @param number Value to which you wish to upgrade/downgrade
+	 * @param array $changeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: 'Aggregated') $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
+	 *	* @param boolean $..['noCharge'] Whether to charge the user for the upgrade/downgrade
+	 *	* @param union[NULL | string_ENUM['immediate', 'delayed']] (Default: NULL) $..['changeMode'] When the change in value of the component should take effect
+	 *	*	
+	 *	*	NULL
+	 *  *	Use the existing change mode specified on the component
+	 *	*
+	 *	*	<immediate>
+	 *	*	Change the value immediately.
+	 *	*	Overrides whatever change mode is specified already on the component.
+	 *	*
+	 *	*	<delayed>
+	 *	*	Change the value when the period ends.
+	 *	*	Overrides whatever change mode is specified already on the component.
+	 *	*
+	 * @return Bf_PricingComponentValueResponse The result of changing the value.
+	 */
+	public function changeValue(
+		$pricingComponent,
+		$value,
+		array $changeOptions = array(
+			'changeMode' => NULL,
+			'invoicingType' => 'Immediate',
+			'noCharge' => false
+			)
+		) {
+		$inputOptions = $changeOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$name = $pricingComponent;
+		if (static::isEntityOfGivenClass($pricingComponent, Bf_PricingComponent::getClassName())) {
+			$name = $pricingComponent->name;
+		}
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'value' => $value,
+				),
+			$inputOptions
+			);
+		$requestEntity = new Bf_PricingComponentValueRequest($stateParams);
+
+		$endpoint = sprintf("%s/values/%s",
+			rawurlencode($subscriptionID),
+			rawurlencode($name)
+			);
+
+		$responseEntity = Bf_PricingComponentValueResponse::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	/**
+	 * Upgrades/downgrade multiple pricing component values on the subscription
+	 * @param array[string => number] $namesToValues The map of pricing component names (or IDs) to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @see changeValue()
+	 * @return Bf_PricingComponentValueResponse[] All value change results created in the process.
+	 */
+	public function changeValues(
+		array $namesToValues,
+		array $changeOptions = array(
+			'changeMode' => NULL,
+			'invoicingType' => 'Immediate',
+			'noCharge' => false
+			)
+		) {
+		$_this = $this;
+		return array_reduce(array_map(
+			function($key, $value) use($_this, $changeOptions) {
+				return $_this->changeValue(
+					$key,
+					$value,
+					$changeOptions
+					);
+			},
+			array_keys($namesToValues), $namesToValues
+			), 'array_merge', array());
+	}
+
 	//// MIGRATE PLAN
 
 	/**
@@ -998,7 +1097,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 				'from' => array($this),
 				'to' => array($this)
 				));
-
 		$requestEntity = new Bf_TimeRequest($stateParams);
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);

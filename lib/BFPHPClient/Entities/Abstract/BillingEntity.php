@@ -415,10 +415,20 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     /**
      * Returns whether entity is a member of this class.
      * @param mixed $entity Possible entity.
+     * @param mixed $class Name of class.
+     * @return boolean Whether the entity is a member of this class.
+     */
+    protected static function isEntityOfGivenClass($entityReference, $class) {
+    	return is_a($entityReference, $class);
+    }
+
+    /**
+     * Returns whether entity is a member of this class.
+     * @param mixed $entity Possible entity.
      * @return boolean Whether the entity is a member of this class.
      */
     protected static function isEntityOfThisClass($entityReference) {
-    	return is_a($entityReference, get_called_class());
+    	return static::isEntityOfGivenClass($entityReference, static::getClassName());
     }
 
     /**
