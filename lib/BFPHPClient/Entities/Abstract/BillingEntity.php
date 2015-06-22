@@ -290,6 +290,16 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $retiredEntity;
 	}
 
+	protected static function retireAndGrabCollection($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
+		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+
+		$url = static::prefixPathWithController($endpoint);
+		$response = $client->doRetire($url, $payload);
+
+		$retiredEntities = static::responseToEntityCollection($response, $client, $responseEntity);
+		return $retiredEntities;
+	}
+
 	protected static function responseToEntityCollection(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
 		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
 

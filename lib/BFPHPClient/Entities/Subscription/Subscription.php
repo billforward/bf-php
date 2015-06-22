@@ -140,7 +140,16 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
-	 * Gets a list of available payment methods for the specified subscription
+	 * Gets a list of available payment methods for this subscription
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_PaymentMethod[] The fetched payment methods.
+	 */
+	public function getPaymentMethods($options = NULL, $customClient = NULL) {
+		return static::getPaymentMethodsOnSubscription($this, $options, $customClient);
+	}
+
+	/**
+	 * Remove the given payment method from the specified subscription
 	 * @param union[string | Bf_PaymentMethod] $paymentMethod The Bf_PaymentMethod which should be removed. <string>: ID of the Bf_PaymentMethod. <Bf_Subscription>: The Bf_Subscription.
 	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PaymentMethod The removed payment method.
@@ -157,6 +166,16 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$responseEntity = Bf_PaymentMethod::getClassName();
 
 		return static::retireAndGrabFirst($endpoint, NULL, $customClient, $responseEntity);
+	}
+
+	/**
+	 * Gets a list of available payment methods for the specified subscription
+	 * @see static::removePaymentMethodFromSubscription()
+	 * @param union[string | Bf_PaymentMethod] $paymentMethod The Bf_PaymentMethod which should be removed. <string>: ID of the Bf_PaymentMethod. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_PaymentMethod The removed payment method.
+	 */
+	public function removePaymentMethod($paymentMethod) {
+		return static::removePaymentMethodFromSubscription($paymentMethod, $this);
 	}
 
 	/**
@@ -228,14 +247,6 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return Bf_Coupon::getApplicableToSubscription($this, $options, $customClient);
 	}
 
-	/**
-	 * Gets Bf_PaymentMethods which are available to this Bf_Subscription.
-	 * @return Bf_PaymentMethod[]
-	 */
-	public function getPaymentMethods($options = NULL, $customClient = NULL) {
-		return Bf_Subscription::getPaymentMethodsOnSubscription($this, $options, $customClient);
-	}
-
 	public function getCurrentPeriodEnd() {
 		if (!is_null($this->currentPeriodEnd)) {
 			return $this->currentPeriodEnd;
@@ -281,10 +292,32 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Gets Bf_PricingComponentValues for the given Bf_Subscription.
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription to which the Bf_Coupon should be applied. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_PricingComponentValue[]
+	 */
+	public static function getPricingComponentValuesForSubscription($subscription, $options = NULL, $customClient = NULL) {
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
+
+		$encoded = rawurlencode($subscriptionIdentifier);
+
+		$endpoint = sprintf("%s/values",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_PricingComponentValue::getClassName();
+
+		return static::getCollection($endpoint, $options, $customClient, $responseEntity);
+	}
+
+	/**
 	 * Gets Bf_PricingComponentValues for this Bf_Subscription.
 	 * @return Bf_PricingComponentValue[]
 	 */
-	public function getPricingComponentValues() {
+	public function getPricingComponentValues($refresh = false, $options = NULL, $customClient = NULL) {
+		if ($refresh) {
+			$this->pricingComponentValues = static::getPricingComponentValuesForSubscription($this, $options, $customClient);
+		}
 		return $this->pricingComponentValues;
 	}
 
@@ -654,6 +687,35 @@ class Bf_Subscription extends Bf_MutableEntity {
 			},
 			array_keys($namesToValues), $namesToValues
 			);
+	}
+
+	/**
+	 * Removes for the specified subscription pending value changes for the given pricing component
+	 * @param union[string($id|$name) | Bf_PricingComponent] Reference to pricing component whose pending changes you wish to discard. <string>: ID or name of the Bf_PricingComponent. <Bf_PricingComponent>: The Bf_PricingComponent.
+	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription from which the Bf_PricingComponent should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
+	 * @return Bf_PricingComponentValue[] The remaining pricing component values in effect for the provided Bf_PricingComponent
+	 */
+	public static function removePendingValueChangeFromSubscription($pricingComponent, $subscription) {
+		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
+		$pricingComponentRef = Bf_PricingComponent::getIdentifier($pricingComponent);
+
+		$endpoint = sprintf("%s/values/%s",
+			rawurlencode($subscriptionID),
+			rawurlencode($pricingComponentRef)
+			);
+
+		$responseEntity = Bf_PricingComponentValue::getClassName();
+
+		return static::retireAndGrabCollection($endpoint, NULL, $customClient, $responseEntity);
+	}
+
+	/**
+	 * Removes for the specified subscription pending value changes for the given pricing component
+	 * @param union[string($id|$name) | Bf_PricingComponent] Reference to pricing component whose pending changes you wish to discard. <string>: ID or name of the Bf_PricingComponent. <Bf_PricingComponent>: The Bf_PricingComponent.
+	 * @return Bf_PricingComponentValue[] The remaining pricing component values in effect for the provided Bf_PricingComponent
+	 */
+	public function removePendingValueChange($pricingComponent) {
+		return static::removePendingValueChangeFromSubscription($pricingComponent, $this);
 	}
 
 	//// MIGRATE PLAN
