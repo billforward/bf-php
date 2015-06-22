@@ -644,7 +644,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			)
 		) {
 		$_this = $this;
-		return array_reduce(array_map(
+		return array_map(
 			function($key, $value) use($_this, $changeOptions) {
 				return $_this->changeValue(
 					$key,
@@ -653,7 +653,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 					);
 			},
 			array_keys($namesToValues), $namesToValues
-			), 'array_merge', array());
+			);
 	}
 
 	//// MIGRATE PLAN
