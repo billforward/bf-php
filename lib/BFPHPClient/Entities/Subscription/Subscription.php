@@ -1015,7 +1015,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$subscriptionID = Bf_Subscription::getIdentifier($this);
 
-		$endpoint = sprintf("%s/invoiceCharges",
+		$endpoint = sprintf("%s/invoice-charges",
 			rawurlencode($subscriptionID)
 			);
 
