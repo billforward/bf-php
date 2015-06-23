@@ -266,7 +266,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 			)
 		) {
 
-		$inputOptions = $recalculationOptions;
+		$inputOptions = $executionOptions;
 
 		$invoiceID = Bf_Invoice::getIdentifier($this);
 
