@@ -9,3 +9,4 @@ composer.phar
 test/BFPHPClientTest/new/config/config.php
 
 test/scratch.php
+*.scratch.php

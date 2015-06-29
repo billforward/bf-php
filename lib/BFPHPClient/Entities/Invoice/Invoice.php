@@ -210,7 +210,7 @@ class Bf_Invoice extends Bf_MutableEntity {
 
 		$requestEntity = new Bf_InvoiceRecalculationRequest($stateParams);
 
-		$endpoint = sprintf("%s/execute",
+		$endpoint = sprintf("%s/recalculate",
 			rawurlencode($invoiceID)
 			);
 
