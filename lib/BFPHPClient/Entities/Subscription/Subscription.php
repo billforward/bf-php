@@ -315,7 +315,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @return Bf_PricingComponentValue[]
 	 */
 	public function getPricingComponentValues($refresh = false, $options = NULL, $customClient = NULL) {
-		if ($refresh) {
+		if ($refresh || is_null($this->pricingComponentValues)) {
 			$this->pricingComponentValues = static::getPricingComponentValuesForSubscription($this, $options, $customClient);
 		}
 		return $this->pricingComponentValues;
