@@ -175,4 +175,52 @@ class Bf_Account_SituationalTest extends PHPUnit_Framework_TestCase {
 			"Payment method remains as default after update of account."
 			);
     }
+
+    /**
+     * @depends testUpdateCascade
+     */
+    public function testAddAnotherDefaultPaymentMethod()
+    {
+    	$account = self::$createdAccount;
+
+    	$customerProfileID = TestBase::getSituation('customerProfileID');
+		$customerPaymentProfileID = TestBase::getSituation('customerPaymentProfileID');
+		// err, didn't check what the actual card last 4 digits are. but this only matters at refund-time.
+		$cardLast4Digits = TestBase::getSituation('cardLast4Digits')+1;
+    	
+		$authorizeNetToken = new Bf_AuthorizeNetToken(array(
+			'accountID' => $account->id,
+			'customerProfileID' => $customerProfileID,
+			'customerPaymentProfileID' => $customerPaymentProfileID,
+			'lastFourDigits' => $cardLast4Digits
+			));
+
+		$createdAuthorizeNetToken = Bf_AuthorizeNetToken::create($authorizeNetToken);
+		$createdAuthorizeNetTokenID = $createdAuthorizeNetToken->id;
+
+		$isDefault = true;
+
+		$paymentMethodModel = new Bf_PaymentMethod(array(
+			'linkID' => $createdAuthorizeNetToken->id,
+			'accountID' => $account->id,
+			'name' => 'Authorize.Net',
+			'description' => $cardLast4Digits,
+			'gateway' => 'authorizeNet',
+			'userEditable' => 0,
+			'priority' => 100,
+			'reusable' => 1,
+			'defaultPaymentMethod' => $isDefault
+			));
+
+		$createdPaymentMethod = Bf_PaymentMethod::create($paymentMethodModel);
+
+		$expected = $isDefault;
+    	$actual = $createdPaymentMethod->defaultPaymentMethod;
+
+    	$this->assertEquals(
+    		$expected,
+			$actual,
+			"Payment method begins as default."
+			);
+    }
 }
