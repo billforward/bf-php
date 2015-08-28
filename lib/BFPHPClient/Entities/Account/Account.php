@@ -110,8 +110,8 @@ class Bf_Account extends Bf_MutableEntity {
 	 *	* 	<None>
 	 *	*
 	 *	* @param boolean (Default: false) $..['freezeOnCompletion']
-	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
-	 *	* @param {@see self::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
+	 *	* @param {@see Bf_BillingEntity::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
+	 *	* @param {@see Bf_BillingEntity::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
 	 *	* @param integer (Default: NULL) (Non-null value of param requires that $..['to'] be NULL instead) $..['periods']
 	 * @return Bf_AccountTimeResponse The results of advancing the account's subscription through time.
 	 */
@@ -144,8 +144,8 @@ class Bf_Account extends Bf_MutableEntity {
 				'to' => 'parseTimeRequestToTime'
 				),
 			array(
-				'from' => array($this),
-				'to' => array($this)
+				'from' => array(NULL),
+				'to' => array(NULL)
 				));
 		$requestEntity = new Bf_TimeRequest($stateParams);
 
