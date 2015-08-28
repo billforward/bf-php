@@ -22,6 +22,7 @@ spl_autoload_register(function($className) {
             'Bf_APIException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_APIQuote' => $baseDir . '/BFPHPClient/Entities/SyncResponses/APIQuote.php',
             'Bf_Account' => $baseDir . '/BFPHPClient/Entities/Account/Account.php',
+            'Bf_AccountTimeResponse' => $baseDir . '/BFPHPClient/Entities/SyncRequests/AccountTimeResponse.php',
             'Bf_AddChargeRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/AddChargeRequest.php',
             'Bf_AddCouponCodeRequest' => $baseDir . '/BFPHPClient/Entities/Coupon/backend/AddCouponCodeRequest.php',
             'Bf_AddPaymentMethodRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/AddPaymentMethodRequest.php',
