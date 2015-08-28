@@ -1108,7 +1108,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	//// ADVANCE SUBSCRIPTION THROUGH TIME
 
 	/**
-	 * Synchronously resumes the subscription.
+	 * Synchronously advances the subscription through time.
 	 * @param array $advancementOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
 	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
 	 *	* @param boolean (Default: false) $..['skipIntermediatePeriods']
@@ -1125,7 +1125,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
 	 *	* @param {@see self::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
 	 *	* @param integer (Default: NULL) (Non-null value of param requires that $..['to'] be NULL instead) $..['periods']
-	 * @return Bf_Subscription The frozen subscription.
+	 * @return Bf_TimeResponse The results of advancing the subscription through time.
 	 */
 	public function advance(
 		array $advancementOptions = array(
@@ -1161,13 +1161,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 				));
 		$requestEntity = new Bf_TimeRequest($stateParams);
 
-		$subscriptionID = Bf_Subscription::getIdentifier($this);
-
 		$endpoint = sprintf("%s/advance",
 			rawurlencode($subscriptionID)
 			);
 
-		$responseEntity = Bf_SubscriptionCharge::getClassName();
+		$responseEntity = Bf_TimeResponse::getClassName();
 
 		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;

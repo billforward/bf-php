@@ -93,6 +93,72 @@ class Bf_Account extends Bf_MutableEntity {
 		return Bf_CreditNote::getRemainingCreditForCurrency($creditNotes, $currency);
 	}
 
+	//// ADVANCE ACCOUNT'S SUBSCRIPTIONS THROUGH TIME
+
+	/**
+	 * Synchronously advances the account's subscriptions through time.
+	 * @param array $advancementOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
+	 *	* @param boolean (Default: false) $..['skipIntermediatePeriods']
+	 *	* @param boolean (Default: true) $..['handleAmendments']
+	 *	* @param string_ENUM['SingleAttempt', 'FollowDunning', 'None'] (Default: 'SingleAttempt') $..['executionStrategy']
+	 *	*
+	 *	* 	<SingleAttempt> (Default)
+	 *	*
+	 *	*	<FollowDunning>
+	 *	*
+	 *	* 	<None>
+	 *	*
+	 *	* @param boolean (Default: false) $..['freezeOnCompletion']
+	 *	* @param {@see self::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
+	 *	* @param {@see self::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
+	 *	* @param integer (Default: NULL) (Non-null value of param requires that $..['to'] be NULL instead) $..['periods']
+	 * @return Bf_AccountTimeResponse The results of advancing the account's subscription through time.
+	 */
+	public function advance(
+		array $advancementOptions = array(
+			'dryRun' => false,
+			'skipIntermediatePeriods' => false,
+			'handleAmendments' => true,
+			'executionStrategy' => 'SingleAttempt',
+			'freezeOnCompletion' => false,
+			'from' => NULL,
+			'to' => 'CurrentPeriodEnd',
+			'periods' => NULL
+			)
+		) {
+
+		$inputOptions = $advancementOptions;
+
+		$accountID = Bf_Account::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+		static::mutateKeysByStaticLambdas(
+			$stateParams,
+			array(
+				'from' => 'parseTimeRequestFromTime',
+				'to' => 'parseTimeRequestToTime'
+				),
+			array(
+				'from' => array($this),
+				'to' => array($this)
+				));
+		$requestEntity = new Bf_TimeRequest($stateParams);
+
+		$endpoint = sprintf("%s/advance",
+			rawurlencode($accountID)
+			);
+
+		$responseEntity = Bf_AccountTimeResponse::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
 	/**
 	 * Creates using the API a new StripeToken.
 	 * Adds to this Bf_Account's paymentMethods a model of
