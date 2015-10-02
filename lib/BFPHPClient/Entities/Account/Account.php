@@ -73,7 +73,7 @@ class Bf_Account extends Bf_MutableEntity {
 	 */
 	public function issueCredit($value, $currency = 'USD') {
 		$creditNote = new Bf_CreditNote(array(
-			'nominalValue' => $value,
+			'value' => $value,
 			'currency' => $currency
 			));
 
