@@ -38,6 +38,21 @@ abstract class Bf_BillingEntity extends \ArrayObject {
         return $obj;
     }
 
+    /**
+    * Constructs a 'sham' instance of an entity -- i.e. a model that only has an ID defined.
+    * This is useful if you want to invoke the member methods of its instance, and know its ID,
+    * but do not wish for the round-trip of grabbing the full entity by getByID().
+    */
+    public static function shamWithID($id, $client = NULL) {
+    	if (is_null($id)) {
+    		throw new Bf_EmptyArgumentException("Received NULL id.");
+    	}
+    	$stateParams = array(
+    		'id' => $id
+    		);
+    	return new static($stateParams, $client);
+    }
+
 	public static function getClassName() {
 		// late static bindings, PHP version 5.3+ only
 		return get_called_class();
