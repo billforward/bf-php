@@ -1110,21 +1110,25 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Synchronously advances the subscription through time.
 	 * @param array $advancementOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes.
-	 *	* @param boolean (Default: false) $..['skipIntermediatePeriods']
-	 *	* @param boolean (Default: true) $..['handleAmendments']
-	 *	* @param string_ENUM['SingleAttempt', 'FollowDunning', 'None'] (Default: 'SingleAttempt') $..['executionStrategy']
+	 *	* @param boolean (Default: false) $..['dryRun'] Whether to forego persisting the effected changes
+	 *	* @param boolean (Default: false) $..['skipIntermediatePeriods'] Whether to raise invoices as time advances over period boundaries
+	 *	* @param boolean (Default: true) $..['handleAmendments'] Whether to handle any scheduled amendments as time scrubs forward
+	 *	* @param string_ENUM['SingleAttempt', 'FollowDunning', 'None'] (Default: 'SingleAttempt') $..['executionStrategy'] What strategy to use when executing any invoices raised as time advances
 	 *	*
 	 *	* 	<SingleAttempt> (Default)
+	 *	* 	Execute any invoice just once.
 	 *	*
 	 *	*	<FollowDunning>
+	 *	*	Apply the existing dunning strategy when executing invoices.
 	 *	*
 	 *	* 	<None>
+	 *	* 	Do not execute invoices.
 	 *	*
-	 *	* @param boolean (Default: false) $..['freezeOnCompletion']
-	 *	* @param {@see Bf_BillingEntity::parseTimeRequestFromTime(mixed)} $..['from'] From when to advance time
-	 *	* @param {@see Bf_BillingEntity::parseTimeRequestToTime(mixed)} $..['to'] Until when to advance time
-	 *	* @param integer (Default: NULL) (Non-null value of param requires that $..['to'] be NULL instead) $..['periods']
+	 *	* @param boolean (Default: false) $..['freezeOnCompletion'] Whether to move the subscription to the `Locked` state upon completion of the time advancement
+	 *	* @param {@see Bf_BillingEntity::parseTimeRequestFromTime(mixed)} (Default: NULL) $..['from'] From when to advance time
+	 *	* @param {@see Bf_BillingEntity::parseTimeRequestToTime(mixed)} (Default: NULL) (Used only if $..['periods'] is NULL) $..['to'] Until when to advance time
+	 *	* @param integer (Default: NULL) (Used only if $..['to'] is NULL) $..['periods'] The number of period boundaries up to which the subscription's time should be advanced. A 1-value advances the subscription to the end of its current service period. Higher values advance the subscription to subsequent period boundaries.
+	 *	* @param integer (Default: true) $..['advanceInclusively'] When advancing onto an instant in time: should TimeControl action billing events scheduled to run upon our destination time (i.e. if advancing to the end of the period, should we cross the boundary: entering the next period)?
 	 * @return Bf_TimeResponse The results of advancing the subscription through time.
 	 */
 	public function advance(
@@ -1135,8 +1139,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'executionStrategy' => 'SingleAttempt',
 			'freezeOnCompletion' => false,
 			'from' => NULL,
-			'to' => 'CurrentPeriodEnd',
-			'periods' => NULL
+			'to' => NULL,
+			'periods' => NULL,
+			'advanceInclusively' => true
 			)
 		) {
 
@@ -1189,11 +1194,13 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*	Add this charge to next invoice.
 	 *	*
 	 *	* @param boolean $..['taxAmount'] Whether to apply tax atop the charge (provided the charge is an ad-hoc charge rather than regarding some pricing component)
-	 *	* @param string_ENUM['Credit', 'Debit'] (Default: 'Debit') $..['chargeType']
+	 *	* @param string_ENUM['Credit', 'Debit'] (Default: 'Debit') $..['chargeType'] Direction of the charge.
 	 *	*
 	 *	*	<Credit>
+	 *	*	Credit awarded to customer.
 	 *	*
 	 *	*	<Debit> (Default)
+	 *	*	Money debited from customer.
 	 *	*
 	 * @return Bf_SubscriptionCharge[] All charges created in the process.
 	 */
