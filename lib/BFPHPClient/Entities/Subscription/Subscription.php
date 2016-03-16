@@ -690,7 +690,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 				$wrapperStateParams = array(
 					'pricingComponent' => $key,
-					'request' = $request
+					'request' => $request
 					);
 
 				$wrapper = new Bf_PricingComponentValueAndIDRequest($wrapperStateParams);
