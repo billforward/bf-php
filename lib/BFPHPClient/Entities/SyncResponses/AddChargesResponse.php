@@ -1,6 +1,6 @@
 <?php
 
-class Bf_AddChargeResponse extends Bf_BillingEntity {
+class Bf_AddChargesResponse extends Bf_BillingEntity {
 
 	protected function doUnserialize(array $json) {
 		// consult parent for further unserialization

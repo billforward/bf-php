@@ -25,6 +25,7 @@ spl_autoload_register(function($className) {
             'Bf_AccountTimeResponse' => $baseDir . '/BFPHPClient/Entities/SyncRequests/AccountTimeResponse.php',
             'Bf_AddChargeRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/AddChargeRequest.php',
             'Bf_AddChargeResponse' => $baseDir . '/BFPHPClient/Entities/SyncResponses/AddChargeResponse.php',
+            'Bf_AddChargesResponse' => $baseDir . '/BFPHPClient/Entities/SyncResponses/AddChargesResponse.php',
             'Bf_AddChargesToInvoiceRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/AddChargesToInvoiceRequest.php',
             'Bf_AddChargesToSubscriptionRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/AddChargesToSubscriptionRequest.php',
             'Bf_AddCouponCodeRequest' => $baseDir . '/BFPHPClient/Entities/Coupon/backend/AddCouponCodeRequest.php',
