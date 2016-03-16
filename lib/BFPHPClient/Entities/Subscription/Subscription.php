@@ -698,6 +698,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 				return $wrapper;
 
 			},
+			array_keys($namesToValues),
 			$namesToValues
 		);
 
