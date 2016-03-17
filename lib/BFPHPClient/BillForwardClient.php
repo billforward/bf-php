@@ -220,7 +220,7 @@ class BillForwardClient {
         $header = array();
 
         if ($json) {
-            $header[] = 'Content-Type: application/json; charset=utf-8';
+            $header[] = 'Content-Type: application/json';
             $header[] = 'Content-Length: ' . strlen($data);
         }
 
