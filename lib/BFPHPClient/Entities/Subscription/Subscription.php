@@ -676,17 +676,49 @@ class Bf_Subscription extends Bf_MutableEntity {
 			'noCharge' => false
 			)
 		) {
-		$_this = $this;
-		return array_map(
-			function($key, $value) use($_this, $changeOptions) {
-				return $_this->changeValue(
-					$key,
-					$value,
-					$changeOptions
+		$inputOptions = $changeOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$pricingComponentValueAndIDRequests = array_map(
+			function($key, $value) {
+				$requestStateParams = array(
+					'value' => $value
 					);
+
+				$request = new Bf_PricingComponentValueRequest($requestStateParams);
+
+				$wrapperStateParams = array(
+					'pricingComponent' => $key,
+					'request' => $request
+					);
+
+				$wrapper = new Bf_PricingComponentValueAndIDRequest($wrapperStateParams);
+
+				return $wrapper;
+
 			},
-			array_keys($namesToValues), $namesToValues
+			array_keys($namesToValues),
+			$namesToValues
+		);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'requests' => $pricingComponentValueAndIDRequests
+				),
+			$inputOptions
 			);
+		$requestEntity = new Bf_PricingComponentValuesRequest($stateParams);
+
+		$endpoint = sprintf("%s/values-batch",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_PricingComponentValueResponse::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
 	}
 
 	/**
