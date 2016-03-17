@@ -665,15 +665,26 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * 	'Bandwidth' => 102,
 	 * 	'CPU' => 10
 	 * )
-	 * @see changeValue()
+	 * @param array $chargeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param Boolean (Default: NULL) $..['dryRun'] [If null: do not override the `dryRun` value to which the nested requests default.] Whether to forego persisting the effected changes.
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: NULL) $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	NULL
+	 *  *	Do not override the `invoicingType` value to which the nested requests default.
+	 *  *	
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
 	 * @return Bf_PricingComponentValueResponse[] All value change results created in the process.
 	 */
 	public function changeValues(
 		array $namesToValues,
 		array $changeOptions = array(
 			'changeMode' => NULL,
-			'invoicingType' => 'Immediate',
-			'noCharge' => false
+			'invoicingType' => 'Immediate'
 			)
 		) {
 		$inputOptions = $changeOptions;
@@ -1270,6 +1281,76 @@ class Bf_Subscription extends Bf_MutableEntity {
 	}
 
 	/**
+	 * Creates multiple pricing component charges on the subscription
+	 * @param array[string => number] $namesToValues The map of pricing component names (or IDs) to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @param array $chargeOptions (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param Boolean (Default: NULL) $..['dryRun'] [If null: do not override the `dryRun` value to which the nested requests default.] Whether to forego persisting the effected changes.
+	 *	* @param string_ENUM['Immediate', 'Aggregated'] (Default: NULL) $..['invoicingType'] Subscription-charge invoicing type
+	 *	*
+	 *	*	NULL
+	 *  *	Do not override the `invoicingType` value to which the nested requests default.
+	 *  *	
+	 *	*	<Immediate>
+	 *	*	Generate invoice straight away with this charge applied.
+	 *	*
+	 *	*	<Aggregated> (Default)
+	 *	*	Add this charge to next invoice.
+	 *	*
+	 * @return Bf_SubscriptionCharge[] All charges created in the process.
+	 */
+	public function chargeComponentsBatch(
+		array $namesToValues,
+		array $chargeOptions = array(
+			'invoicingType' => 'Aggregated',
+			'dryRun' => false
+			)
+		) {
+		$inputOptions = $chargeOptions;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$addChargeRequests = array_map(
+			function($key, $value) {
+				$stateParams = array(
+					'pricingComponent' => $key,
+					'pricingComponentValue' => $value
+					);
+
+				$addChargeRequest = new Bf_AddChargeRequest($stateParams);
+
+				return $addChargeRequest;
+
+			},
+			array_keys($namesToValues),
+			$namesToValues
+		);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(
+				'requests' => $addChargeRequests
+				),
+			$inputOptions
+			);
+		$requestEntity = new Bf_AddChargesToSubscriptionRequest($stateParams);
+
+		$endpoint = sprintf("%s/charges/batch",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_AddChargesResponse::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
+	/**
+	 * @deprecated Prefer chargeComponentsBatch(); it makes less API requests, and gives a more semantic response.
 	 * Creates multiple pricing component charges on the subscription
 	 * @param array[string => number] $namesToValues The map of pricing component names (or IDs) to quantities
 	 * Example:
