@@ -384,7 +384,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doRetire($url, $payload);
+		$response = $client->doRetire(
+			$url,
+			$payload,
+			$queryParams
+			);
 
 		$retiredEntity = static::responseToFirstEntity(
 			$response,
@@ -406,7 +410,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doRetire($url, $payload);
+		$response = $client->doRetire(
+			$url,
+			$payload,
+			$queryParams
+			);
 
 		$retiredEntities = static::responseToEntityCollection(
 			$response,
