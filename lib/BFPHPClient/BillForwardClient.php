@@ -123,40 +123,42 @@ class BillForwardClient {
         //}
     }
 
-	public function doGet($endpoint, $data = null) {
+	public function doGet($endpoint, array $queryParams = array()) {
 		$urlFull = $this->urlRoot.$endpoint;
-		$response = $this->doCurl('GET', $urlFull, $data);
+		$response = $this->doCurl('GET', $urlFull, null, $queryParams);
 
         static::handleError($response);
 
 		return $response;
 	}
 
-	public function doPost($endpoint, array $params) {
+	public function doPost($endpoint, array $payload, array $queryParams = array()) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->doCurl('POST', $urlFull, json_encode($params));
+        $response = $this->doCurl('POST', $urlFull, json_encode($payload), $queryParams);
 
         static::handleError($response);
 
 		return $response;
 	}
 
-	public function doPut($endpoint, array $params) {
+	public function doPut($endpoint, array $payload, array $queryParams = array()) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->doCurl('PUT', $urlFull, json_encode($params));
+        $response = $this->doCurl('PUT', $urlFull, json_encode($payload), $queryParams);
 
         static::handleError($response);
 
 		return $response;
 	}
 
-    public function doRetire($endpoint, array $params = null) {
+    public function doRetire($endpoint, array $payload = null, array $queryParams = array()) {
         $urlFull = $this->urlRoot.$endpoint;
-        $data = is_null($params) ? null : json_encode($params);
+        $data = is_null($payload)
+        ? null
+        : json_encode($payload);
 
-        $response = $this->doCurl('DELETE', $urlFull, $data, !is_null($data));
+        $response = $this->doCurl('DELETE', $urlFull, $data, $queryParams);
 
         static::handleError($response);
 
@@ -164,70 +166,68 @@ class BillForwardClient {
     }
 
     /**
-     * @param $method "GET"/"POST"/...
-     * @param $request
+     * @param $verb "GET"/"POST"/...
+     * @param $url
      * @param bool|array $data
      * @param bool $json
      * @return Bf_RawAPIOutput
      */
-    private function doCurl($method, $request, $data = false) {
+    private function doCurl($verb, $url, $payloadStr, array $queryParams = array()) {
         $curl = curl_init();
+        $header = array();
 
-        $url = $request;
+        $hasPayload = !is_null($payloadStr) && is_string($payloadStr);
+        $hasQueryParams = !is_null($queryParams) && is_array($queryParams) && count($queryParams);
 
-        switch ($method) {
+        switch ($verb) {
             case "POST":
                 curl_setopt($curl, CURLOPT_POST, 1);
- 
-                if ($data) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                }
-
                 break;
             case "PUT":
-                if ($data) {
-                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                }
+                curl_setopt($curl, CURLOPT_PUT, 1);
                 break;
             case "DELETE":
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
                 break;
-            case "GET":
-                if ($data) {
-                    foreach($data as $key => $value) {
-                        if(is_bool($value)) {
-                            $data[$key] = $value ? 'true' : 'false';
-                        }
-                    }
+        }
 
-                    $query = strpos($request, '?') !== FALSE ? '' : '?';
-                    if($query == '?') {
-                        $url = sprintf("%s?%s", $url, http_build_query($data));
-                    } else {
-                        $url = sprintf("%s&%s", $url, http_build_query($data));
-                    }
+        if ($hasPayload) {
+            array_push($header, "Authorization: Bearer " . $this->access_token);
+        } else {
+            // if we put auth in the query param: we can avoid an OPTIONS preflight
+            if (!$hasQueryParams) {
+                $queryParams = array();
+            }
+            $queryParams['access_token'] = $this->access_token;
+            $hasQueryParams = true;
+        }
+
+        if ($hasQueryParams) {
+            foreach($queryParams as $key => $value) {
+                if(is_bool($value)) {
+                    $queryParams[$key] = $value ? 'true' : 'false';
                 }
-                break;
-            default:
-                if ($data) {
-                    $url = sprintf("%s?%s", $url, http_build_query($data));
-                }
+            }
+
+            $url = sprintf(
+                "%s%s%s",
+                $url,
+                strpos($url, '?')
+                ? '&'
+                : '?',
+                http_build_query($queryParams)
+                );
         }
 
         // curl_setopt($curl, CURLOPT_PROXY, '127.0.0.1:4651');
-        $header = array();
 
-        switch ($method) {
-            case "POST":
-            case "PUT":
-                // has JSON payload
-                $header[] = 'Content-Type: application/json';
-                $header[] = 'Content-Length: ' . strlen($data);
-            break;
+        if ($hasPayload) {
+            // has JSON payload
+            array_push($header, 'Content-Type: application/json');
+            array_push($header, 'Content-Length: ' . strlen($payloadStr));
+
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $payloadStr);
         }
-
-        $header[] = "Authorization: Bearer " . $this->access_token;
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
@@ -237,11 +237,10 @@ class BillForwardClient {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
 
-        $res = curl_exec($curl);
+        $response = curl_exec($curl);
         $info = curl_getinfo($curl);
         curl_close($curl);
 
-
-        return new Bf_RawAPIOutput($info, $res);
+        return new Bf_RawAPIOutput($info, $response);
     }
 }
