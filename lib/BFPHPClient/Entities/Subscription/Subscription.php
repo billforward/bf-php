@@ -154,7 +154,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PaymentMethod The removed payment method.
 	 */
-	public static function removePaymentMethodFromSubscription($paymentMethod, $subscription) {
+	public static function removePaymentMethodFromSubscription(
+		$paymentMethod,
+		$subscription,
+		array $queryParams = array()
+		) {
 		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 		$paymentMethodID = Bf_PaymentMethod::getIdentifier($paymentMethod);
 
@@ -165,7 +169,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$responseEntity = Bf_PaymentMethod::getClassName();
 
-		return static::retireAndGrabFirst($endpoint, NULL, $customClient, $responseEntity);
+		return static::retireAndGrabFirst($endpoint, NULL, $queryParams, $customClient, $responseEntity);
 	}
 
 	/**
@@ -698,7 +702,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function removePendingValueChangeFromSubscription(
 		$pricingComponent,
 		$subscription,
-		$queryParams = array()
+		array $queryParams = array()
 		) {
 		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 		$pricingComponentRef = Bf_PricingComponent::getIdentifier($pricingComponent);

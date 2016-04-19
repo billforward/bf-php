@@ -315,7 +315,10 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param string The Coupon code to remove.
 	 * @return Bf_Coupon The removed coupon.
 	 */
-	public static function removeCouponCode($couponCode, $queryParams = array()) {
+	public static function removeCouponCode(
+		$couponCode,
+		array $queryParams = array()
+		) {
 		// empty IDs are no good!
 		if (!$couponCode) {
     		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon code!");
