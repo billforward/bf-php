@@ -125,7 +125,7 @@ class BillForwardClient {
 
 	public function doGet($endpoint, $data = null) {
 		$urlFull = $this->urlRoot.$endpoint;
-		$response = $this->CallAPI_Unvalidated('GET', $urlFull, $data, false);
+		$response = $this->doCurl('GET', $urlFull, $data, false);
 
         static::handleError($response);
 
@@ -135,7 +135,7 @@ class BillForwardClient {
 	public function doPost($endpoint, array $params) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->CallAPI_Unvalidated('POST', $urlFull, json_encode($params), true);
+        $response = $this->doCurl('POST', $urlFull, json_encode($params), true);
 
         static::handleError($response);
 
@@ -145,7 +145,7 @@ class BillForwardClient {
 	public function doPut($endpoint, array $params) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->CallAPI_Unvalidated('PUT', $urlFull, json_encode($params), true);
+        $response = $this->doCurl('PUT', $urlFull, json_encode($params), true);
 
         static::handleError($response);
 
@@ -156,14 +156,13 @@ class BillForwardClient {
         $urlFull = $this->urlRoot.$endpoint;
         $data = is_null($params) ? null : json_encode($params);
 
-        $response = $this->CallAPI_Unvalidated('DELETE', $urlFull, $data, !is_null($data));
+        $response = $this->doCurl('DELETE', $urlFull, $data, !is_null($data));
 
         static::handleError($response);
 
         return $response;
     }
 
-	    //todo google codeigniter rest
     /**
      * @param $method "GET"/"POST"/...
      * @param $request
@@ -171,7 +170,7 @@ class BillForwardClient {
      * @param bool $json
      * @return Bf_RawAPIOutput
      */
-    private function CallAPI_Unvalidated($method, $request, $data = false, $json = false) {
+    private function doCurl($method, $request, $data = false, $json = false) {
         $curl = curl_init();
 
         $url = $request;
