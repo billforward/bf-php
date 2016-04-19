@@ -123,7 +123,7 @@ class BillForwardClient {
         //}
     }
 
-	public function doGet($endpoint, array $queryParams = array()) {
+	public function doGet($endpoint, $queryParams = array()) {
 		$urlFull = $this->urlRoot.$endpoint;
 		$response = $this->doCurl('GET', $urlFull, null, $queryParams);
 
@@ -132,7 +132,7 @@ class BillForwardClient {
 		return $response;
 	}
 
-	public function doPost($endpoint, array $payload, array $queryParams = array()) {
+	public function doPost($endpoint, array $payload, $queryParams = array()) {
 		$urlFull = $this->urlRoot.$endpoint;
 
         $response = $this->doCurl('POST', $urlFull, json_encode($payload), $queryParams);
@@ -142,7 +142,7 @@ class BillForwardClient {
 		return $response;
 	}
 
-	public function doPut($endpoint, array $payload, array $queryParams = array()) {
+	public function doPut($endpoint, array $payload, $queryParams = array()) {
 		$urlFull = $this->urlRoot.$endpoint;
 
         $response = $this->doCurl('PUT', $urlFull, json_encode($payload), $queryParams);
@@ -152,7 +152,7 @@ class BillForwardClient {
 		return $response;
 	}
 
-    public function doRetire($endpoint, array $payload = null, array $queryParams = array()) {
+    public function doRetire($endpoint, array $payload = null, $queryParams = array()) {
         $urlFull = $this->urlRoot.$endpoint;
         $data = is_null($payload)
         ? null
@@ -172,7 +172,7 @@ class BillForwardClient {
      * @param bool $json
      * @return Bf_RawAPIOutput
      */
-    private function doCurl($verb, $url, $payloadStr, array $queryParams = array()) {
+    private function doCurl($verb, $url, $payloadStr, $queryParams = array()) {
         $curl = curl_init();
         $header = array();
 
@@ -223,7 +223,7 @@ class BillForwardClient {
 
         if ($hasPayload) {
             // has JSON payload
-            array_push($header, 'Content-Type: application/json');
+            array_push($header, 'Content-Type: application/json; charset=utf-8');
             array_push($header, 'Content-Length: ' . strlen($payloadStr));
 
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payloadStr);

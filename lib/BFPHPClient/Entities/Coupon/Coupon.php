@@ -317,7 +317,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 */
 	public static function removeCouponCode(
 		$couponCode,
-		array $queryParams = array()
+		$queryParams = array()
 		) {
 		// empty IDs are no good!
 		if (!$couponCode) {

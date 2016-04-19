@@ -157,7 +157,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function removePaymentMethodFromSubscription(
 		$paymentMethod,
 		$subscription,
-		array $queryParams = array()
+		$queryParams = array()
 		) {
 		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 		$paymentMethodID = Bf_PaymentMethod::getIdentifier($paymentMethod);
@@ -702,7 +702,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	public static function removePendingValueChangeFromSubscription(
 		$pricingComponent,
 		$subscription,
-		array $queryParams = array()
+		$queryParams = array()
 		) {
 		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 		$pricingComponentRef = Bf_PricingComponent::getIdentifier($pricingComponent);

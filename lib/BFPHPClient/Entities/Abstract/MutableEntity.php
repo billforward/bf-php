@@ -16,7 +16,7 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 	 * You could try also setting the 'deleted' boolean on an entity.
 	 * @return Bf_MutableEntity the retired Entity.
 	 */
-	public function retire(array $queryParams = array()) {
+	public function retire($queryParams = array()) {
 		$id = static::getIdentifier($this);
 
 		// $serial = $this->getSerialized();
