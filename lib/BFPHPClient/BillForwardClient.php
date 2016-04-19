@@ -125,7 +125,7 @@ class BillForwardClient {
 
 	public function doGet($endpoint, $data = null) {
 		$urlFull = $this->urlRoot.$endpoint;
-		$response = $this->doCurl('GET', $urlFull, $data, false);
+		$response = $this->doCurl('GET', $urlFull, $data);
 
         static::handleError($response);
 
@@ -135,7 +135,7 @@ class BillForwardClient {
 	public function doPost($endpoint, array $params) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->doCurl('POST', $urlFull, json_encode($params), true);
+        $response = $this->doCurl('POST', $urlFull, json_encode($params));
 
         static::handleError($response);
 
@@ -145,7 +145,7 @@ class BillForwardClient {
 	public function doPut($endpoint, array $params) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->doCurl('PUT', $urlFull, json_encode($params), true);
+        $response = $this->doCurl('PUT', $urlFull, json_encode($params));
 
         static::handleError($response);
 
@@ -170,7 +170,7 @@ class BillForwardClient {
      * @param bool $json
      * @return Bf_RawAPIOutput
      */
-    private function doCurl($method, $request, $data = false, $json = false) {
+    private function doCurl($method, $request, $data = false) {
         $curl = curl_init();
 
         $url = $request;
@@ -218,9 +218,13 @@ class BillForwardClient {
         // curl_setopt($curl, CURLOPT_PROXY, '127.0.0.1:4651');
         $header = array();
 
-        if ($json) {
-            $header[] = 'Content-Type: application/json';
-            $header[] = 'Content-Length: ' . strlen($data);
+        switch ($method) {
+            case "POST":
+            case "PUT":
+                // has JSON payload
+                $header[] = 'Content-Type: application/json';
+                $header[] = 'Content-Length: ' . strlen($data);
+            break;
         }
 
         $header[] = "Authorization: Bearer " . $this->access_token;
