@@ -295,7 +295,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $updatedEntity;
 	}
 
-	protected static function retireAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
+	protected static function retireAndGrabFirst($endpoint, $payload, $queryParams = array(), $customClient = NULL, $responseEntity = NULL) {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
@@ -305,7 +305,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $retiredEntity;
 	}
 
-	protected static function retireAndGrabCollection($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
+	protected static function retireAndGrabCollection($endpoint, $payload, $queryParams = array(), $customClient = NULL, $responseEntity = NULL) {
 		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
 
 		$url = static::prefixPathWithController($endpoint);

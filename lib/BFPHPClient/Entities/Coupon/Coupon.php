@@ -315,7 +315,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 	 * @param string The Coupon code to remove.
 	 * @return Bf_Coupon The removed coupon.
 	 */
-	public static function removeCouponCode($couponCode) {
+	public static function removeCouponCode($couponCode, $queryParams = array()) {
 		// empty IDs are no good!
 		if (!$couponCode) {
     		throw new Bf_EmptyArgumentException("Cannot lookup empty coupon code!");
@@ -325,7 +325,7 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 		$client = Bf_BillingEntity::getSingletonClient();
 
-		$retiredEntity = static::retireAndGrabFirst($endpoint, NULL, $client);
+		$retiredEntity = static::retireAndGrabFirst($endpoint, NULL, $queryParams, $client);
 		return $retiredEntity;
 	}
 
