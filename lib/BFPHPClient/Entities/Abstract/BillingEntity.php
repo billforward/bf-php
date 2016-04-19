@@ -214,7 +214,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 	}
 
-	public static function getByID($id, $options = NULL, $customClient = NULL) {
+	public static function getByID(
+		$id,
+		$queryParams = array(),
+		$customClient = NULL
+		) {
 		$identifier = static::getIdentifier($id);
 
 		$endpoint = sprintf("%s",
@@ -222,7 +226,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			);
 
 		try {
-			return static::getFirst($endpoint, $options, $customClient);
+			return static::getFirst(
+				$endpoint,
+				$queryParams,
+				$customClient
+				);
 		} catch(Bf_NoMatchingEntityException $e) {
 			// rethrow with better message
 			$callingClass = static::getClassName();
@@ -341,6 +349,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function putAndGrabFirst(
 		$endpoint,
 		$payload,
+		$queryParams = array(),
 		$customClient = NULL,
 		$responseEntity = NULL
 		) {
@@ -349,7 +358,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doPut($url, $payload);
+		$response = $client->doPut(
+			$url,
+			$payload,
+			$queryParams
+			);
 
 		$updatedEntity = static::responseToFirstEntity(
 			$response,

@@ -123,42 +123,75 @@ class BillForwardClient {
         //}
     }
 
-	public function doGet($endpoint, $queryParams = array()) {
+	public function doGet(
+        $endpoint,
+        $queryParams = array()
+        ) {
 		$urlFull = $this->urlRoot.$endpoint;
-		$response = $this->doCurl('GET', $urlFull, null, $queryParams);
+
+		$response = $this->doCurl(
+            'GET',
+            $urlFull,
+            null,
+            $queryParams
+            );
 
         static::handleError($response);
 
 		return $response;
 	}
 
-	public function doPost($endpoint, array $payload, $queryParams = array()) {
+	public function doPost(
+        $endpoint,
+        array $payload,
+        $queryParams = array()
+        ) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->doCurl('POST', $urlFull, json_encode($payload), $queryParams);
+        $response = $this->doCurl(
+            'POST',
+            $urlFull,
+            $payload,
+            $queryParams
+            );
 
         static::handleError($response);
 
 		return $response;
 	}
 
-	public function doPut($endpoint, array $payload, $queryParams = array()) {
+	public function doPut(
+        $endpoint,
+        array $payload,
+        $queryParams = array()
+        ) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->doCurl('PUT', $urlFull, json_encode($payload), $queryParams);
+        $response = $this->doCurl(
+            'PUT',
+            $urlFull,
+            $payload,
+            $queryParams
+            );
 
         static::handleError($response);
 
 		return $response;
 	}
 
-    public function doRetire($endpoint, array $payload = null, $queryParams = array()) {
+    public function doRetire(
+        $endpoint,
+        $payload = null,
+        $queryParams = array()
+        ) {
         $urlFull = $this->urlRoot.$endpoint;
-        $data = is_null($payload)
-        ? null
-        : json_encode($payload);
 
-        $response = $this->doCurl('DELETE', $urlFull, $data, $queryParams);
+        $response = $this->doCurl(
+            'DELETE',
+            $urlFull,
+            $payload,
+            $queryParams
+            );
 
         static::handleError($response);
 
@@ -168,13 +201,22 @@ class BillForwardClient {
     /**
      * @param $verb "GET"/"POST"/...
      * @param $url
-     * @param bool|array $data
+     * @param array|null $payload
      * @param bool $json
      * @return Bf_RawAPIOutput
      */
-    private function doCurl($verb, $url, $payloadStr, $queryParams = array()) {
+    private function doCurl(
+        $verb,
+        $url,
+        $payload,
+        $queryParams = array()
+        ) {
         $curl = curl_init();
         $header = array();
+
+        $payloadStr = is_null($payload)
+        ? null
+        : json_encode($payload);
 
         $hasPayload = !is_null($payloadStr) && is_string($payloadStr);
         $hasQueryParams = !is_null($queryParams) && is_array($queryParams) && count($queryParams);
