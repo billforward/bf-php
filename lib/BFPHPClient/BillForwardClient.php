@@ -199,6 +199,23 @@ class BillForwardClient {
     }
 
     /**
+     * @author devilan (REMOVEIT) (at) o2 (dot) pl
+     * For PHP5.3 users who want to emulate JSON_UNESCAPED_UNICODE
+     * @see https://php.net/manual/en/function.json-encode.php#105789
+     */
+    private function array_to_json_string(array $arr) {
+        $convmap = array(0x80, 0xffff, 0, 0xffff);
+
+        //convmap since 0x80 char codes so it takes all multibyte codes (above ASCII 127). So such characters are being "hidden" from normal json_encoding
+        array_walk_recursive($arr, function (&$item, $key) use(&$convmap) {
+            if (is_string($item)) {
+                $item = mb_encode_numericentity($item, $convmap, 'UTF-8');
+            }
+        });
+        return mb_decode_numericentity(json_encode($arr), $convmap, 'UTF-8');
+    }
+
+    /**
      * @param $verb "GET"/"POST"/...
      * @param $url
      * @param array|null $payload
@@ -216,7 +233,12 @@ class BillForwardClient {
 
         $payloadStr = is_null($payload)
         ? null
-        : json_encode($payload);
+        : $this->array_to_json_string($payload);
+
+        if ($payloadStr) {
+            echo $payloadStr;
+            exit;
+        }
 
         $hasPayload = !is_null($payloadStr) && is_string($payloadStr);
         $hasQueryParams = !is_null($queryParams) && is_array($queryParams) && count($queryParams);
@@ -266,7 +288,11 @@ class BillForwardClient {
         if ($hasPayload) {
             // has JSON payload
             array_push($header, 'Content-Type: application/json; charset=utf-8');
-            array_push($header, 'Content-Length: ' . strlen($payloadStr));
+            // array_push($header, 'Content-Length: ' . mb_strlen($payloadStr, 'utf8'));
+            // array_push($header, 'Content-Length: ' . strlen($payloadStr));
+            // array_push($header, 'Content-Length: ' . mb_strlen($payloadStr));
+
+            var_export($payloadStr);
 
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payloadStr);
         }
@@ -278,6 +304,7 @@ class BillForwardClient {
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
 
         $response = curl_exec($curl);
         $info = curl_getinfo($curl);

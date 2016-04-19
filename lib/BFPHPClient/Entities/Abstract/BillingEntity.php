@@ -333,14 +333,19 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function putEntityAndGrabFirst(
 		$endpoint,
 		$entity,
+		$queryParams = array(),
 		$responseEntity = NULL
 		) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
 
+		// var_export($serial);
+		// exit;
+
 		return static::putAndGrabFirst(
 			$endpoint,
 			$serial,
+			$queryParams,
 			$client,
 			$responseEntity
 			);
