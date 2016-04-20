@@ -15,7 +15,11 @@ class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
 		$useExistingOrMakeNew = function($entityClass, $model) {
 			$name = $model->name;
 			try {
-				$existing = $entityClass::getByID($name);
+				if ($entityClass === Bf_ProductRatePlan::getClassName()) {
+					$existing = Bf_ProductRatePlan::getByProductAndRatePlanID($model->productID, $name);
+				} else {
+					$existing = $entityClass::getByID($name);
+				}
 				if ($existing) {
 					return $existing;
 				}
@@ -53,7 +57,7 @@ class Bf_SubscriptionTest extends \PHPUnit_Framework_TestCase {
 			Models::PricingComponent3($created['uom'][1], $models['pricingComponentTierLists'][1])
 			);
 		$models['ratePlan'] = Models::ProductRatePlan($created['product'], $models['pricingComponents']);
-		$created['ratePlan'] = Bf_ProductRatePlan::create($models['ratePlan']);
+		$created['ratePlan'] = $useExistingOrMakeNew(Bf_ProductRatePlan::getClassName(), $models['ratePlan']);
 
 		$models['subscription'] = Models::Subscription($created['ratePlan'], $created['account']);
 		$created['subscription'] = Bf_Subscription::create($models['subscription']);
