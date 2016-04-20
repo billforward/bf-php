@@ -95,31 +95,31 @@ class BillForwardClient {
     protected static function handleError($response) {
         $info = $response
         ->getInfo();
-        $payload = $response
+        $payloadArray = $response
         ->payloadArray();
-        $responseRaw = $response
+        $payloadStr = $response
         ->payloadStr();
 
         $httpCode = $info['http_code'];
 
-        //var_export($responseRaw);
+        //var_export($payloadStr);
 
         //if ($info['http_code'] != 200) {
-            if (is_null($payload)) {
-                if (is_null($responseRaw)) {
+            if (is_null($payloadArray)) {
+                if (is_null($payloadStr)) {
                     // I think this means you cannot connect to API.
                     $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\n====", $httpCode);
                     throw new Bf_NoAPIResponseException($errorString);
                 } else {
                     // I think this means you can connect to API, but it is in a bad state.
-                    $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n====", $httpCode, $responseRaw);
+                    $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n====", $httpCode, $payloadStr);
                     throw new Bf_NoAPIResponseException($errorString);
                 }
             } else {
-                if (array_key_exists('errorType', $payload)) {
+                if (array_key_exists('errorType', $payloadArray)) {
                     // API up and running, but your request is unsuccessful
-                    $errorType = $payload['errorType'];
-                    $errorMessage = $payload['errorMessage'];
+                    $errorType = $payloadArray['errorType'];
+                    $errorMessage = $payloadArray['errorMessage'];
 
                     $errorString = sprintf("\n====\nReceived error from API.\nError code: \t<%d>\nError type: \t<%s>\nError message:\t<%s>.\n====", $httpCode, $errorType, $errorMessage);
                     throw new Bf_APIErrorResponseException($errorString);
