@@ -11,6 +11,7 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 		$this->unserializeArrayEntities('pricingComponents', Bf_PricingComponent::getClassName(), $json);
 
 		$this->unserializeEntity('product', Bf_Product::getClassName(), $json);
+		$this->unserializeEntity('metadata', Bf_MetadataJson::getClassName(), $json);
 	}
 
 	/**
