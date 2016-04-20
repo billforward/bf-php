@@ -259,7 +259,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function postEntityAndGrabFirst(
 		$endpoint,
 		$entity,
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
@@ -268,14 +269,16 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			$endpoint,
 			$serial,
 			$client,
-			$responseEntity
+			$responseEntity,
+			$queryParams
 			);
 	}
 
 	protected static function postEntityAndGrabCollection(
 		$endpoint,
 		$entity,
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
@@ -284,7 +287,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			$endpoint,
 			$serial,
 			$client,
-			$responseEntity
+			$responseEntity,
+			$queryParams
 			);
 	}
 
@@ -292,14 +296,19 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$endpoint,
 		$payload,
 		$customClient = NULL,
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$client = is_null($customClient)
 		? static::getSingletonClient()
 		: $customClient;
 		
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doPost($url, $payload);
+		$response = $client->doPost(
+			$url,
+			$payload,
+			$queryParams
+			);
 
 		$constructedEntity = static::responseToFirstEntity(
 			$response,
@@ -313,14 +322,19 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$endpoint,
 		$payload,
 		$customClient = NULL,
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$client = is_null($customClient)
 		? static::getSingletonClient()
 		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doPost($url, $payload);
+		$response = $client->doPost(
+			$url,
+			$payload,
+			$queryParams
+			);
 
 		$constructedEntities = static::responseToEntityCollection(
 			$response,
