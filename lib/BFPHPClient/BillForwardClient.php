@@ -12,10 +12,6 @@ class Bf_RawAPIOutput {
         $this->response = $response;
     }
 
-    private function asUTF8($str) {
-        return utf8_encode($str);
-    }
-
     /**
     * Currently used to "get the entire payload returned by the API", as PHP arrays
     */
@@ -27,7 +23,7 @@ class Bf_RawAPIOutput {
     * Currently used to "get the entire payload returned by the API", as a string
     */
     public function payloadStr() {
-        return $this->asUTF8($this->response);
+        return $this->response;
     }
 
     public function getInfo() {
@@ -292,9 +288,13 @@ class BillForwardClient {
         if ($hasPayload) {
             // has JSON payload
             array_push($header, 'Content-Type: application/json; charset=UTF-8');
-            // array_push($header, 'Content-Length: ' . mb_strlen($payloadStr, 'utf8'));
+            /*
+            * `strlen` is fine even for UTF-8, because it counts bytes rather than characters. And bytes is indeed what curl wants.
+            * For posterity: here are alternatives if we actually want to count characters:
+            * mb_strlen($payloadStr, 'utf8')
+            * mb_strlen($payloadStr)
+            */
             array_push($header, 'Content-Length: ' . strlen($payloadStr));
-            // array_push($header, 'Content-Length: ' . mb_strlen($payloadStr));
 
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payloadStr);
         }
