@@ -333,8 +333,8 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function putEntityAndGrabFirst(
 		$endpoint,
 		$entity,
-		$queryParams = array(),
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
@@ -345,18 +345,18 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return static::putAndGrabFirst(
 			$endpoint,
 			$serial,
-			$queryParams,
 			$client,
-			$responseEntity
+			$responseEntity,
+			$queryParams
 			);
 	}
 
 	protected static function putAndGrabFirst(
 		$endpoint,
 		$payload,
-		$queryParams = array(),
 		$customClient = NULL,
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$client = is_null($customClient)
 		? static::getSingletonClient()
@@ -380,9 +380,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function retireAndGrabFirst(
 		$endpoint,
 		$payload,
-		$queryParams = array(),
 		$customClient = NULL,
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$client = is_null($customClient)
 		? static::getSingletonClient()
@@ -406,9 +406,9 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected static function retireAndGrabCollection(
 		$endpoint,
 		$payload,
-		$queryParams = array(),
 		$customClient = NULL,
-		$responseEntity = NULL
+		$responseEntity = NULL,
+		$queryParams = array()
 		) {
 		$client = is_null($customClient)
 		? static::getSingletonClient()

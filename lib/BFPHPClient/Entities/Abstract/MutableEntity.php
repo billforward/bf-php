@@ -26,7 +26,13 @@ abstract class Bf_MutableEntity extends Bf_InsertableEntity {
 			rawurlencode($id)
 			);
 
-		$retiredEntity = static::retireAndGrabFirst($endpoint, NULL, $queryParams, $client);
+		$retiredEntity = static::retireAndGrabFirst(
+			$endpoint,
+			NULL,
+			$client,
+			NULL,
+			$queryParams
+			);
 		return $retiredEntity;
 	}
 }

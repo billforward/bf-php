@@ -328,7 +328,13 @@ class Bf_Coupon extends Bf_MutableEntity {
 
 		$client = Bf_BillingEntity::getSingletonClient();
 
-		$retiredEntity = static::retireAndGrabFirst($endpoint, NULL, $queryParams, $client);
+		$retiredEntity = static::retireAndGrabFirst(
+			$endpoint,
+			NULL,
+			$client,
+			NULL,
+			$queryParams
+			);
 		return $retiredEntity;
 	}
 
