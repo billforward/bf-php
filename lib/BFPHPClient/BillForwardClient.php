@@ -16,11 +16,17 @@ class Bf_RawAPIOutput {
         return utf8_encode($str);
     }
 
-    public function json() {
-        return json_decode($this->rawResponse(), true);
+    /**
+    * Currently used to "get the entire payload returned by the API", as PHP arrays
+    */
+    public function payloadArray() {
+        return json_decode($this->payloadStr(), true);
     }
 
-    public function rawResponse() {
+    /**
+    * Currently used to "get the entire payload returned by the API", as a string
+    */
+    public function payloadStr() {
         return $this->asUTF8($this->response);
     }
 
@@ -29,7 +35,7 @@ class Bf_RawAPIOutput {
     }
 
     public function getResults() {
-        $json = $this->json();
+        $json = $this->payloadArray();
         $results = $json['results'];
         return $results;
     }
@@ -94,9 +100,9 @@ class BillForwardClient {
         $info = $response
         ->getInfo();
         $payload = $response
-        ->json();
+        ->payloadArray();
         $responseRaw = $response
-        ->rawResponse();
+        ->payloadStr();
 
         $httpCode = $info['http_code'];
 

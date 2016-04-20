@@ -429,7 +429,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $retiredEntities;
 	}
 
-	protected static function responseToEntityCollection(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
+	protected static function responseToEntityCollection(
+		Bf_RawAPIOutput $response,
+		$client,
+		$responseEntity = NULL
+		) {
 		$entityClass = is_null($responseEntity)
 		? static::getClassName()
 		: $responseEntity;
@@ -449,7 +453,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $entities;
 	}
 
-	protected static function responseToFirstEntity(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
+	protected static function responseToFirstEntity(
+		Bf_RawAPIOutput $response,
+		$client,
+		$responseEntity = NULL
+		) {
 		$entityClass = is_null($responseEntity)
 		? static::getClassName()
 		: $responseEntity;
@@ -504,7 +512,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		$url = static::prefixPathWithController($endpoint);
 		$response = $client->doGet($url, $queryParams);
 
-		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		$constructedEntity = static::responseToFirstEntity(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $constructedEntity;
 	}
 
