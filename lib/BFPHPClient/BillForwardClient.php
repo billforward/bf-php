@@ -48,13 +48,15 @@ class Bf_RawAPIOutput {
 
 class BillForwardClient {
 	private $access_token = NULL;
-	private $urlRoot = NULL;
+    private $urlRoot = NULL;
+	private $curlProxy = NULL;
 
     private static $singletonClient = NULL;
 
-	public function __construct($access_token, $urlRoot) {
+	public function __construct($access_token, $urlRoot, $curlProxy = NULL) {
 		$this->access_token = $access_token;
 		$this->urlRoot = $urlRoot;
+        $this->curlProxy = $curlProxy;
 	}
 
     public static function getDefaultClient() {
@@ -79,10 +81,11 @@ class BillForwardClient {
      * Constructs a client, and sets it to be used as the default client.
      * @param string $access_token Access token to connect to BillForward API
      * @param string $urlRoot URL of BillForward API version you wish to connect to
+     * @param null|string $curlProxy (Optional) URL of a local proxy (such as Fiddler or Proxy.app) through which you wish to forward your request. Example for Proxy.app: '127.0.0.1:4651'
      * @return BillForwardClient The new default client
      */
-    public static function makeDefaultClient($access_token, $urlRoot) {
-        $client = new BillForwardClient($access_token, $urlRoot);
+    public static function makeDefaultClient($access_token, $urlRoot, $curlProxy = NULL) {
+        $client = new BillForwardClient($access_token, $urlRoot, $curlProxy);
         static::setDefaultClient($client);
         return static::$singletonClient;
     }
@@ -235,11 +238,6 @@ class BillForwardClient {
         ? null
         : $this->array_to_json_string($payload);
 
-        if ($payloadStr) {
-            echo $payloadStr;
-            exit;
-        }
-
         $hasPayload = !is_null($payloadStr) && is_string($payloadStr);
         $hasQueryParams = !is_null($queryParams) && is_array($queryParams) && count($queryParams);
 
@@ -248,7 +246,7 @@ class BillForwardClient {
                 curl_setopt($curl, CURLOPT_POST, 1);
                 break;
             case "PUT":
-                curl_setopt($curl, CURLOPT_PUT, 1);
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
                 break;
             case "DELETE":
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -276,23 +274,21 @@ class BillForwardClient {
             $url = sprintf(
                 "%s%s%s",
                 $url,
-                strpos($url, '?')
-                ? '&'
-                : '?',
+                strpos($url, '?') ? '&' : '?',
                 http_build_query($queryParams)
                 );
         }
 
-        // curl_setopt($curl, CURLOPT_PROXY, '127.0.0.1:4651');
+        if (!is_null($this->curlProxy)) {
+            curl_setopt($curl, CURLOPT_PROXY, $this->curlProxy);
+        }
 
         if ($hasPayload) {
             // has JSON payload
-            array_push($header, 'Content-Type: application/json; charset=utf-8');
+            array_push($header, 'Content-Type: application/json; charset=UTF-8');
             // array_push($header, 'Content-Length: ' . mb_strlen($payloadStr, 'utf8'));
-            // array_push($header, 'Content-Length: ' . strlen($payloadStr));
+            array_push($header, 'Content-Length: ' . strlen($payloadStr));
             // array_push($header, 'Content-Length: ' . mb_strlen($payloadStr));
-
-            var_export($payloadStr);
 
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payloadStr);
         }
