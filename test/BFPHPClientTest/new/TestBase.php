@@ -54,7 +54,7 @@ class TestBase {
     private static function setupClient()
     {
     	$credentials = self::grabCredentials();
-    	self::$client = new \BillForwardClient($credentials['access_token'], $credentials['urlRoot']);
+    	self::$client = new \BillForwardClient($credentials['access_token'], $credentials['urlRoot'], $credentials['curlProxy']);
         \BillForwardClient::setDefaultClient(self::$client);
     }
 
