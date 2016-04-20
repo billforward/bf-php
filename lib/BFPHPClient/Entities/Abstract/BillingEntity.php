@@ -193,7 +193,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		foreach ($this as $key => $value) {
 			$outputArray[$key] = static::serializeField($value);
 		}
-		return $outputArray;
+		return (object)$outputArray;
 	}
 
 	public static function serializeField($value) {

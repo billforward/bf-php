@@ -148,7 +148,7 @@ class BillForwardClient {
 
 	public function doPost(
         $endpoint,
-        array $payload,
+        $payload,
         $queryParams = array()
         ) {
 		$urlFull = $this->urlRoot.$endpoint;
@@ -167,7 +167,7 @@ class BillForwardClient {
 
 	public function doPut(
         $endpoint,
-        array $payload,
+        $payload,
         $queryParams = array()
         ) {
 		$urlFull = $this->urlRoot.$endpoint;
@@ -208,7 +208,7 @@ class BillForwardClient {
      * For PHP5.3 users who want to emulate JSON_UNESCAPED_UNICODE
      * @see https://php.net/manual/en/function.json-encode.php#105789
      */
-    private function array_to_json_string(array $arr) {
+    private function array_to_json_string($arr) {
         $convmap = array(0x80, 0xffff, 0, 0xffff);
 
         //convmap since 0x80 char codes so it takes all multibyte codes (above ASCII 127). So such characters are being "hidden" from normal json_encoding
@@ -217,7 +217,7 @@ class BillForwardClient {
                 $item = mb_encode_numericentity($item, $convmap, 'UTF-8');
             }
         });
-        return mb_decode_numericentity(json_encode((object)$arr), $convmap, 'UTF-8');
+        return mb_decode_numericentity(json_encode($arr), $convmap, 'UTF-8');
     }
 
     /**
