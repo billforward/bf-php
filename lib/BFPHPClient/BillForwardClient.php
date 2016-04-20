@@ -217,7 +217,7 @@ class BillForwardClient {
                 $item = mb_encode_numericentity($item, $convmap, 'UTF-8');
             }
         });
-        return mb_decode_numericentity(json_encode($arr), $convmap, 'UTF-8');
+        return mb_decode_numericentity(json_encode((object)$arr), $convmap, 'UTF-8');
     }
 
     /**
