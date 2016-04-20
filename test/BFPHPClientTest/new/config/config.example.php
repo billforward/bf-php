@@ -7,7 +7,9 @@
 $config = array(
 	'credentials' => array(
 		'urlRoot' => 'https://api-sandbox.billforward.net:443/v1/',
-		'access_token' => 'INSERT_ACCESS_TOKEN_HERE'
+		'access_token' => 'INSERT_ACCESS_TOKEN_HERE',
+		// For use with Proxy.app: change to '127.0.0.1:4651'.
+		'curlProxy' => null
 		),
 
 	// Fill these in to run situational tests

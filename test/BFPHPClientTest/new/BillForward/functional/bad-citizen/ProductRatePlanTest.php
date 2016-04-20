@@ -15,7 +15,11 @@ class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 		$useExistingOrMakeNew = function($entityClass, $model) {
 			$name = $model->name;
 			try {
-				$existing = $entityClass::getByID($name);
+				if ($entityClass === Bf_ProductRatePlan::getClassName()) {
+					$existing = Bf_ProductRatePlan::getByProductAndRatePlanID($model->productID, $name);
+				} else {
+					$existing = $entityClass::getByID($name);
+				}
 				if ($existing) {
 					return $existing;
 				}
@@ -42,7 +46,7 @@ class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 				$useExistingOrMakeNew(Bf_UnitOfMeasure::getClassName(), $models['uom'][0]),
 				$useExistingOrMakeNew(Bf_UnitOfMeasure::getClassName(), $models['uom'][1]),
 				),
-			'product' => Bf_Product::create($models['product'])
+			'product' => $useExistingOrMakeNew(Bf_Product::getClassName(), $models['product'])
 			);
 		// having created product, make rate plan for it
 		$models['pricingComponents'] = array(
@@ -51,7 +55,7 @@ class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 			Models::PricingComponent3($created['uom'][1], $models['pricingComponentTierLists'][1])
 			);
 		$models['ratePlan'] = Models::ProductRatePlan($created['product'], $models['pricingComponents']);
-		$created['ratePlan'] = Bf_ProductRatePlan::create($models['ratePlan']);
+		$created['ratePlan'] = $useExistingOrMakeNew(Bf_ProductRatePlan::getClassName(), $models['ratePlan']);
 
 		self::$models = $models;
 		self::$created = $created;

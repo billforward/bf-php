@@ -11,6 +11,7 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 		$this->unserializeArrayEntities('pricingComponents', Bf_PricingComponent::getClassName(), $json);
 
 		$this->unserializeEntity('product', Bf_Product::getClassName(), $json);
+		$this->unserializeEntity('metadata', Bf_MetadataJson::getClassName(), $json);
 	}
 
 	/**
@@ -77,11 +78,16 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 
 	/**
 	 * Gets (by name or ID) Bf_ProductRatePlans belonging to a Bf_Product by name or ID
-	 * @param union[string ($id | $name) | Bf_Product $entity] The Product whose rate plans you wish to GET. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product.
-	 * @param union[string ($id | $name) | Bf_ProductRatePlan $entity] The ProductRatePlan that you wish to GET from that Product. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
+	 * @param union[string ($id | $name) | Bf_Product $entity] $product The Product whose rate plans you wish to GET. <string>: ID or name of the Bf_Product. <Bf_Product>: The Bf_Product.
+	 * @param union[string ($id | $name) | Bf_ProductRatePlan $entity] $ratePlan The ProductRatePlan that you wish to GET from that Product. <string>: ID or name of the Bf_ProductRatePlan. <Bf_ProductRatePlan>: The Bf_ProductRatePlan.
 	 * @return Bf_ProductRatePlan
 	 */
-	public static function getByProductAndRatePlanID($product, $ratePlan, $options = NULL, $customClient = NULL) {
+	public static function getByProductAndRatePlanID(
+		$product,
+		$ratePlan,
+		$queryParams = array(),
+		$customClient = NULL
+		) {
 		$productID = Bf_Product::getIdentifier($product);
 		$ratePlanID = Bf_ProductRatePlan::getIdentifier($ratePlan);
 
@@ -90,7 +96,11 @@ class Bf_ProductRatePlan extends Bf_MutableEntity {
 			rawurlencode($ratePlanID)
 			);
 
-		return static::getFirst($endpoint, $options, $customClient);
+		return static::getFirst(
+			$endpoint,
+			$queryParams,
+			$customClient
+			);
 	}
 
 	/**

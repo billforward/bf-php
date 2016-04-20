@@ -47,9 +47,9 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 			"Account is found with a userID set.");
 	}
 
-	/**
-     * @depends testLoginAccountFound
-     */
+	/*
+	`roles` is no longer exposed, so we cannot perform this test
+	// @depends testLoginAccountFound
 	public function testRolePrivilege()
     {
 		$account = self::$loginAccount;
@@ -71,7 +71,7 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 			$found,
 			"Asserting that login user has a known expected privileg."
 			);
-    }
+    }*/
 
     /**
      * @depends testLoginAccountFound
@@ -151,6 +151,8 @@ class Bf_AccountTest extends PHPUnit_Framework_TestCase {
 
 		// construct model of profile
 		$profile = new Bf_Profile(array(
+			'organizationID' => $createdAccount->organizationID,
+			'accountID' => $createdAccount->id,
 			'email' => $newEmail,
 			'firstName' => 'Test',
 			));

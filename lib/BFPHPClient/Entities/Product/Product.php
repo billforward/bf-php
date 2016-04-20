@@ -3,6 +3,13 @@
 class Bf_Product extends Bf_MutableEntity {
 	protected static $_resourcePath;
 
+	protected function doUnserialize(array $json) {
+		// consult parent for further unserialization
+		parent::doUnserialize($json);
+
+		$this->unserializeEntity('metadata', Bf_MetadataJson::getClassName(), $json);
+	}
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('products', 'product');
 	}

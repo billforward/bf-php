@@ -12,16 +12,18 @@ class Bf_RawAPIOutput {
         $this->response = $response;
     }
 
-    private function asUTF8($str) {
-        return utf8_encode($str);
+    /**
+    * Currently used to "get the entire payload returned by the API", as PHP arrays
+    */
+    public function payloadArray() {
+        return json_decode($this->payloadStr(), true);
     }
 
-    public function json() {
-        return json_decode($this->rawResponse(), true);
-    }
-
-    public function rawResponse() {
-        return $this->asUTF8($this->response);
+    /**
+    * Currently used to "get the entire payload returned by the API", as a string
+    */
+    public function payloadStr() {
+        return $this->response;
     }
 
     public function getInfo() {
@@ -29,7 +31,7 @@ class Bf_RawAPIOutput {
     }
 
     public function getResults() {
-        $json = $this->json();
+        $json = $this->payloadArray();
         $results = $json['results'];
         return $results;
     }
@@ -48,13 +50,15 @@ class Bf_RawAPIOutput {
 
 class BillForwardClient {
 	private $access_token = NULL;
-	private $urlRoot = NULL;
+    private $urlRoot = NULL;
+	private $curlProxy = NULL;
 
     private static $singletonClient = NULL;
 
-	public function __construct($access_token, $urlRoot) {
+	public function __construct($access_token, $urlRoot, $curlProxy = NULL) {
 		$this->access_token = $access_token;
 		$this->urlRoot = $urlRoot;
+        $this->curlProxy = $curlProxy;
 	}
 
     public static function getDefaultClient() {
@@ -79,10 +83,11 @@ class BillForwardClient {
      * Constructs a client, and sets it to be used as the default client.
      * @param string $access_token Access token to connect to BillForward API
      * @param string $urlRoot URL of BillForward API version you wish to connect to
+     * @param null|string $curlProxy (Optional) URL of a local proxy (such as Fiddler or Proxy.app) through which you wish to forward your request. Example for Proxy.app: '127.0.0.1:4651'
      * @return BillForwardClient The new default client
      */
-    public static function makeDefaultClient($access_token, $urlRoot) {
-        $client = new BillForwardClient($access_token, $urlRoot);
+    public static function makeDefaultClient($access_token, $urlRoot, $curlProxy = NULL) {
+        $client = new BillForwardClient($access_token, $urlRoot, $curlProxy);
         static::setDefaultClient($client);
         return static::$singletonClient;
     }
@@ -90,31 +95,31 @@ class BillForwardClient {
     protected static function handleError($response) {
         $info = $response
         ->getInfo();
-        $payload = $response
-        ->json();
-        $responseRaw = $response
-        ->rawResponse();
+        $payloadArray = $response
+        ->payloadArray();
+        $payloadStr = $response
+        ->payloadStr();
 
         $httpCode = $info['http_code'];
 
-        //var_export($responseRaw);
+        //var_export($payloadStr);
 
         //if ($info['http_code'] != 200) {
-            if (is_null($payload)) {
-                if (is_null($responseRaw)) {
+            if (is_null($payloadArray)) {
+                if (is_null($payloadStr)) {
                     // I think this means you cannot connect to API.
                     $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\n====", $httpCode);
                     throw new Bf_NoAPIResponseException($errorString);
                 } else {
                     // I think this means you can connect to API, but it is in a bad state.
-                    $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n====", $httpCode, $responseRaw);
+                    $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n====", $httpCode, $payloadStr);
                     throw new Bf_NoAPIResponseException($errorString);
                 }
             } else {
-                if (array_key_exists('errorType', $payload)) {
+                if (array_key_exists('errorType', $payloadArray)) {
                     // API up and running, but your request is unsuccessful
-                    $errorType = $payload['errorType'];
-                    $errorMessage = $payload['errorMessage'];
+                    $errorType = $payloadArray['errorType'];
+                    $errorMessage = $payloadArray['errorMessage'];
 
                     $errorString = sprintf("\n====\nReceived error from API.\nError code: \t<%d>\nError type: \t<%s>\nError message:\t<%s>.\n====", $httpCode, $errorType, $errorMessage);
                     throw new Bf_APIErrorResponseException($errorString);
@@ -123,108 +128,176 @@ class BillForwardClient {
         //}
     }
 
-	public function doGet($endpoint, $data = null) {
+	public function doGet(
+        $endpoint,
+        $queryParams = array()
+        ) {
 		$urlFull = $this->urlRoot.$endpoint;
-		$response = $this->CallAPI_Unvalidated('GET', $urlFull, $data, false);
+
+		$response = $this->doCurl(
+            'GET',
+            $urlFull,
+            null,
+            $queryParams
+            );
 
         static::handleError($response);
 
 		return $response;
 	}
 
-	public function doPost($endpoint, array $params) {
+	public function doPost(
+        $endpoint,
+        $payload,
+        $queryParams = array()
+        ) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->CallAPI_Unvalidated('POST', $urlFull, json_encode($params), true);
+        $response = $this->doCurl(
+            'POST',
+            $urlFull,
+            $payload,
+            $queryParams
+            );
 
         static::handleError($response);
 
 		return $response;
 	}
 
-	public function doPut($endpoint, array $params) {
+	public function doPut(
+        $endpoint,
+        $payload,
+        $queryParams = array()
+        ) {
 		$urlFull = $this->urlRoot.$endpoint;
 
-        $response = $this->CallAPI_Unvalidated('PUT', $urlFull, json_encode($params), true);
+        $response = $this->doCurl(
+            'PUT',
+            $urlFull,
+            $payload,
+            $queryParams
+            );
 
         static::handleError($response);
 
 		return $response;
 	}
 
-    public function doRetire($endpoint, array $params = null) {
+    public function doRetire(
+        $endpoint,
+        $payload = null,
+        $queryParams = array()
+        ) {
         $urlFull = $this->urlRoot.$endpoint;
-        $data = is_null($params) ? null : json_encode($params);
 
-        $response = $this->CallAPI_Unvalidated('DELETE', $urlFull, $data, !is_null($data));
+        $response = $this->doCurl(
+            'DELETE',
+            $urlFull,
+            $payload,
+            $queryParams
+            );
 
         static::handleError($response);
 
         return $response;
     }
 
-	    //todo google codeigniter rest
     /**
-     * @param $method "GET"/"POST"/...
-     * @param $request
-     * @param bool|array $data
+     * @author devilan (REMOVEIT) (at) o2 (dot) pl
+     * For PHP5.3 users who want to emulate JSON_UNESCAPED_UNICODE
+     * @see https://php.net/manual/en/function.json-encode.php#105789
+     */
+    private function array_to_json_string($arr) {
+        $convmap = array(0x80, 0xffff, 0, 0xffff);
+
+        //convmap since 0x80 char codes so it takes all multibyte codes (above ASCII 127). So such characters are being "hidden" from normal json_encoding
+        array_walk_recursive($arr, function (&$item, $key) use(&$convmap) {
+            if (is_string($item)) {
+                $item = mb_encode_numericentity($item, $convmap, 'UTF-8');
+            }
+        });
+        return mb_decode_numericentity(json_encode($arr), $convmap, 'UTF-8');
+    }
+
+    /**
+     * @param $verb "GET"/"POST"/...
+     * @param $url
+     * @param array|null $payload
      * @param bool $json
      * @return Bf_RawAPIOutput
      */
-    private function CallAPI_Unvalidated($method, $request, $data = false, $json = false) {
+    private function doCurl(
+        $verb,
+        $url,
+        $payload,
+        $queryParams = array()
+        ) {
         $curl = curl_init();
+        $header = array();
 
-        $url = $request;
+        $payloadStr = is_null($payload)
+        ? null
+        : $this->array_to_json_string($payload);
 
-        switch ($method) {
+        $hasPayload = !is_null($payloadStr) && is_string($payloadStr);
+        $hasQueryParams = !is_null($queryParams) && is_array($queryParams) && count($queryParams);
+
+        switch ($verb) {
             case "POST":
                 curl_setopt($curl, CURLOPT_POST, 1);
- 
-                if ($data) {
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                }
-
                 break;
             case "PUT":
-                if ($data) {
-                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                }
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
                 break;
             case "DELETE":
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
                 break;
-            case "GET":
-                if ($data) {
-                    foreach($data as $key => $value) {
-                        if(is_bool($value)) {
-                            $data[$key] = $value ? 'true' : 'false';
-                        }
-                    }
-
-                    $query = strpos($request, '?') !== FALSE ? '' : '?';
-                    if($query == '?') {
-                        $url = sprintf("%s?%s", $url, http_build_query($data));
-                    } else {
-                        $url = sprintf("%s&%s", $url, http_build_query($data));
-                    }
-                }
-                break;
-            default:
-                if ($data) {
-                    $url = sprintf("%s?%s", $url, http_build_query($data));
-                }
         }
 
-        // curl_setopt($curl, CURLOPT_PROXY, '127.0.0.1:4651');
-        $header = array();
-
-        if ($json) {
-            $header[] = 'Content-Type: application/json';
-            $header[] = 'Content-Length: ' . strlen($data);
+        if ($hasPayload) {
+            array_push($header, "Authorization: Bearer " . $this->access_token);
+        } else {
+            // if we put auth in the query param: we can avoid an OPTIONS preflight
+            if (!$hasQueryParams) {
+                $queryParams = array();
+            }
+            $queryParams['access_token'] = $this->access_token;
+            $hasQueryParams = true;
         }
 
-        $header[] = "Authorization: Bearer " . $this->access_token;
+        if ($hasQueryParams) {
+            foreach($queryParams as $key => $value) {
+                if(is_bool($value)) {
+                    $queryParams[$key] = $value ? 'true' : 'false';
+                }
+            }
+
+            $url = sprintf(
+                "%s%s%s",
+                $url,
+                strpos($url, '?') ? '&' : '?',
+                http_build_query($queryParams)
+                );
+        }
+
+        if (!is_null($this->curlProxy)) {
+            curl_setopt($curl, CURLOPT_PROXY, $this->curlProxy);
+        }
+
+        if ($hasPayload) {
+            // has JSON payload
+            array_push($header, 'Content-Type: application/json; charset=UTF-8');
+            /*
+            * `strlen` is fine even for UTF-8, because it counts bytes rather than characters. And bytes is indeed what curl wants.
+            * For posterity: here are alternatives if we actually want to count characters:
+            * mb_strlen($payloadStr, 'utf8')
+            * mb_strlen($payloadStr)
+            */
+            array_push($header, 'Content-Length: ' . strlen($payloadStr));
+
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $payloadStr);
+        }
 
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
@@ -233,12 +306,12 @@ class BillForwardClient {
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
 
-        $res = curl_exec($curl);
+        $response = curl_exec($curl);
         $info = curl_getinfo($curl);
         curl_close($curl);
 
-
-        return new Bf_RawAPIOutput($info, $res);
+        return new Bf_RawAPIOutput($info, $response);
     }
 }

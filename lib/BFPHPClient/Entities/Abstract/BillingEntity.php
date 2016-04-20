@@ -193,7 +193,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		foreach ($this as $key => $value) {
 			$outputArray[$key] = static::serializeField($value);
 		}
-		return $outputArray;
+		return (object)$outputArray;
 	}
 
 	public static function serializeField($value) {
@@ -214,7 +214,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		}
 	}
 
-	public static function getByID($id, $options = NULL, $customClient = NULL) {
+	public static function getByID(
+		$id,
+		$queryParams = array(),
+		$customClient = NULL
+		) {
 		$identifier = static::getIdentifier($id);
 
 		$endpoint = sprintf("%s",
@@ -222,7 +226,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			);
 
 		try {
-			return static::getFirst($endpoint, $options, $customClient);
+			return static::getFirst(
+				$endpoint,
+				$queryParams,
+				$customClient
+				);
 		} catch(Bf_NoMatchingEntityException $e) {
 			// rethrow with better message
 			$callingClass = static::getClassName();
@@ -240,97 +248,233 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $qualified;
 	}
 
-	public static function getAll($options = NULL, $customClient = NULL) {
-		return static::getCollection('', $options, $customClient);
+	public static function getAll($queryParams = array(), $customClient = NULL) {
+		return static::getCollection(
+			'',
+			$queryParams,
+			$customClient
+			);
 	}
 
-	protected static function postEntityAndGrabFirst($endpoint, $entity, $responseEntity = NULL) {
+	protected static function postEntityAndGrabFirst(
+		$endpoint,
+		$entity,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
 
-		return static::postAndGrabFirst($endpoint, $serial, $client, $responseEntity);
+		return static::postAndGrabFirst(
+			$endpoint,
+			$serial,
+			$client,
+			$responseEntity,
+			$queryParams
+			);
 	}
 
-	protected static function postEntityAndGrabCollection($endpoint, $entity, $responseEntity = NULL) {
+	protected static function postEntityAndGrabCollection(
+		$endpoint,
+		$entity,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
 
-		return static::postAndGrabCollection($endpoint, $serial, $client, $responseEntity);
+		return static::postAndGrabCollection(
+			$endpoint,
+			$serial,
+			$client,
+			$responseEntity,
+			$queryParams
+			);
 	}
 
-	protected static function postAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function postAndGrabFirst(
+		$endpoint,
+		$payload,
+		$customClient = NULL,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
+		$client = is_null($customClient)
+		? static::getSingletonClient()
+		: $customClient;
 		
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doPost($url, $payload);
+		$response = $client->doPost(
+			$url,
+			$payload,
+			$queryParams
+			);
 
-		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		$constructedEntity = static::responseToFirstEntity(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $constructedEntity;
 	}
 
-	protected static function postAndGrabCollection($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function postAndGrabCollection(
+		$endpoint,
+		$payload,
+		$customClient = NULL,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
+		$client = is_null($customClient)
+		? static::getSingletonClient()
+		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doPost($url, $payload);
+		$response = $client->doPost(
+			$url,
+			$payload,
+			$queryParams
+			);
 
-		$constructedEntities = static::responseToEntityCollection($response, $client, $responseEntity);
+		$constructedEntities = static::responseToEntityCollection(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $constructedEntities;
 	}
 
-	protected static function putEntityAndGrabFirst($endpoint, $entity, $responseEntity = NULL) {
+	protected static function putEntityAndGrabFirst(
+		$endpoint,
+		$entity,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
 		$serial = $entity->getSerialized();
 		$client = $entity->getClient();
 
-		return static::putAndGrabFirst($endpoint, $serial, $client, $responseEntity);
+		// var_export($serial);
+		// exit;
+
+		return static::putAndGrabFirst(
+			$endpoint,
+			$serial,
+			$client,
+			$responseEntity,
+			$queryParams
+			);
 	}
 
-	protected static function putAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function putAndGrabFirst(
+		$endpoint,
+		$payload,
+		$customClient = NULL,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
+		$client = is_null($customClient)
+		? static::getSingletonClient()
+		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doPut($url, $payload);
+		$response = $client->doPut(
+			$url,
+			$payload,
+			$queryParams
+			);
 
-		$updatedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		$updatedEntity = static::responseToFirstEntity(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $updatedEntity;
 	}
 
-	protected static function retireAndGrabFirst($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function retireAndGrabFirst(
+		$endpoint,
+		$payload,
+		$customClient = NULL,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
+		$client = is_null($customClient)
+		? static::getSingletonClient()
+		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doRetire($url, $payload);
+		$response = $client->doRetire(
+			$url,
+			$payload,
+			$queryParams
+			);
 
-		$retiredEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		$retiredEntity = static::responseToFirstEntity(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $retiredEntity;
 	}
 
-	protected static function retireAndGrabCollection($endpoint, $payload, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function retireAndGrabCollection(
+		$endpoint,
+		$payload,
+		$customClient = NULL,
+		$responseEntity = NULL,
+		$queryParams = array()
+		) {
+		$client = is_null($customClient)
+		? static::getSingletonClient()
+		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doRetire($url, $payload);
+		$response = $client->doRetire(
+			$url,
+			$payload,
+			$queryParams
+			);
 
-		$retiredEntities = static::responseToEntityCollection($response, $client, $responseEntity);
+		$retiredEntities = static::responseToEntityCollection(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $retiredEntities;
 	}
 
-	protected static function responseToEntityCollection(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
-		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
+	protected static function responseToEntityCollection(
+		Bf_RawAPIOutput $response,
+		$client,
+		$responseEntity = NULL
+		) {
+		$entityClass = is_null($responseEntity)
+		? static::getClassName()
+		: $responseEntity;
 
 		$results = $response->getResults();
 		$entities = array();
 
 		foreach($results as $value) {
-			$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $value, $client);
+			$constructedEntity = Bf_BillingEntity::constructEntityFromArgs(
+				$entityClass,
+				$value,
+				$client
+				);
 			array_push($entities, $constructedEntity);
 		}
 
 		return $entities;
 	}
 
-	protected static function responseToFirstEntity(Bf_RawAPIOutput $response, $client, $responseEntity = NULL) {
-		$entityClass = is_null($responseEntity) ? static::getClassName() : $responseEntity;
+	protected static function responseToFirstEntity(
+		Bf_RawAPIOutput $response,
+		$client,
+		$responseEntity = NULL
+		) {
+		$entityClass = is_null($responseEntity)
+		? static::getClassName()
+		: $responseEntity;
 
 		try {
 			$firstMatch = $response->getFirstResult();	
@@ -340,38 +484,77 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			throw new Bf_NoMatchingEntityException("No results returned in API response. Expected at least 1 '$responseClass' entity.");
 		}
 
-		$constructedEntity = Bf_BillingEntity::constructEntityFromArgs($entityClass, $firstMatch, $client);
+		$constructedEntity = Bf_BillingEntity::constructEntityFromArgs(
+			$entityClass,
+			$firstMatch,
+			$client
+			);
 		return $constructedEntity;
 	}
 
-	protected static function getCollection($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function getCollection(
+		$endpoint,
+		$queryParams = array(),
+		$customClient = NULL,
+		$responseEntity = NULL
+		) {
+		$client = is_null($customClient)
+		? static::getSingletonClient()
+		: $customClient;
 
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doGet($url, $options);
+		$response = $client->doGet($url, $queryParams);
 
-		$entities = static::responseToEntityCollection($response, $client, $responseEntity);
+		$entities = static::responseToEntityCollection(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $entities;
 	}
 
-	protected static function getFirst($endpoint, $options = NULL, $customClient = NULL, $responseEntity = NULL) {
-		$client = is_null($customClient) ? static::getSingletonClient() : $customClient;
+	protected static function getFirst(
+		$endpoint,
+		$queryParams = array(),
+		$customClient = NULL,
+		$responseEntity = NULL
+		) {
+		$client = is_null($customClient)
+		? static::getSingletonClient()
+		: $customClient;
 		
 		$url = static::prefixPathWithController($endpoint);
-		$response = $client->doGet($url, $options);
+		$response = $client->doGet($url, $queryParams);
 
-		$constructedEntity = static::responseToFirstEntity($response, $client, $responseEntity);
+		$constructedEntity = static::responseToFirstEntity(
+			$response,
+			$client,
+			$responseEntity
+			);
 		return $constructedEntity;
 	}
 
-	protected static function getAllThenGrabAllWithProperties(array $properties, $options = NULL, $customClient = NULL) {
-		$entities = self::getAll($options, $customClient);
-		return self::fromCollectionFindAllWhoMatchProperties($entities, $properties);
+	protected static function getAllThenGrabAllWithProperties(
+		array $properties,
+		$queryParams = array(),
+		$customClient = NULL
+		) {
+		$entities = self::getAll($queryParams, $customClient);
+		return self::fromCollectionFindAllWhoMatchProperties(
+			$entities,
+			$properties
+			);
 	}
 
-	protected static function getAllThenGrabFirstWithProperties(array $properties, $options = NULL, $customClient = NULL) {
-		$entities = self::getAll($options, $customClient);
-		return self::fromCollectionFindFirstWhoMatchesProperties($entities, $properties);
+	protected static function getAllThenGrabFirstWithProperties(array $properties,
+		$queryParams = array(),
+		$customClient = NULL
+		) {
+		$entities = self::getAll($queryParams, $customClient);
+		return self::fromCollectionFindFirstWhoMatchesProperties(
+			$entities,
+			$properties
+			);
 	}
 
     public function &__get($name) {
@@ -543,7 +726,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param array $lambdaParams Params to be added into the lambda call.
 	 * @return static The modified array.
 	 */
-	protected static function mutateKeyByStaticLambda(array &$stateParams, $key, $lambda, array $lambdaParams = array()) {
+	protected static function mutateKeyByStaticLambda(
+		array &$stateParams,
+		$key,
+		$lambda,
+		array $lambdaParams = array()
+		) {
 		$originalValue = static::popKey($stateParams, $key);
 		if (is_null($originalValue)) {
 			// means the user wanted to not send this kvp; let's not parse it.
@@ -573,7 +761,11 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 * @param array $lambdaParams Params to be added into the lambda call.
 	 * @return static The modified array.
 	 */
-	protected function mutateKeysByStaticLambdas(array &$stateParams, array $keyLambdaMap, array $keyLambdaParams = array()) {
+	protected function mutateKeysByStaticLambdas(
+		array &$stateParams,
+		array $keyLambdaMap,
+		array $keyLambdaParams = array()
+		) {
 		$mutator = array(get_called_class(), 'mutateKeyByStaticLambda');
 		array_map(function($key, $lambda) use(&$stateParams, $mutator, $keyLambdaParams) {
 			$params = array_key_exists($key, $keyLambdaParams)
@@ -633,7 +825,14 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public function callMethodAndPageThrough($lambda, array $lambdaParams = array(), $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	public function callMethodAndPageThrough(
+		$lambda,
+		array $lambdaParams = array(),
+		$filter = NULL,
+		$breakOnFirst = false,
+		$initialPageSize = 20,
+		$recordLimit = 1000
+		) {
 		$reflectionMethod = new ReflectionMethod($this, $lambda);
 		return forward_static_call_array(
 			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
@@ -672,7 +871,14 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	 *
 	 * @return mixed Returns all entities meeting the criteria (or just the first, if $breakOnFirst is specified)
 	 */
-	public static function callFunctionAndPageThrough($lambda, array $lambdaParams = array(), $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	public static function callFunctionAndPageThrough(
+		$lambda,
+		array $lambdaParams = array(),
+		$filter = NULL,
+		$breakOnFirst = false,
+		$initialPageSize = 20,
+		$recordLimit = 1000
+		) {
 		$reflectionMethod = new ReflectionMethod(get_called_class(), $lambda);
 		return forward_static_call_array(
 			array(get_called_class(), 'callFunctionAbstractAndPageThrough'),
@@ -683,7 +889,15 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			);
 	}
 
-	protected static function callFunctionAbstractAndPageThrough($caller, ReflectionMethod $extendsReflectionFunctionAbstract, array $lambdaParams = array(), $filter = NULL, $breakOnFirst = false, $initialPageSize = 20, $recordLimit = 1000) {
+	protected static function callFunctionAbstractAndPageThrough(
+		$caller,
+		ReflectionMethod $extendsReflectionFunctionAbstract,
+		array $lambdaParams = array(),
+		$filter = NULL,
+		$breakOnFirst = false,
+		$initialPageSize = 20,
+		$recordLimit = 1000
+		) {
 		$optionsParams = array_filter($extendsReflectionFunctionAbstract->getParameters(),
 			function($param) {
 				return $param->name === 'options';

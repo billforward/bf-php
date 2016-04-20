@@ -14,6 +14,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 		$this->unserializeArrayEntities('paymentMethodSubscriptionLinks', Bf_PaymentMethodSubscriptionLink::getClassName(), $json);
 
 		$this->unserializeEntity('productRatePlan', Bf_ProductRatePlan::getClassName(), $json);
+		$this->unserializeEntity('metadata', Bf_MetadataJson::getClassName(), $json);
 	}
 
 	/**
@@ -154,7 +155,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription from which the Bf_PaymentMethod should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PaymentMethod The removed payment method.
 	 */
-	public static function removePaymentMethodFromSubscription($paymentMethod, $subscription) {
+	public static function removePaymentMethodFromSubscription(
+		$paymentMethod,
+		$subscription,
+		$queryParams = array()
+		) {
 		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 		$paymentMethodID = Bf_PaymentMethod::getIdentifier($paymentMethod);
 
@@ -165,7 +170,13 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$responseEntity = Bf_PaymentMethod::getClassName();
 
-		return static::retireAndGrabFirst($endpoint, NULL, $customClient, $responseEntity);
+		return static::retireAndGrabFirst(
+			$endpoint,
+			NULL,
+			$customClient,
+			$responseEntity,
+			$queryParams
+			);
 	}
 
 	/**
@@ -695,7 +706,11 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 * @param union[string | Bf_Subscription] $subscription The Bf_Subscription from which the Bf_PricingComponent should be removed. <string>: ID of the Bf_Subscription. <Bf_Subscription>: The Bf_Subscription.
 	 * @return Bf_PricingComponentValue[] The remaining pricing component values in effect for the provided Bf_PricingComponent
 	 */
-	public static function removePendingValueChangeFromSubscription($pricingComponent, $subscription) {
+	public static function removePendingValueChangeFromSubscription(
+		$pricingComponent,
+		$subscription,
+		$queryParams = array()
+		) {
 		$subscriptionID = Bf_Subscription::getIdentifier($subscription);
 		$pricingComponentRef = Bf_PricingComponent::getIdentifier($pricingComponent);
 
@@ -706,7 +721,13 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$responseEntity = Bf_PricingComponentValue::getClassName();
 
-		return static::retireAndGrabCollection($endpoint, NULL, $customClient, $responseEntity);
+		return static::retireAndGrabCollection(
+			$endpoint,
+			NULL,
+			$customClient,
+			$responseEntity,
+			$queryParams
+			);
 	}
 
 	/**

@@ -61,6 +61,7 @@ spl_autoload_register(function($className) {
             'Bf_IssueInvoiceAmendment' => $baseDir . '/BFPHPClient/Entities/Amendments/IssueInvoiceAmendment.php',
             'Bf_MalformedEntityReferenceException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_MalformedInputException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
+            'Bf_MetadataJson' => $baseDir . '/BFPHPClient/Entities/Abstract/MetadataJson.php',
             'Bf_MigrationRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/MigrationRequest.php',
             'Bf_MigrationResponse' => $baseDir . '/BFPHPClient/Entities/SyncResponses/MigrationResponse.php',
             'Bf_MutableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/MutableEntity.php',

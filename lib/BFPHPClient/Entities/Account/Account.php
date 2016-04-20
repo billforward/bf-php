@@ -11,6 +11,7 @@ class Bf_Account extends Bf_MutableEntity {
 		$this->unserializeArrayEntities('paymentMethods', Bf_PaymentMethod::getClassName(), $json);
 
 		$this->unserializeEntity('profile', Bf_Profile::getClassName(), $json);
+		$this->unserializeEntity('metadata', Bf_MetadataJson::getClassName(), $json);
 	}
 
 	/**
