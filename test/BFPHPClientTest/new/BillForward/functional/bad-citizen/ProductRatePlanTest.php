@@ -42,7 +42,7 @@ class Bf_ProductRatePlanTest extends \PHPUnit_Framework_TestCase {
 				$useExistingOrMakeNew(Bf_UnitOfMeasure::getClassName(), $models['uom'][0]),
 				$useExistingOrMakeNew(Bf_UnitOfMeasure::getClassName(), $models['uom'][1]),
 				),
-			'product' => Bf_Product::create($models['product'])
+			'product' => $useExistingOrMakeNew(Bf_Product::getClassName(), $models['product'])
 			);
 		// having created product, make rate plan for it
 		$models['pricingComponents'] = array(
