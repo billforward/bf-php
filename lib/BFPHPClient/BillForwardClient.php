@@ -109,11 +109,15 @@ class BillForwardClient {
                 if (is_null($payloadStr)) {
                     // I think this means you cannot connect to API.
                     $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\n====", $httpCode);
-                    throw new Bf_NoAPIResponseException($errorString);
+                    throw new Bf_NoAPIResponseException($errorString, $httpCode, NULL);
                 } else {
                     // I think this means you can connect to API, but it is in a bad state.
                     $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n====", $httpCode, $payloadStr);
-                    throw new Bf_NoAPIResponseException($errorString);
+                    throw new Bf_NoAPIResponseException(
+                        $errorString,
+                        $httpCode,
+                        $payloadStr
+                        );
                 }
             } else {
                 if (array_key_exists('errorType', $payloadArray)) {
@@ -121,8 +125,22 @@ class BillForwardClient {
                     $errorType = $payloadArray['errorType'];
                     $errorMessage = $payloadArray['errorMessage'];
 
+                    $errorParameters = NULL;
+                    if (array_key_exists('errorParameters', $payloadArray)) {
+                        $errorParameters = $payloadArray['errorParameters'];
+                        // var_export($payloadArray['errorParameters']);
+                    }
+
                     $errorString = sprintf("\n====\nReceived error from API.\nError code: \t<%d>\nError type: \t<%s>\nError message:\t<%s>.\n====", $httpCode, $errorType, $errorMessage);
-                    throw new Bf_APIErrorResponseException($errorString);
+                    throw new Bf_APIErrorResponseException(
+                        $errorString,
+                        $httpCode,
+                        $payloadStr,
+                        $payloadArray,
+                        $errorType,
+                        $errorMessage,
+                        $errorParameters
+                        );
                 }
             }
         //}
