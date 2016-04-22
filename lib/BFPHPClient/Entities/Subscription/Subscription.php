@@ -668,7 +668,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 		return $constructedEntity;
 	}
 
-	/**
+	/*
+	// Commented out until batch PCV feature is released. Use the old `changeValues()` for a bit longer.
 	 * Upgrades/downgrade multiple pricing component values on the subscription
 	 * @param array[string => number] $namesToValues The map of pricing component names (or IDs) to quantities
 	 * Example:
@@ -690,8 +691,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 	 *	*	Add this charge to next invoice.
 	 *	*
 	 * @return Bf_PricingComponentValueResponse[] All value change results created in the process.
-	 */
-	public function changeValues(
+	public function changeValuesBatch(
 		array $namesToValues,
 		array $changeOptions = array(
 			'changeMode' => NULL,
@@ -741,6 +741,39 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;
+	}
+	*/
+
+	/**
+	 * Upgrades/downgrade multiple pricing component values on the subscription
+	 * @param array[string => number] $namesToValues The map of pricing component names (or IDs) to quantities
+	 * Example:
+	 * array(
+	 * 	'Bandwidth' => 102,
+	 * 	'CPU' => 10
+	 * )
+	 * @see changeValue()
+	 * @return Bf_PricingComponentValueResponse[] All value change results created in the process.
+	 */
+	public function changeValues(
+		array $namesToValues,
+		array $changeOptions = array(
+			'changeMode' => NULL,
+			'invoicingType' => 'Immediate',
+			'noCharge' => false
+			)
+		) {
+		$_this = $this;
+		return array_map(
+			function($key, $value) use($_this, $changeOptions) {
+				return $_this->changeValue(
+					$key,
+					$value,
+					$changeOptions
+					);
+			},
+			array_keys($namesToValues), $namesToValues
+			);
 	}
 
 	/**
