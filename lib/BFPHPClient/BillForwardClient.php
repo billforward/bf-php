@@ -16,7 +16,7 @@ class Bf_RawAPIOutput {
     * Currently used to "get the entire payload returned by the API", as PHP arrays
     */
     public function payloadArray() {
-        return json_decode($this->payloadStr(), true);
+        return Bf_Util::jsonStrToAssociativeArray($this->payloadStr());
     }
 
     /**
@@ -222,23 +222,6 @@ class BillForwardClient {
     }
 
     /**
-     * @author devilan (REMOVEIT) (at) o2 (dot) pl
-     * For PHP5.3 users who want to emulate JSON_UNESCAPED_UNICODE
-     * @see https://php.net/manual/en/function.json-encode.php#105789
-     */
-    private function array_to_json_string($arr) {
-        $convmap = array(0x80, 0xffff, 0, 0xffff);
-
-        //convmap since 0x80 char codes so it takes all multibyte codes (above ASCII 127). So such characters are being "hidden" from normal json_encoding
-        array_walk_recursive($arr, function (&$item, $key) use(&$convmap) {
-            if (is_string($item)) {
-                $item = mb_encode_numericentity($item, $convmap, 'UTF-8');
-            }
-        });
-        return mb_decode_numericentity(json_encode($arr), $convmap, 'UTF-8');
-    }
-
-    /**
      * @param $verb "GET"/"POST"/...
      * @param $url
      * @param array|null $payload
@@ -256,7 +239,7 @@ class BillForwardClient {
 
         $payloadStr = is_null($payload)
         ? null
-        : $this->array_to_json_string($payload);
+        : Bf_Util::associativeArrayToJsonStr($payload);
 
         $hasPayload = !is_null($payloadStr) && is_string($payloadStr);
         $hasQueryParams = !is_null($queryParams) && is_array($queryParams) && count($queryParams);

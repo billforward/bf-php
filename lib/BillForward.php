@@ -125,6 +125,7 @@ spl_autoload_register(function($className) {
             'Bf_UnserializationException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_UnsupportedMethodException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_UnsupportedParameterException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
+            'Bf_Util' => $baseDir . '/BFPHPClient/Utility.php',
             'Bf_Webhook' => $baseDir . '/BFPHPClient/Entities/Notification/Webhook.php',
             'Bf_WebhookSubscription' => $baseDir . '/BFPHPClient/Entities/Notification/WebhookSubscription.php',
             'BillForwardClient' => $baseDir . '/BFPHPClient/BillForwardClient.php',

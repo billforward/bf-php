@@ -133,7 +133,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 	protected function unserializeEntity($key, $class, array $json) {
 		$this->_registeredEntities[$key] = $class;
 		if (array_key_exists($key, $json)) {
-			$newEntity = $this->buildEntity($class, $json[$key]);
+			$newEntity = $this->buildEntity($class, $json[$key], $key);
 			$this->offsetSet($key, $newEntity);
 		}
 	}
@@ -144,15 +144,15 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			// var_export($key);
 			// var_export($json);
 			// var_export($json[$key]);
-			$entities = $this->buildEntityArray($class, $json[$key]);
+			$entities = $this->buildEntityArray($class, $json[$key], $key);
 			$this->offsetSet($key, $entities);
 		}
 	}
 
-	protected function buildEntityArray($class, array $input) {
+	protected function buildEntityArray($class, array $input, $key = NULL) {
 		$entityArray = array();
 		foreach ($input as $index => $value) {
-			$newEntity = $this->buildEntity($class, $value);
+			$newEntity = $this->buildEntity($class, $value, $key);
 			$entityArray[$index] = $newEntity;
 		}
 		return $entityArray;
@@ -163,28 +163,49 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return $newEntity;
 	}
 
-	protected function buildEntity($class, $constructArgs) {
+	protected function buildEntity($class, $constructArgs, $key = NULL) {
 		$client = $this->getClient();
+
+		$transformedToArray = NULL;
 		if (!is_array($constructArgs)) {
-			// maybe we have been given an entity already?
-			if (is_object($constructArgs) && method_exists($constructArgs, 'getClassName')) {
-				$itsClass = $constructArgs->getClassName();
-				if ($itsClass == $class) {
-					// use the provided entity. Hm, should we set its client to match our own? Let's not for now.
-					return $constructArgs;
+			if (is_object($constructArgs)) {
+				// maybe we have been given an entity already?
+				if (method_exists($constructArgs, 'getClassName')) {
+					$itsClass = $constructArgs->getClassName();
+					if ($itsClass == $class) {
+						// use the provided entity. Hm, should we set its client to match our own? Let's not for now.
+						return $constructArgs;
+					} else {
+						$thisClass = $this->getClassName();
+						$errorString = "Construction of entity <$class> inside entity <$thisClass> failed; expected array or <$class> entity. Instead received object (with class <$itsClass>).";
+						throw new Bf_UnserializationException($errorString);
+					}
 				} else {
-					$thisClass = $this->getClassName();
-					$errorString = "Construction of entity <$class> inside entity <$thisClass> failed; expected array or <$class> entity. Instead received object (with class <$itsClass>).";
-					throw new Bf_UnserializationException($errorString);
+					// this is probably a POPO, so I'll allow it. cast to associative array and continue.
+					$transformedToArray = (array) $constructArgs;
 				}
 			} else {
+				if (is_string($constructArgs) && $key === 'metadata') {
+					// in the case of `metadata` field: it is possible that post-processing in the API failed to unserialize this JSON string into JSON. We shall take matters into our own hands.
+					$transformedToArray = Bf_Util::jsonStrToAssociativeArray($constructArgs);
+				} else {
+					$itsType = gettype($constructArgs);
+					$thisClass = $this->getClassName();
+					$errorString = "Construction of entity <$class> inside entity <$thisClass> failed; expected array or <$class> entity. Instead received: <$constructArgs> (with type <$itsType>)";
+					throw new Bf_UnserializationException($errorString);
+				}
+			}
+		}
+		if (!is_null($transformedToArray)) {
+			if (!is_array($transformedToArray)) {
+				$itsType = gettype($constructArgs);
 				$thisClass = $this->getClassName();
-				$errorString = "Construction of entity <$class> inside entity <$thisClass> failed; expected array or <$class> entity. Instead received: <$constructArgs>";
+				$errorString = "Construction of entity <$class> inside entity <$thisClass> failed; expected array or <$class> entity. We identified it as a salvageable case -- and attempted to transform it into an array -- but failed. Received: <$constructArgs> (with type <$itsType>)";
 				throw new Bf_UnserializationException($errorString);
 			}
-		} else {
-			$newEntity = Bf_BillingEntity::constructEntityFromArgs($class, $constructArgs, $client);
+			$constructArgs = $transformedToArray;
 		}
+		$newEntity = Bf_BillingEntity::constructEntityFromArgs($class, $constructArgs, $client);
 		return $newEntity;
 	}
 
@@ -572,12 +593,12 @@ abstract class Bf_BillingEntity extends \ArrayObject {
     	if (array_key_exists($name, $this->_registeredEntities)) {
 			// if we expect an Entity in this field, parse it now
     		$expectedClass = $this->_registeredEntities[$name];
-    		$entity = $this->buildEntity($expectedClass, $value);
+    		$entity = $this->buildEntity($expectedClass, $value, $name);
     		$parsedValue = $entity;
     	} else if (array_key_exists($name, $this->_registeredEntityArrays)) {
     		// if we expect an Entity[] in this field, parse it now
     		$expectedClass = $this->_registeredEntityArrays[$name];
-    		$entities = $this->buildEntityArray($expectedClass, $value);
+    		$entities = $this->buildEntityArray($expectedClass, $value, $name);
     		$parsedValue = $entities;
     	} else {
     		// otherwise this is just a normal field; parse as such
@@ -588,26 +609,26 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 
     /**
      * Returns date formatted as BillForward's UTC ISO8601 string.
+     * @deprecated
+     * @see Bf_Util::makeBillForwardDate()
+     * 
      * @param int The timestamp (for example generated by time())
      * @return string The BillForward-formatted time. (Example: '2015-04-23T17:13:37Z')
      */
     public static function makeBillForwardDate($time) {
-    	// convert to UTC ISO8601 date
-		$isoFormatted = gmdate(DATE_ISO8601, $time);
-		// replace "+0000 with Z"
-		$formattedTimezone = substr($isoFormatted, 0, strlen($isoFormatted)-5).'Z';
-
-		return $formattedTimezone;
+    	return Bf_Util::makeBillForwardDate($time);
     }
 
     /**
      * Returns PHP time integer from BillForward's UTC ISO8601 string.
+     * @deprecated
+     * @see Bf_Util::makeUTCTimeFromBillForwardDate()
+     * 
      * @param string The BillForward-formatted time (Example: '2015-04-23T17:13:37Z')
      * @return int The timestamp
      */
     public static function makeUTCTimeFromBillForwardDate($date) {
-    	$dateTime = new DateTime($date, new DateTimeZone('UTC'));
-    	return $dateTime->getTimestamp();
+    	return Bf_Util::makeUTCTimeFromBillForwardDate($time);
     }
 
     protected static function getFinalArgDefault($method) {
@@ -1102,13 +1123,16 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		return NULL;
 	}
 
-    public function getJson() {
-    	return json_encode($this, JSON_PRETTY_PRINT);
+    public function getJson($jsonEncodeOptionsBitmask = 0) {
+    	if (defined('JSON_PRETTY_PRINT')) {
+    		$jsonEncodeOptionsBitmask |= JSON_PRETTY_PRINT;
+    	}
+    	return Bf_Util::associativeArrayToJsonStr($this, $jsonEncodeOptionsBitmask);
     }
 
-    public function printJson() {
+    public function printJson($jsonEncodeOptionsBitmask = 0) {
     	echo "\n";
-    	print_r($this->getJson());
+    	print_r($this->getJson($jsonEncodeOptionsBitmask));
     	echo "\n";
     }
 }
