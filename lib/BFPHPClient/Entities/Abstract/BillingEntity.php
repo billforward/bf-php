@@ -900,10 +900,10 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 		) {
 		$optionsParams = array_filter($extendsReflectionFunctionAbstract->getParameters(),
 			function($param) {
-				return $param->name === 'options';
+				return $param->name === 'options' || $param->name === 'queryParams';
 			});
 		if (count($optionsParams) <= 0) {
-			throw new Bf_InvocationException(sprintf("The method '%s' has no 'options' parameter with which we can page through its results", $lambda));
+			throw new Bf_InvocationException(sprintf("The method '%s' has no 'options' or 'queryParams' parameter with which we can page through its results", $lambda));
 		}
 
 		$paramKeys = array_keys($optionsParams);
@@ -913,7 +913,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
 			$lambdaParams[$optionParamPosition] = array();
 		}
 		if (!is_array($lambdaParams[$optionParamPosition])) {
-			throw new Bf_InvocationException(sprintf("Received in 'options' param slot a non-array value: '%s'", $lambdaParams[$optionParamPosition]));
+			throw new Bf_InvocationException(sprintf("Received in 'options' or 'queryParams' param slot a non-array value: '%s'", $lambdaParams[$optionParamPosition]));
 		}
 
 		$existingOptionsParams = $lambdaParams[$optionParamPosition];
