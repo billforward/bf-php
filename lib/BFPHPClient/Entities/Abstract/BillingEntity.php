@@ -628,7 +628,7 @@ abstract class Bf_BillingEntity extends \ArrayObject {
      * @return int The timestamp
      */
     public static function makeUTCTimeFromBillForwardDate($date) {
-    	return Bf_Util::makeUTCTimeFromBillForwardDate($time);
+    	return Bf_Util::makeUTCTimeFromBillForwardDate($date);
     }
 
     protected static function getFinalArgDefault($method) {
