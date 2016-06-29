@@ -1441,18 +1441,18 @@ class Bf_Subscription extends Bf_MutableEntity {
 	/**
 	 * Creates a TimerAmendment to notify you (via webhook) of events upon your subscription
 	 * @param array $payload (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
-	 *	* @param string_ENUM['Minutes', 'Hours', 'Days'] (Default: NULL) $..['period'] Measure describing the magnitude of the duration
 	 *	* @param int (Default: NULL) $..['duration'] Number of periods before or after the event
+	 *	* @param string_ENUM['Minutes', 'Hours', 'Days'] (Default: NULL) $..['period'] Measure describing the magnitude of the duration
 	 *	* @param string_ENUM['Before', 'After'] (Default: 'Before') $..['direction'] Timer fires x time-measures Before event, or After event
 	 *	* @param string_ENUM['TrialExpiry', 'SubscriptionExpiry', 'PeriodEnd'] (Default: NULL) $..['event'] Subscription event to which this timer relates
 	 * @return Bf_TimerAmendment The timer amendment
 	 */
 	public function setupTimer(
 		array $payload = array(
-			'period' => NULL,
 			'duration' => NULL,
+			'period' => NULL,
 			'direction' => 'Before',
-			'event' => NULL,
+			'event' => NULL
 			)
 		) {
 		$inputOptions = $payload;
