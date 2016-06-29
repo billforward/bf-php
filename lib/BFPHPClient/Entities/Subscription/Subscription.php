@@ -1436,6 +1436,46 @@ class Bf_Subscription extends Bf_MutableEntity {
 			), 'array_merge', array());
 	}
 
+	//// CREATE A TIMER
+
+	/**
+	 * Creates a TimerAmendment to notify you (via webhook) of events upon your subscription
+	 * @param array $payload (Default: All keys set to their respective default values) Encapsulates the following optional parameters:
+	 *	* @param string_ENUM['Minutes', 'Hours', 'Days'] (Default: NULL) $..['period'] Measure describing the magnitude of the duration
+	 *	* @param int (Default: NULL) $..['duration'] Number of periods before or after the event
+	 *	* @param string_ENUM['Before', 'After'] (Default: 'Before') $..['direction'] Timer fires x time-measures Before event, or After event
+	 *	* @param string_ENUM['TrialExpiry', 'SubscriptionExpiry', 'PeriodEnd'] (Default: NULL) $..['event'] Subscription event to which this timer relates
+	 * @return Bf_TimerAmendment The timer amendment
+	 */
+	public function setupTimer(
+		array $payload = array(
+			'period' => NULL,
+			'duration' => NULL,
+			'direction' => 'Before',
+			'event' => NULL,
+			)
+		) {
+		$inputOptions = $payload;
+
+		$subscriptionID = Bf_Subscription::getIdentifier($this);
+
+		$stateParams = static::mergeUserArgsOverNonNullDefaults(
+			__METHOD__,
+			array(),
+			$inputOptions
+			);
+		$requestEntity = new Bf_CreateSubscriptionTimerRequest($stateParams);
+
+		$endpoint = sprintf("%s/timer",
+			rawurlencode($subscriptionID)
+			);
+
+		$responseEntity = Bf_TimerAmendment::getClassName();
+
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
+		return $constructedEntity;
+	}
+
 	public static function initStatics() {
 		self::$_resourcePath = new Bf_ResourcePath('subscriptions', 'subscription');
 	}
