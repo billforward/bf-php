@@ -7,6 +7,7 @@ class Bf_AddChargeResponse extends Bf_BillingEntity {
 		parent::doUnserialize($json);
 
 		$this->unserializeEntity('request', Bf_AddChargeRequest::getClassName(), $json);
+		$this->unserializeEntity('invoice', Bf_Invoice::getClassName(), $json);
 		$this->unserializeArrayEntities('charges', Bf_SubscriptionCharge::getClassName(), $json);
 	}
 

@@ -339,9 +339,9 @@ class Bf_Invoice extends Bf_MutableEntity {
 			rawurlencode($invoiceID)
 			);
 
-		$responseEntity = Bf_SubscriptionCharge::getClassName();
+		$responseEntity = Bf_AddChargeResponse::getClassName();
 
-		$constructedEntity = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;
 	}
 

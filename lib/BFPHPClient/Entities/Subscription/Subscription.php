@@ -1328,9 +1328,9 @@ class Bf_Subscription extends Bf_MutableEntity {
 			rawurlencode($subscriptionID)
 			);
 
-		$responseEntity = Bf_SubscriptionCharge::getClassName();
+		$responseEntity = Bf_AddChargeResponse::getClassName();
 
-		$constructedEntity = static::postEntityAndGrabCollection($endpoint, $requestEntity, $responseEntity);
+		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity, $responseEntity);
 		return $constructedEntity;
 	}
 
