@@ -6,7 +6,7 @@ class Bf_PricingComponentValuesResponse extends Bf_BillingEntity {
 		// consult parent for further unserialization
 		parent::doUnserialize($json);
 
-		$this->unserializeArrayEntities('responses', Bf_PricingComponentValueResponse::getClassName(), $json);
+		$this->unserializeArrayEntities('responses', Bf_ExecutionReceiptResponse::getClassName(), $json);
 	}
 
 	public static function getByID($id, $options = NULL, $customClient = NULL) {

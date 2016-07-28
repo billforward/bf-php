@@ -15,6 +15,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$this->unserializeEntity('productRatePlan', Bf_ProductRatePlan::getClassName(), $json);
 		$this->unserializeEntity('metadata', Bf_MetadataJson::getClassName(), $json);
+		$this->unserializeEntity('executionInfo', Bf_ExecutionResponse::getClassName(), $json);
 	}
 
 	/**
