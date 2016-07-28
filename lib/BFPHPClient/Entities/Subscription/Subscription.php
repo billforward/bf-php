@@ -15,6 +15,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 
 		$this->unserializeEntity('productRatePlan', Bf_ProductRatePlan::getClassName(), $json);
 		$this->unserializeEntity('metadata', Bf_MetadataJson::getClassName(), $json);
+		$this->unserializeEntity('executionInfo', Bf_ExecutionResponse::getClassName(), $json);
 	}
 
 	/**
@@ -1052,8 +1053,8 @@ class Bf_Subscription extends Bf_MutableEntity {
 	//// REVIVE CANCELLED SUBSCRIPTION
 
 	/**
-	 * Synchronously revives the subscription.
-	 * @return Bf_Subscription The revived subscription.
+	 * Synchronously revives the subscription (and its children, if any).
+	 * @return Bf_Subscription[] All subscriptions revived as a result of the action.
 	 */
 	public function revive(
 		array $revivalOptions = array(
@@ -1077,7 +1078,7 @@ class Bf_Subscription extends Bf_MutableEntity {
 			rawurlencode($subscriptionID)
 			);
 
-		$constructedEntity = static::postEntityAndGrabFirst($endpoint, $requestEntity);
+		$constructedEntity = static::postEntityAndGrabCollection($endpoint, $requestEntity);
 		return $constructedEntity;
 	}
 

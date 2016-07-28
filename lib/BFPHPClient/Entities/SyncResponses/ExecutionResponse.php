@@ -1,12 +1,11 @@
 <?php
 
-class Bf_PricingComponentValuesResponse extends Bf_BillingEntity {
-
+class Bf_ExecutionResponse extends Bf_BillingEntity {
 	protected function doUnserialize(array $json) {
 		// consult parent for further unserialization
 		parent::doUnserialize($json);
 
-		$this->unserializeArrayEntities('responses', Bf_ExecutionReceiptResponse::getClassName(), $json);
+		$this->unserializeArrayEntities('executions', Bf_PricingComponentValueResponse::getClassName(), $json);
 	}
 
 	public static function getByID($id, $options = NULL, $customClient = NULL) {

@@ -52,6 +52,8 @@ spl_autoload_register(function($className) {
             'Bf_CreditSubscriptionRequest' => $baseDir . '/BFPHPClient/Entities/SyncRequests/CreditSubscriptionRequest.php',
             'Bf_EmptyArgumentException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
             'Bf_EntityLacksIdentifierException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',
+            'Bf_ExecutionReceiptResponse' => $baseDir . '/BFPHPClient/Entities/SyncResponses/ExecutionReceiptResponse.php',
+            'Bf_ExecutionResponse' => $baseDir . '/BFPHPClient/Entities/SyncResponses/ExecutionResponse.php',
             'Bf_GetCouponsRequest' => $baseDir . '/BFPHPClient/Entities/Coupon/backend/GetCouponsRequest.php',
             'Bf_InsertableEntity' => $baseDir . '/BFPHPClient/Entities/Abstract/InsertableEntity.php',
             'Bf_InvocationException' => $baseDir . '/BFPHPClient/Exceptions/SDKExceptions.php',

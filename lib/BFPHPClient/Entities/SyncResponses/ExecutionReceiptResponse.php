@@ -1,14 +1,6 @@
 <?php
 
-class Bf_PricingComponentValuesResponse extends Bf_BillingEntity {
-
-	protected function doUnserialize(array $json) {
-		// consult parent for further unserialization
-		parent::doUnserialize($json);
-
-		$this->unserializeArrayEntities('responses', Bf_ExecutionReceiptResponse::getClassName(), $json);
-	}
-
+class Bf_ExecutionReceiptResponse extends Bf_BillingEntity {
 	public static function getByID($id, $options = NULL, $customClient = NULL) {
 		throw new Bf_UnsupportedMethodException('Get by ID support is denied for this entity; '
 		 .'at the time of writing, no API endpoint exists to support it.'
