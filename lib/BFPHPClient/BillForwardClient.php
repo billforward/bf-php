@@ -7,9 +7,10 @@ class Bf_RawAPIOutput {
      * @param mixed $info
      * @param RestAPIResponse $response
      */
-    public function __construct($info, $response) {
+    public function __construct($info, $response, $error) {
         $this->info = $info;
         $this->response = $response;
+        $this->error = $error;
     }
 
     /**
@@ -28,6 +29,10 @@ class Bf_RawAPIOutput {
 
     public function getInfo() {
         return $this->info;
+    }
+
+    public function getCurlError() {
+        return $this->error;
     }
 
     public function getResults() {
@@ -106,13 +111,32 @@ class BillForwardClient {
 
         //if ($info['http_code'] != 200) {
             if (is_null($payloadArray)) {
-                if (is_null($payloadStr)) {
+                if (is_null($payloadStr) || $payloadStr === false) {
                     // I think this means you cannot connect to API.
-                    $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\n====", $httpCode);
+                    $errorString = sprintf(
+                        "\n====\nNo message returned by API.\nHTTP code: \t<%d>\n%s====",
+                        $httpCode,
+                        $response->getCurlError()
+                        ? sprintf(
+                            "cURL error: \t<%s>\n",
+                            $response->getCurlError()
+                            )
+                        : ''
+                        );
                     throw new Bf_NoAPIResponseException($errorString, $httpCode, NULL);
                 } else {
                     // I think this means you can connect to API, but it is in a bad state.
-                    $errorString = sprintf("\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n====", $httpCode, $payloadStr);
+                    $errorString = sprintf(
+                        "\n====\nNo message returned by API.\nHTTP code: \t<%d>\nRaw response: \t<%s>\n%s====",
+                        $httpCode,
+                        $payloadStr,
+                        $response->getCurlError()
+                        ? sprintf(
+                            "cURL error: \t<%s>\n",
+                            $response->getCurlError()
+                            )
+                        : ''
+                        );
                     throw new Bf_NoAPIResponseException(
                         $errorString,
                         $httpCode,
@@ -311,8 +335,12 @@ class BillForwardClient {
 
         $response = curl_exec($curl);
         $info = curl_getinfo($curl);
+        $error = $info === false
+        ? curl_error($curl)
+        : NULL;
+
         curl_close($curl);
 
-        return new Bf_RawAPIOutput($info, $response);
+        return new Bf_RawAPIOutput($info, $response, $error);
     }
 }
