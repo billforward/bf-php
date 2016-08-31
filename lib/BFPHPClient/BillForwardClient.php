@@ -111,7 +111,7 @@ class BillForwardClient {
 
         //if ($info['http_code'] != 200) {
             if (is_null($payloadArray)) {
-                if (is_null($payloadStr)) {
+                if (is_null($payloadStr) || $payloadStr === false) {
                     // I think this means you cannot connect to API.
                     $errorString = sprintf(
                         "\n====\nNo message returned by API.\nHTTP code: \t<%d>\n%s====",
@@ -338,6 +338,7 @@ class BillForwardClient {
         $error = $info === false
         ? curl_error($curl)
         : NULL;
+
         curl_close($curl);
 
         return new Bf_RawAPIOutput($info, $response, $error);
